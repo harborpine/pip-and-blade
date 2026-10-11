@@ -66,6 +66,9 @@ function swap(events: GameEvent[] = [], action: Action | null = null): void {
   root.append(screen.el);
   current = { name, screen };
   document.body.dataset['screen'] = name;
+  const run = engine ? game().run : null;
+  if (run) document.body.dataset['act'] = String(run.act);
+  else delete document.body.dataset['act'];
   screen.mounted?.();
 }
 

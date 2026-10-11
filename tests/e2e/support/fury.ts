@@ -29,6 +29,16 @@ export function openFury(page: Page, turn: number): Promise<void> {
   });
 }
 
+/** Reload the page into exactly this game (a starting position; everything after it is done with taps). */
+export async function openGame(page: Page, g: GameState): Promise<void> {
+  const file = eng.newSave();
+  file.game = g;
+  await page.evaluate((text) => localStorage.setItem('pip-and-blade.save', JSON.stringify({ t: Date.now() + 1000, text })), eng.save(file));
+  await page.reload();
+  await page.waitForFunction(() => document.body.dataset['screen'] !== 'boot');
+  await idle(page);
+}
+
 /** A fight with four enemies on the field (the Bramble King's summons make this possible in play). */
 export function openFourEnemies(page: Page): Promise<void> {
   return openCrafted(page, (g) => {

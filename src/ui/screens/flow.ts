@@ -1,14 +1,15 @@
 /** Between-fight screens: reward, doors, rest, shop, event, victory, defeat. */
 import type { Action, RewardOption, RunState } from '@shared';
 import { IllegalActionError } from '@shared';
-import { spriteImg } from '../art';
+import { icon, picture, spriteImg } from '../art';
 import { h, replace } from '../dom';
+import { scrollBox } from '../scroll';
 import { content } from '../engine';
 import { showItemInfo } from '../info';
-import { chooseFace, chooseHero, chooseItemPlacement, faceCard, faceGrid, faceInline, goldPill, partyStrip } from '../parts';
+import { chooseFace, chooseHero, chooseItemPlacement, faceCard, faceInline, goldPill, partyStrip } from '../parts';
 import { dispatch, game, go } from '../store';
 import { onLongPress, toast } from '../ui';
-import { heroName, itemDef, itemName, shortName } from '../view';
+import { faceLine, heroName, itemDef, itemName, shortName } from '../view';
 import type { Screen } from './types';
 
 function run(): RunState {
@@ -39,18 +40,34 @@ function header(title: string, r: RunState, sub?: string): HTMLElement {
 // ------------------------------------------------------------ reward
 
 function rewardCard(o: RewardOption, r: RunState, i: number, onPick: () => void): HTMLElement {
-  let body: (Node | string)[];
+  // One compact row per reward (picture left, words right) so three rewards fit a browser-tab screen.
+  let art: Node;
+  let title: string;
+  let line: string | null = null;
+  let note: string;
   if (o.type === 'face') {
-    body = [h('strong', { text: `New face: ${shortName(r.heroes[o.hero]?.heroId ?? '')}` }), faceCard(o.face), h('small', { text: 'Replaces one of this hero’s faces.' })];
+    art = faceCard(o.face, 'compact art-only');
+    title = `New face: ${shortName(r.heroes[o.hero]?.heroId ?? '')}`;
+    line = faceLine(o.face);
+    note = 'Replaces one of this hero’s faces.';
   } else if (o.type === 'upgrade') {
-    body = [h('strong', { text: 'Upgrade a face' }), h('div', { class: 'big-plus', text: `+${o.amount}` }), r.heroes[o.hero] ? faceGrid(r.heroes[o.hero]!.faces) : '', h('small', { text: `Pick one of ${heroName(r.heroes[o.hero]?.heroId ?? '')}’s faces to make stronger.` })];
+    art = h('div', { class: 'big-plus', text: `+${o.amount}` });
+    title = 'Upgrade a face';
+    note = `Pick one of ${heroName(r.heroes[o.hero]?.heroId ?? '')}’s faces to make stronger.`;
   } else {
-    body = [h('strong', { text: itemName(o.item) }), spriteImg(`item.${o.item}`, 3), h('small', { text: itemDef(o.item)?.text ?? '' })];
+    art = picture(`item.${o.item}`);
+    title = itemName(o.item);
+    note = itemDef(o.item)?.text ?? '';
   }
   const rarity = o.type === 'upgrade' ? 'common' : o.rarity;
   const card = h('button', { class: `reward-card rarity-${rarity}`, testid: `reward-option-${i}`, attrs: { 'data-type': o.type } },
-    h('span', { class: 'rarity-tag', text: o.type === 'upgrade' ? 'Upgrade' : cap(rarity) }),
-    ...body,
+    h('span', { class: 'reward-art' }, art),
+    h('span', { class: 'reward-text' },
+      h('span', { class: 'rarity-tag', text: o.type === 'upgrade' ? 'Upgrade' : cap(rarity) }),
+      h('strong', { text: title }),
+      line ? h('span', { class: 'reward-line', text: line }) : null,
+      h('small', { text: note }),
+    ),
   );
   card.addEventListener('click', onPick);
   if (o.type === 'item') onLongPress(card, () => showItemInfo(o.item));
@@ -64,7 +81,7 @@ export function buildReward(): Screen {
   if (!rw) return { el };
   el.append(
     header('Choose a reward', r, rw.picksLeft > 0 ? `${rw.picksLeft + 1} picks in a row` : rw.source === 'treasure' ? 'A free item' : 'Pick one'),
-    h('div', { class: 'scrollable reward-list' },
+    scrollBox('reward', { class: 'reward-list' },
       ...rw.options.map((o, i) =>
         rewardCard(o, r, i, () => {
           void (async () => {
@@ -78,8 +95,8 @@ export function buildReward(): Screen {
             if (!hero) return;
             const face = await chooseFace(hero, {
               testid: 'choose-face',
-              title: o.type === 'face' ? `Replace which face of ${shortName(hero.heroId)}?` : `Upgrade which face of ${shortName(hero.heroId)}?`,
-              hint: o.type === 'face' ? `New: ${o.face.name}. The old face is lost.` : undefined,
+              title: o.type === 'face' ? 'Replace which face?' : 'Upgrade which face?',
+              hint: o.type === 'face' ? `${shortName(hero.heroId)} gets ${o.face.name}. The old face is lost.` : `${shortName(hero.heroId)}: the face you pick gets +${o.amount}.`,
               onlyUpgradable: o.type === 'upgrade',
               upgradeAmount: o.type === 'upgrade' ? o.amount : undefined,
             });
@@ -101,13 +118,12 @@ export function buildDoors(): Screen {
   const doors = r.doors ?? [];
   const el = h('main', { class: 'screen flow', testid: 'screen-doors' },
     header('Choose a door', r, `Act ${r.act}, next: ${r.slot === 4 ? 'the boss' : `fight ${r.slot}`}`),
-    h('div', { class: 'door-row' },
+    scrollBox('doors', { class: 'door-row' },
       ...doors.map((d, i) => {
         const def = content.doors.find((x) => x.kind === d.kind);
         const b = h('button', { class: `door-card door-${d.kind}`, testid: `door-${i}`, attrs: { 'data-kind': d.kind } },
-          spriteImg(`door.${d.kind}`, 3),
-          h('strong', { text: def?.name ?? d.kind }),
-          h('small', { text: def?.text ?? '' }),
+          picture(`door.${d.kind}`),
+          h('span', { class: 'door-text' }, h('strong', { text: def?.name ?? d.kind }), h('small', { text: def?.text ?? '' })),
         );
         b.addEventListener('click', () => send({ type: 'pickDoor', door: i }));
         return b;
@@ -125,8 +141,7 @@ export function buildRest(): Screen {
   const used = r.rest?.used ?? false;
   const el = h('main', { class: 'screen flow', testid: 'screen-rest' },
     header('Campfire', r, used ? 'You rested.' : 'Heal the party or sharpen one face'),
-    h('div', { class: 'rest-art' }, spriteImg('door.rest', 4)),
-    partyStrip(r),
+    scrollBox('rest', { class: 'rest-mid' }, h('div', { class: 'rest-art' }, picture('door.rest')), partyStrip(r)),
     h('div', { class: 'flow-buttons' },
       !used
         ? h('button', { class: 'btn primary big', testid: 'btn-rest-heal', text: `Heal everyone ${content.rules.restHealPct}%`, onClick: () => send({ type: 'restHeal' }) })
@@ -143,7 +158,7 @@ export function buildRest(): Screen {
                 if (hi === null) return;
                 const hero = cur.heroes[hi];
                 if (!hero) return;
-                const face = await chooseFace(hero, { testid: 'choose-face', title: `Upgrade which face of ${shortName(hero.heroId)}?`, onlyUpgradable: true, upgradeAmount: content.rules.upgradeAmount });
+                const face = await chooseFace(hero, { testid: 'choose-face', title: 'Upgrade which face?', hint: `${shortName(hero.heroId)}: the face you pick gets +${content.rules.upgradeAmount}.`, onlyUpgradable: true, upgradeAmount: content.rules.upgradeAmount });
                 if (face !== null) send({ type: 'restUpgrade', hero: hi, face });
               })();
             },
@@ -162,33 +177,33 @@ export function buildShop(): Screen {
   const slots = r.shop?.slots ?? [];
   const el = h('main', { class: 'screen flow', testid: 'screen-shop' },
     header('Pedlar', r, 'Spend your gold'),
-    h('div', { class: 'scrollable shop-list' },
+    scrollBox('shop', { class: 'shop-list' },
       ...slots.map((s, i) => {
         const afford = r.gold >= s.price;
-        let icon: Node;
+        let pic: Node;
         let title: string;
         let text: string;
         if (s.type === 'item') {
-          icon = spriteImg(`item.${s.item}`, 1);
+          pic = picture(`item.${s.item}`, false);
           title = itemName(s.item);
           text = itemDef(s.item)?.text ?? '';
         } else if (s.type === 'face') {
-          icon = faceInline(s.face);
+          pic = faceInline(s.face);
           title = `Face for ${shortName(r.heroes[s.hero]?.heroId ?? '')}`;
           text = `${s.face.name}. Replaces one of their faces.`;
         } else if (s.type === 'upgrade') {
-          icon = h('b', { class: 'plus-icon', text: `+${content.rules.upgradeAmount}` });
+          pic = h('b', { class: 'plus-icon', text: `+${content.rules.upgradeAmount}` });
           title = 'Upgrade a face';
           text = 'Make any face stronger.';
         } else {
-          icon = spriteImg('ui.hp', 1);
+          pic = icon('ui.hp', 36);
           title = `Heal ${content.rules.shop.healPct}%`;
           text = 'Heals every hero.';
         }
         const b = h('button', { class: `shop-slot${s.sold ? ' sold' : ''}`, testid: `shop-slot-${i}`, disabled: s.sold || !afford, attrs: { 'data-type': s.type } },
-          icon,
+          pic,
           h('span', { class: 'shop-text' }, h('strong', { text: title }), h('small', { text })),
-          h('span', { class: 'price' }, spriteImg('ui.gold', 1), h('b', { text: s.sold ? 'SOLD' : String(s.price) })),
+          h('span', { class: 'price' }, s.sold ? null : icon('ui.gold', 18), h('b', { class: 'pxn', text: s.sold ? 'SOLD' : String(s.price) })),
         );
         b.addEventListener('click', () => {
           void (async () => {
@@ -199,14 +214,14 @@ export function buildShop(): Screen {
             } else if (s.type === 'face') {
               const hero = cur.heroes[s.hero];
               if (!hero) return;
-              const face = await chooseFace(hero, { testid: 'choose-face', title: `Replace which face of ${shortName(hero.heroId)}?`, hint: `New: ${s.face.name}` });
+              const face = await chooseFace(hero, { testid: 'choose-face', title: 'Replace which face?', hint: `${shortName(hero.heroId)} gets ${s.face.name}. The old face is lost.` });
               if (face !== null) send({ type: 'shopBuy', slot: i, face });
             } else if (s.type === 'upgrade') {
               const hi = await chooseHero(cur, { title: 'Whose face?', testid: 'choose-hero' });
               if (hi === null) return;
               const hero = cur.heroes[hi];
               if (!hero) return;
-              const face = await chooseFace(hero, { testid: 'choose-face', title: `Upgrade which face of ${shortName(hero.heroId)}?`, onlyUpgradable: true, upgradeAmount: content.rules.upgradeAmount });
+              const face = await chooseFace(hero, { testid: 'choose-face', title: 'Upgrade which face?', hint: `${shortName(hero.heroId)}: the face you pick gets +${content.rules.upgradeAmount}.`, onlyUpgradable: true, upgradeAmount: content.rules.upgradeAmount });
               if (face !== null) send({ type: 'shopBuy', slot: i, hero: hi, face });
             } else {
               send({ type: 'shopBuy', slot: i });
@@ -234,7 +249,7 @@ export function buildEvent(): Screen {
   const chosen = ev.chosen !== null ? def.choices[ev.chosen] : undefined;
   replace(el,
     header(def.name, r),
-    h('div', { class: 'scrollable' },
+    scrollBox('event', {},
       h('p', { class: 'event-text', testid: 'event-text', text: chosen ? chosen.result : def.text }),
       ...(chosen
         ? []
@@ -277,9 +292,9 @@ export function buildEnd(won: boolean): () => Screen {
     const el = h('main', { class: `screen flow end ${won ? 'won' : 'lost'}`, testid: won ? 'screen-victory' : 'screen-defeat' },
       h('div', { class: 'end-top' },
         h('h1', { class: 'end-title', testid: 'end-title', text: title }),
-        spriteImg(won ? 'hero.' + (r.heroes[0]?.heroId ?? 'bulwark') : 'ui.downed', won ? 2 : 4),
+        won ? spriteImg('hero.' + (r.heroes[0]?.heroId ?? 'bulwark'), 2) : icon('ui.downed', 48),
       ),
-      h('div', { class: 'scrollable end-scroll' },
+      scrollBox(won ? 'victory' : 'defeat', { class: 'end-scroll' },
         partyStrip(r),
         h('div', { class: 'end-lines', testid: 'end-lines' }, ...lines.map((l) => h('p', { text: l }))),
         feats.length > 0 ? h('div', { class: 'end-feats', testid: 'end-feats' }, h('strong', { text: 'Feats earned' }), ...feats.map((f) => h('p', { text: f }))) : null,

@@ -1,15 +1,16 @@
-/** Builds every sprite on the asset list. */
+/** Builds every sprite: everything on the asset list plus the generator's own kit, font and die-face pieces. */
 import { ASSET_LIST } from '../../src/shared/assets';
-import { HERO_ROSTER } from '../../src/shared/roster';
-import { buildBackgrounds } from './backgrounds';
+
 import { buildLogo, drawAppIcon } from './appicon';
 import { buildCharacters } from './characters';
-import { buildDice } from './dice';
-import { buildDoors } from './doors';
-import { effects, keywords, setBadges, statuses, symbols } from './icons1';
-import { intents, uiIcons } from './icons2';
-import { buildItems } from './items';
+
+import { HERO_DIE_COLOR } from './heroes';
+import { effects, intents, keywords, setBadges, statuses, symbols, uiIcons } from './icons';
+import { buildToyDoors, buildToyItems } from './toyitems';
+import { buildKit } from './kit';
+import { buildScenes } from './scenes';
 import type { Sprite } from './sheet';
+import { buildToyDice } from './toydice';
 
 export function buildAll(): Map<string, Sprite> {
   const all = new Map<string, Sprite>();
@@ -17,7 +18,7 @@ export function buildAll(): Map<string, Sprite> {
     for (const [k, v] of Object.entries(group)) all.set(`${cat}.${k}`, v);
   };
   for (const [id, s] of buildCharacters()) all.set(id, s);
-  for (const [id, s] of buildItems()) all.set(id, s);
+  for (const [id, s] of buildToyItems()) all.set(id, s);
   put('sym', symbols());
   put('fx', effects());
   put('kw', keywords());
@@ -25,12 +26,14 @@ export function buildAll(): Map<string, Sprite> {
   put('set', setBadges());
   put('intent', intents());
   put('ui', uiIcons());
-  for (const [id, s] of buildDice(HERO_ROSTER.map((h) => h.id))) all.set(id, s);
-  for (const [id, s] of buildDoors()) all.set(id, s);
-  for (const [id, s] of buildBackgrounds()) all.set(id, s);
+  for (const [id, s] of buildToyDice(HERO_DIE_COLOR)) all.set(id, s);
+  for (const [id, s] of buildToyDoors()) all.set(id, s);
+  for (const [id, s] of buildScenes()) all.set(id, s);
+  for (const [id, s] of buildKit()) all.set(id, s);
   all.set('ui.logo', buildLogo());
   const icon = drawAppIcon(64, 8);
-  all.set('app.icon', { canvas: icon, ax: 32, ay: 32 });
+  // the die and sword are voxel renders; the field behind them is a flat fill so the icon is opaque
+  all.set('app.icon', { canvas: icon, ax: 32, ay: 32, render: 'voxel' });
   return all;
 }
 

@@ -1,116 +1,97 @@
-/* Fight screen. Top to bottom: status, enemies, heroes, dice tray (thumb zone), actions (thumb zone). */
+/*
+ * Fight screen. Top to bottom: status, enemies, heroes, then the wooden dice tray in the thumb
+ * zone (hint, dice, a padlock under each die, Reroll / Undo / End Turn).
+ * Which kit piece each element wears is decided in styles.css section 3; this file is layout.
+ */
 .fight {
-  position: relative;
-  padding: 0 8px 8px;
-  gap: 4px;
-  background-size: 100% 100%;
-  background-position: center;
-  background-color: var(--bg);
-  image-rendering: pixelated;
+  padding: 0 8px 6px;
+  gap: 2px;
   overflow: hidden;
-}
-.fight::before {
-  /* dim the backdrop a little so sprites and text read */
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(#0f2a2e66, #0f2a2eb3);
-  pointer-events: none;
+  background-image: linear-gradient(var(--ink-20), var(--ink-40)), var(--screen-bg);
 }
 .fight > * {
   position: relative;
 }
 
+/* ------------------------------------------------------------ status bar */
 .fight-status {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 6px;
   min-height: var(--tap);
 }
 .pips {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
 }
 .act-label {
-  font-weight: 800;
-  margin-right: 4px;
-  text-shadow: 0 1px 0 #000a;
+  margin-right: 6px;
+  filter: drop-shadow(0 2px 0 var(--ink));
 }
 .pip {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #0006;
-  border: 2px solid var(--line);
+  display: inline-flex;
 }
-.pip.done {
-  background: var(--green);
-  border-color: #3b8f45;
+.pip.todo .sprite {
+  filter: grayscale(1) brightness(0.75);
+  opacity: 0.7;
 }
-.pip.now {
-  background: var(--gold);
-  border-color: var(--gold-dark);
-}
-.pip.boss {
-  border-radius: 4px;
-  transform: rotate(45deg) scale(0.9);
+.pip.done .sprite {
+  opacity: 0.45;
 }
 .status-right {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.gold {
-  display: inline-flex;
-  align-items: center;
   gap: 4px;
-  font-weight: 800;
-  background: #0007;
-  border-radius: 999px;
-  padding: 3px 10px 3px 6px;
 }
 .tier {
-  background: var(--red);
-  border-radius: 8px;
-  padding: 2px 6px;
-  font-weight: 800;
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
 }
-.menu-btn {
-  font-size: 22px;
+.fury-badge {
+  min-height: var(--tap);
+  padding: 0 2px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+.fury-badge.on {
+  color: var(--pal-red-light);
+}
+.fury-badge.soon {
+  color: var(--pal-gold-light);
 }
 
+/* ------------------------------------------------------------ tutorial coach card */
 .coach {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--gold);
-  color: #2b1d00;
-  border-radius: 12px;
-  padding: 6px 8px 6px 12px;
-  font-weight: 700;
+  padding: 0 0 0 2px;
   font-size: 14px;
   line-height: 1.2;
 }
 .coach p {
-  margin: 0;
   flex: 1;
 }
-.btn.small {
-  min-height: var(--tap);
-  padding: 4px 12px;
-  font-size: 14px;
+.coach-n {
+  flex: 0 0 auto;
+  opacity: 0.6;
+}
+.coach .btn {
+  flex: 0 0 auto;
+  min-width: 64px;
 }
 .tut-focus {
   outline: 3px solid var(--gold);
   outline-offset: 2px;
-  border-radius: 10px;
 }
 
-/* rows */
+/* ------------------------------------------------------------ rows of miniatures */
 .row {
   display: flex;
   justify-content: space-evenly;
@@ -132,10 +113,13 @@
   align-items: center;
   justify-content: flex-end;
   gap: 2px;
-  min-width: 70px;
+  min-width: 76px;
   flex: 0 1 auto;
-  padding: 4px 6px 6px;
-  touch-action: manipulation;
+  padding: 2px 4px 4px;
+  text-shadow: var(--text-shadow);
+}
+.row.enemies .unit {
+  align-self: center;
 }
 .unit .sprite-box {
   position: relative;
@@ -143,11 +127,8 @@
   align-items: flex-end;
   justify-content: center;
 }
-.unit.dead {
-  opacity: 0.3;
-}
-.unit.downed .sprite {
-  filter: grayscale(1) brightness(0.65);
+.unit.downed .sprite-box > .sprite:first-child {
+  filter: grayscale(1) brightness(0.6);
 }
 .downed-icon {
   position: absolute;
@@ -156,126 +137,181 @@
 }
 .unit-name {
   font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-  text-shadow: 0 1px 2px #000;
+  font-weight: 800;
+  color: var(--ivory);
   white-space: nowrap;
 }
-.unit.targetable .sprite-box {
-  animation: target-pulse 900ms ease-in-out 4 alternate;
+.unit.boss .unit-name {
+  color: var(--pal-gold-light);
 }
+/* A lifted die's targets hold a steady gold frame. */
 .unit.targetable::after {
   content: '';
   position: absolute;
   inset: 0;
-  border: 3px solid var(--gold);
-  border-radius: 14px;
+  border: 4px solid var(--gold);
+  box-shadow: 0 0 0 2px var(--ink), inset 0 0 0 2px var(--ink);
   pointer-events: none;
 }
-@keyframes target-pulse {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.05);
-  }
-}
 .unit.owner .sprite-box {
-  filter: drop-shadow(0 0 6px var(--gold));
+  filter: drop-shadow(0 0 0 var(--gold)) drop-shadow(0 2px 0 var(--gold)) drop-shadow(0 -2px 0 var(--gold));
 }
-
-/* intent bubble */
-.intent {
+.unit-items {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
+  gap: 0;
+  justify-content: center;
   min-height: var(--tap);
-  min-width: var(--tap);
-  background: #000a;
-  border: 2px solid var(--line);
-  border-radius: 12px;
-  padding: 2px 6px;
-  margin-bottom: 2px;
 }
-.intent .chip-old {
+.unit-items .mini-item {
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-weight: 800;
-  font-size: 16px;
+  justify-content: center;
 }
-.intent .chip-old.attack {
-  color: #ff9a85;
+
+/* intent bubble: what this enemy will do */
+.intent {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  min-height: var(--tap);
+  min-width: var(--tap);
+  max-width: 150px;
+  padding: 0;
+  margin-bottom: 8px;
 }
-.intent .chip-old.shield {
-  color: #9bd0ff;
-}
-.intent .chip-old.heal {
-  color: #9be8a4;
-}
-.intent-target {
-  font-size: 12px;
-  color: var(--muted);
-  max-width: 96px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.intent::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(-8px - var(--kit-bubble_tail-h) + 2px);
+  width: var(--kit-bubble_tail-w);
+  height: var(--kit-bubble_tail-h);
+  margin-left: calc(var(--kit-bubble_tail-w) / -2);
+  background: var(--kit-bubble_tail) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
 }
 .intent:empty {
   visibility: hidden;
 }
+.intent-move {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--pal-brown);
+  text-transform: uppercase;
+}
+.intent-line {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.1;
+  text-align: left;
+}
+.intent-line.attack {
+  color: var(--red-dark);
+}
+.intent-line.shield {
+  color: var(--pal-navy);
+}
+.intent-line.heal {
+  color: var(--pal-forest);
+}
+.intent-line .intent-text {
+  max-width: 104px;
+}
+.unit.boss .intent {
+  max-width: 260px;
+}
+.unit.boss .intent-line .intent-text {
+  max-width: 220px;
+}
+.row.enemies.crowded .unit:not(.boss) {
+  width: var(--uw);
+  min-width: 0;
+  max-width: var(--uw);
+  padding-left: 1px;
+  padding-right: 1px;
+}
+.row.enemies.crowded .unit:not(.boss) .intent {
+  width: 100%;
+  max-width: 100%;
+  align-items: center;
+}
+.row.enemies.crowded .unit:not(.boss) .intent-line {
+  font-size: 12px;
+  gap: 2px;
+}
+.row.enemies.crowded .unit:not(.boss) .intent-line .intent-text {
+  max-width: none;
+  min-width: 0;
+}
+.row.enemies.crowded .unit:not(.boss) .hp {
+  width: 100%;
+}
 
-/* HP bars and chips */
+/* health bar: a toy bar with a heart, the number sitting on it */
 .hp {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 4px;
-  width: 92%;
-  max-width: 110px;
+  width: 96%;
+  max-width: 116px;
+  min-width: 64px;
+  height: 18px;
+  padding-left: 9px;
+}
+.hp-heart {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
 }
 .hp-track {
+  position: relative;
   flex: 1;
-  height: 10px;
-  background: #000a;
-  border-radius: 5px;
-  overflow: hidden;
-  border: 1px solid #000;
+  height: var(--kit-bar_frame-h);
 }
 .hp-fill {
-  width: 100%;
-  height: 100%;
-  background: var(--green);
+  position: absolute;
+  inset: -2px;
+  background: var(--kit-bar_hp) left center / var(--kit-bar_hp-w) var(--kit-bar_hp-h) repeat-x;
+  image-rendering: pixelated;
   transform-origin: left center;
   transition: transform 260ms ease-out;
 }
 .hp-fill.low {
-  background: var(--red);
+  background-image: var(--kit-bar_hurt);
 }
 .hp-text {
-  font-size: 12px;
-  font-weight: 800;
-  text-shadow: 0 1px 2px #000;
-  min-width: 34px;
-  text-align: right;
+  position: absolute;
+  left: 9px;
+  right: 0;
+  top: 2px;
+  justify-content: center;
+  z-index: 1;
 }
 .shield-badge {
   position: absolute;
-  right: 0;
-  top: -14px;
+  right: -6px;
+  top: -20px;
   display: inline-flex;
   align-items: center;
   gap: 1px;
-  background: #000b;
-  border-radius: 8px;
-  padding: 0 4px;
-  font-size: 12px;
-  color: #9bd0ff;
+  z-index: 3;
 }
 .statuses {
   display: flex;
-  gap: 3px;
+  gap: 2px;
   min-height: 0;
   flex-wrap: wrap;
   justify-content: center;
@@ -283,234 +319,324 @@
 .status-chip {
   display: inline-flex;
   align-items: center;
-  font-size: 12px;
-  background: #000a;
-  border-radius: 8px;
-  padding: 0 3px;
+  gap: 1px;
 }
+.status-chip,
+.shield-badge,
+.forecast,
+.preview,
+.warn-chip,
+.tier,
+.fury-badge,
+.set-banner {
+  margin: -2px -3px;
+}
+
+/* exact preview on a target while a die is lifted (or peeked at) */
 .preview {
   position: absolute;
-  bottom: 52px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  background: var(--gold);
-  color: #2b1d00;
-  font-weight: 900;
-  font-size: 16px;
-  border-radius: 10px;
-  padding: 2px 8px;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 2px 0 #000a;
   z-index: 3;
+  font-size: 12px;
+  font-weight: 900;
+  filter: drop-shadow(0 0 0 var(--gold)) drop-shadow(0 2px 0 var(--ink));
+}
+.preview .px,
+.forecast .px {
+  --px-s: 1;
 }
 .preview.kill {
-  background: var(--red);
-  color: #fff;
+  color: var(--pal-red-light);
 }
+/* what End Turn will do to each hero */
 .forecast {
   order: -1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   font-weight: 900;
-  font-size: 14px;
-  border-radius: 8px;
-  padding: 1px 6px;
-  box-shadow: 0 2px 0 #000a;
+  font-size: 12px;
   pointer-events: none;
-}
-.forecast.hit {
-  background: var(--red);
-  color: #fff;
+  margin-bottom: 0;
 }
 .forecast.down {
-  background: #000;
-  color: #ff6b6b;
-  border: 2px solid var(--red);
-  animation: warn-pulse 700ms ease-in-out 5 alternate;
+  color: var(--pal-red-light);
 }
 .forecast.safe {
-  background: #0008;
-  color: var(--muted);
-  font-size: 12px;
+  color: var(--pal-steel-light);
 }
 .warn-chip {
   order: -1;
-  background: var(--violet);
-  color: #fff;
   font-size: 12px;
   font-weight: 800;
-  border-radius: 6px;
-  padding: 0 5px;
-}
-@keyframes warn-pulse {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.12);
-  }
+  color: var(--pal-lilac);
 }
 
-/* dice tray */
+/* ------------------------------------------------------------ the dice tray */
 .tray {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  background: #0f2a2ecc;
-  border-radius: 16px;
-  padding: 6px 8px 6px;
+  gap: 2px;
+  padding: 0;
+  color: var(--ivory);
+  text-shadow: var(--text-shadow);
 }
 .tray-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 28px;
+  gap: 6px;
+  min-height: 30px;
+}
+.turn-label {
+  flex: 0 0 auto;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.hint-line {
+  flex: 1;
+  text-align: center;
   font-size: 13px;
   font-weight: 700;
+  line-height: 1.15;
+}
+.hint-line.note {
+  color: var(--pal-gold-light);
+  font-weight: 900;
 }
 .set-banner {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  border: 0;
-  border-radius: 10px;
-  padding: 3px 10px;
-  min-height: 28px;
-  font: inherit;
-  font-weight: 800;
-  background: var(--violet);
-  color: #fff;
+  gap: 3px;
+  min-height: 30px;
+  font-size: 12px;
+  font-weight: 900;
 }
 .set-banner.none {
-  background: transparent;
-  color: var(--muted);
-  font-weight: 600;
-  padding: 0;
+  border: 0;
+  border-image: none;
+  margin: 0;
+  color: var(--pal-deepteal-light);
+  font-weight: 700;
 }
 .dice {
   display: flex;
   justify-content: space-evenly;
-  align-items: flex-end;
+  align-items: flex-start;
+}
+.die-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* the socket each die stands in */
+.die-col::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: var(--slot-top, 37px);
+  width: var(--kit-slot-w);
+  height: var(--kit-slot-h);
+  margin-left: calc(var(--kit-slot-w) / -2);
+  background: var(--kit-slot) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
 }
 .die {
   position: relative;
   padding: 0;
   border: 0;
   background: transparent;
-  color: #fff;
-  font: inherit;
-  touch-action: manipulation;
-  transition: transform 100ms ease-out;
+  z-index: 1;
 }
-.die .die-body,
-.die .die-overlay {
+.die .sprite {
   position: absolute;
   left: 0;
   top: 0;
 }
-.die.selected {
-  transform: translateY(-8px) scale(1.06);
-  filter: drop-shadow(0 0 8px var(--gold));
-}
-.die.used .die-body {
-  filter: grayscale(1) brightness(0.8);
-}
-.die.used .used-overlay {
-  opacity: 0.3;
-}
-.die.used .die-face {
-  opacity: 0.75;
+.die-face {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 .die-face.pending {
   visibility: hidden;
 }
-.die.unusable {
-  filter: grayscale(0.8);
-}
-.die-face {
+.die-value {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 38%;
+  left: var(--num-x, 62px);
+  top: var(--num-y, 54px);
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+}
+.die-value.two .px {
+  --px-s: 1.5;
+}
+.die-word {
+  font-size: 0;
+}
+.die-badges {
+  position: absolute;
+  left: var(--top-x, 42px);
+  top: var(--top-y, 12px);
+  transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
+  gap: 0;
   pointer-events: none;
 }
-.die-value {
-  font-size: 28px;
-  line-height: 1;
-  color: #fff;
-  text-shadow: 0 2px 0 #000, 0 0 4px #000, 2px 0 0 #000, -2px 0 0 #000;
+.die-badges .sprite {
+  position: static;
 }
-.die-symbol {
-  position: absolute;
-  left: 2px;
-  top: 2px;
+.die.locked {
+  transform: translateY(2px);
 }
-.die-kws {
-  position: absolute;
-  right: 2px;
-  bottom: 4px;
-  display: flex;
-  gap: 1px;
+.die.selected {
+  transform: translateY(-10px);
+  filter: drop-shadow(0 10px 0 var(--ink-40)) drop-shadow(0 0 0 var(--gold)) drop-shadow(0 3px 0 var(--gold)) drop-shadow(0 -3px 0 var(--gold));
 }
-.hint-line {
-  flex: 1;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.15;
-  padding: 0 6px;
+/* used = the grey sunk body; its face fades. While its copy is in the air it still looks fresh. */
+.die .die-used {
+  visibility: hidden;
+}
+.die.used:not(.using) .die-used {
+  visibility: visible;
+}
+.die.used:not(.using) .die-body {
+  visibility: hidden;
+}
+.die.used:not(.using) .die-face,
+.die.used:not(.using) .die-badges {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+.die.used:not(.using) .die-overlay {
+  opacity: 0.4;
+}
+.die.unusable:not(.used) {
+  filter: grayscale(0.8);
+}
+.die-ghost {
+  pointer-events: none;
+  z-index: 12;
+  filter: drop-shadow(0 6px 0 var(--ink-40));
 }
 
-/* action bar */
+/* the padlock button under each die: as wide as the die, 44 px tall */
+.lock-btn {
+  position: relative;
+  width: var(--die-w, 84px);
+  min-width: var(--tap);
+  height: var(--tap);
+  margin-top: var(--lock-up, -4px);
+  padding: 0;
+  z-index: 2;
+}
+.lock-btn:active:not(.chain) {
+  transform: translateY(2px);
+}
+.lock-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+.lock-btn.gone {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.lock-first {
+  position: absolute;
+  top: 0;
+  right: 2px;
+  --px-small-font: var(--font-small-ivory);
+  background: var(--red);
+  box-shadow: 0 0 0 2px var(--ink);
+  padding: 2px 3px;
+  display: inline-flex;
+}
+.lock-first .px {
+  --px-s: 1;
+}
+.tut-focus.lock-btn {
+  outline-offset: -4px;
+}
+
+/* ------------------------------------------------------------ Reroll, Undo, End Turn */
 .actions {
   flex: 0 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1.5fr;
-  gap: 8px;
-  padding-bottom: 2px;
+  grid-template-columns: 1.3fr 0.75fr 1.35fr;
+  gap: 6px;
+  text-shadow: none;
 }
 .act-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 56px;
-  padding: 6px 8px;
-  font-size: 15px;
+  min-height: 52px;
+  min-width: 0;
+  padding: 0;
+  gap: 4px;
 }
-.act-btn.end {
-  background: var(--gold);
-  border-color: var(--gold-dark);
-  color: #2b1d00;
+.act-btn .px-small {
+  line-height: 16px;
 }
-.act-btn.end.down {
-  background: var(--red);
-  border-color: var(--red-dark);
-  color: #fff;
-}
-.act-btn.end.wipe {
-  background: #1a0a0a;
-  border-color: var(--red);
-  color: #ff8a8a;
-  animation: warn-pulse 700ms ease-in-out 5 alternate;
-}
+.reroll-text,
 .end-text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1.1;
+  gap: 3px;
+  white-space: nowrap;
+}
+.end-text {
+  align-items: center;
+}
+.reroll-count {
+  display: inline-flex;
+  align-items: center;
+}
+.act-btn.reroll.over .reroll-text {
+  align-items: center;
+}
+.act-btn.reroll.over .sprite {
+  display: none;
 }
 .end-text small {
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: inherit;
   font-size: 12px;
+  font-weight: 900;
+  line-height: 14px;
+  min-height: 14px;
+}
+.end-text small .px {
+  --px-s: 1;
+}
+.act-btn.end.down,
+.act-btn.end.wipe {
+  --k: var(--kit-button_danger);
+  --kf: var(--kit-button_danger-fill);
+  --px-small-font: var(--font-small-ivory);
+  color: var(--ivory);
+}
+.act-btn.end.down:active,
+.act-btn.end.wipe:active {
+  --k: var(--kit-button_danger_pressed);
+  --kf: var(--kit-button_danger_pressed-fill);
 }
 
-/* effects */
+/* ------------------------------------------------------------ effects */
 .fx-layer {
   position: absolute;
   inset: 0;
@@ -521,258 +647,613 @@
   position: absolute;
   left: 50%;
   top: 20%;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   font-weight: 900;
-  font-size: 24px;
-  text-shadow: 0 2px 0 #000, 0 0 6px #000;
+  font-size: 15px;
+  color: var(--ivory);
+  text-shadow: var(--text-shadow);
   pointer-events: none;
   white-space: nowrap;
   z-index: 5;
 }
-.float-dmg {
-  color: #ff6b5a;
-}
-.float-heal {
-  color: #7ff08c;
-}
-.float-shield {
-  color: #8cc8ff;
-}
-.float-status {
-  color: #ffd86b;
-  font-size: 16px;
+.float-status .px {
+  --px-s: 1;
 }
 .banner {
   position: absolute;
   left: 50%;
-  top: 40%;
-  transform: translateX(-50%);
-  font-size: 44px;
-  font-weight: 900;
-  color: var(--gold);
-  text-shadow: 0 4px 0 #000, 0 0 12px #000;
+  top: 38%;
+  margin-left: -110px;
+  width: 220px;
+  height: var(--kit-banner-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .ghost {
   object-fit: contain;
 }
-
-@media (max-height: 700px) {
-  .act-btn {
-    min-height: 50px;
-  }
+.burst {
+  position: absolute;
+  border: 4px solid var(--ivory);
+  box-shadow: 0 0 0 2px var(--ink);
+  pointer-events: none;
 }
-.row.enemies .unit {
-  align-self: center;
+.burst-damage,
+.burst-weaken {
+  border-color: var(--red);
 }
-
-.unit-items {
-  display: flex;
-  gap: 2px;
-  justify-content: center;
-}
-.unit-items .mini-item {
-  min-width: 24px;
-  min-height: 24px;
-}
-.unit.boss .unit-name {
-  color: var(--gold);
-  font-size: 13px;
-}
-.tray {
-  border: 3px solid transparent;
-  transition: border-color 150ms;
-}
-.tray.mode-lock {
+.burst-shield {
   border-color: var(--blue);
 }
-.tray.mode-act {
+.burst-heal {
+  border-color: var(--green);
+}
+.burst-focus {
   border-color: var(--gold);
 }
-.mode-pill {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  padding: 3px 10px;
-  font-weight: 900;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-.mode-lock .mode-pill {
-  background: var(--blue);
-  color: #06233d;
-}
-.mode-act .mode-pill {
-  background: var(--gold);
-  color: #2b1d00;
-}
-.tray-head {
-  gap: 6px;
-}
-.set-banner {
-  min-height: 44px;
-}
-.tray-head {
-  min-height: 44px;
-}
-.end-text small {
-  white-space: nowrap;
-}
-.end-text {
-  white-space: nowrap;
-}
-
-.intent-chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0 8px;
-  max-width: 120px;
-}
-
-.intent-line {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 1.15;
-  text-align: left;
-}
-.intent-line .intent-text {
-  max-width: 108px;
-}
-.intent-line.attack {
-  color: #ff9a85;
-}
-.intent-line.shield {
-  color: #9bd0ff;
-}
-.intent-line.heal {
-  color: #9be8a4;
-}
-.intent {
-  align-items: flex-start;
-  max-width: 150px;
-}
-
-.die-face.blank {
-  flex-direction: column;
-  gap: 0;
-}
-.die-word {
-  font-size: 13px;
-  line-height: 1.1;
-  letter-spacing: 0.3px;
-}
-.die-kws {
-  background: #000b;
-  border-radius: 8px;
-  padding: 1px 3px;
-  right: auto;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 2px;
-}
-
-.fury-badge {
-  border: 0;
-  border-radius: 999px;
-  min-height: var(--tap);
-  padding: 0 12px;
-  font: inherit;
-  font-weight: 900;
-  font-size: 13px;
-}
-.fury-badge.on {
+.ribbon {
+  position: absolute;
+  height: 6px;
   background: var(--red);
-  color: #fff;
+  box-shadow: 0 0 0 2px var(--ink);
+  transform-origin: left center;
+  pointer-events: none;
 }
-.fury-badge.soon {
-  background: var(--gold);
-  color: #2b1d00;
-}
-.unit.boss .intent {
-  max-width: 260px;
-}
-.unit.boss .intent-line .intent-text {
-  max-width: 220px;
-}
-
-.intent {
-  flex-shrink: 0;
-  min-height: 44px;
-}
-.intent-move {
-  font-size: 12px;
-  font-weight: 900;
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.row.enemies.crowded .unit:not(.boss) {
-  width: var(--uw);
-  min-width: 0;
-  max-width: var(--uw);
-  padding-left: 2px;
-  padding-right: 2px;
-}
-.row.enemies.crowded .unit:not(.boss) .intent {
-  width: 100%;
-  max-width: 100%;
-  padding: 2px 3px;
-}
-.row.enemies.crowded .unit:not(.boss) .intent-line {
-  font-size: 12px;
-  gap: 2px;
-}
-.row.enemies.crowded .unit:not(.boss) .intent-line .intent-text {
-  max-width: none;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.row.enemies.crowded .unit:not(.boss) .hp {
-  width: 100%;
-}
-
-
-.unit-items {
-  min-height: var(--tap);
-}
-.unit-items .mini-item {
-  width: var(--tap);
-  height: var(--tap);
-  min-width: var(--tap);
-  min-height: var(--tap);
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
+.ribbon-tag {
+  position: absolute;
+  height: var(--kit-banner-h);
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  pointer-events: auto;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
+/* ------------------------------------------------------------ tight: the very smallest screens */
+.fight.tight .unit-name {
+  display: none;
+}
+.fight.tight .unit {
+  padding-top: 0;
+  padding-bottom: 2px;
+  gap: 1px;
+}
 .fight.tight .intent-move,
 .fight.tight .intent-line .sprite {
   display: none;
 }
-.fight.tight .intent-line {
-  font-size: 12px;
-  line-height: 1.05;
-}
 .fight.tight .intent {
-  padding: 1px 4px;
-  gap: 0;
+  min-height: 30px;
+  margin-bottom: 6px;
 }
-.row.enemies.crowded .unit:not(.boss) .intent-line .sprite {
+.fight.tight .intent::after {
+  bottom: calc(-6px - var(--kit-bubble_tail-h) + 2px);
+}
+.fight.tight .tray-head {
+  min-height: 24px;
+}
+.fight.tight .tray {
+  --lock-up: -14px;
+}
+.fight.tight .act-btn {
+  min-height: 48px;
+}
+
+/* ------------------------------------------------------------ fit and finish */
+.unit {
+  min-width: 88px;
+}
+.unit.enemy:not(.boss) .unit-name {
   display: none;
 }
-.row.enemies.crowded .unit:not(.boss) .intent-line .intent-text {
-  overflow-wrap: normal;
-  word-break: normal;
-  text-align: center;
+.hp {
+  width: 88px;
+  max-width: none;
+}
+.unit.boss .hp {
+  width: 132px;
+}
+.hp-text {
+  height: 14px;
+  line-height: 14px;
+}
+.px-big {
+  display: inline-flex;
+  align-items: center;
+}
+/* Chips are low: their contents sit over the top and bottom edges of the piece. */
+.status-chip > *,
+.shield-badge > *,
+.forecast > *,
+.preview > *,
+.set-chip > *,
+.gold > *,
+.price > * {
+  margin-top: -5px;
+  margin-bottom: -5px;
+}
+.forecast.safe,
+.warn-chip,
+.tier {
+  line-height: 8px;
+}
+.tray-head {
+  min-height: 26px;
+}
+.tray {
+  --lock-up: -10px;
+}
+.act-btn .px-small,
+.act-btn .pxw {
+  line-height: 14px;
+  vertical-align: top;
+}
+.reroll-text,
+.end-text {
+  gap: 2px;
+}
+.reroll-text > *,
+.end-text > * {
+  display: flex;
+  align-items: center;
+  height: 14px;
+}
+.actions {
+  display: flex;
+  gap: 4px;
+}
+.act-btn.reroll,
+.act-btn.undo {
+  flex: 0 0 auto;
+}
+.act-btn.undo {
+  min-width: 72px;
+}
+.act-btn.reroll {
+  min-width: 100px;
+}
+.act-btn.end {
+  flex: 1 1 auto;
+}
+.fight {
+  padding: 0 4px 4px;
+}
+.reroll-text,
+.end-text {
+  display: grid;
+  grid-auto-rows: 14px;
+  row-gap: 3px;
+  justify-items: start;
+  align-items: center;
+}
+.end-text {
+  justify-items: center;
+}
+.act-btn.reroll.over .reroll-text {
+  justify-items: center;
+}
+.px-big,
+.hp-text,
+.reroll-text,
+.end-text {
+  line-height: 0;
+}
+.end-text small span {
+  line-height: 14px;
+}
+.hp-text {
+  display: flex;
+  align-items: center;
+  top: 1px;
+  height: 16px;
+}
+.forecast > .px-big,
+.forecast > b {
+  display: inline-flex;
+}
+
+/* progress markers: done = tick, now = bright with a gold bar, to come = dark */
+.pips {
+  gap: 0;
+}
+.pip {
+  position: relative;
+  padding-bottom: 4px;
+}
+.pip.now::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 0;
+  height: 4px;
+  background: var(--gold);
+  box-shadow: 0 0 0 2px var(--ink);
+}
+.pip.todo .sprite {
+  filter: brightness(0.45) saturate(0.4);
+  opacity: 1;
+}
+.pip.done .sprite {
+  opacity: 0.8;
+}
+/* a lifted die's targets: the miniature and its bar are outlined in gold; the exact result sits under the bar */
+.unit.targetable::after {
+  display: none;
+}
+.unit.targetable .sprite-box > .sprite {
+  filter: drop-shadow(2px 0 0 var(--gold)) drop-shadow(-2px 0 0 var(--gold)) drop-shadow(0 2px 0 var(--gold)) drop-shadow(0 -2px 0 var(--gold));
+}
+.unit.targetable .hp-track {
+  outline: 2px solid var(--gold);
+  outline-offset: 0;
+}
+.unit.owner .sprite-box {
+  filter: none;
+}
+.unit .preview {
+  top: auto;
+  bottom: -16px;
+  transform: translateX(-50%);
+  filter: none;
+}
+.unit.hero .preview {
+  bottom: -2px;
+}
+/* chips: contents centred, digits never touching */
+.status-chip > *,
+.shield-badge > *,
+.forecast > *,
+.preview > *,
+.set-chip > *,
+.gold > *,
+.price > * {
+  margin-top: -3px;
+  margin-bottom: -3px;
+}
+.status-chip,
+.shield-badge,
+.forecast,
+.preview,
+.gold,
+.price {
+  --px-gap: 1px;
+  line-height: 0;
+}
+.forecast.safe,
+.forecast.down span,
+.preview .ko {
+  line-height: 12px;
+}
+/* a blank die is plainly blank: no number, a little dimmer */
+.die.blank:not(.used) .die-body,
+.die.blank:not(.used) .die-face {
+  filter: saturate(0.55) brightness(0.9);
+}
+
+/* the exact result of the lifted die sits ON the target's health bar (never over the miniature) */
+.hp .preview {
+  top: 50%;
+  bottom: auto;
+  left: calc(50% + 4px);
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
+.hp.previewing .hp-text {
+  visibility: hidden;
+}
+
+/* ------------------------------------------------------------ tight, part 2: everything that can overlap, overlaps */
+.intent-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   width: 100%;
 }
-.row.enemies.crowded .unit:not(.boss) .intent {
+.intent-row .intent-line {
+  gap: 1px;
+}
+.intent-row .px {
+  --px-s: 1;
+  --px-gap: 1px;
+}
+.fight.tight .intent-line .sprite {
+  display: inline-block;
+}
+.fight.tight .intent {
+  min-height: 36px;
   align-items: center;
+}
+/* keep the bubble a full 44 px to the finger */
+.fight.tight .intent::before {
+  content: '';
+  position: absolute;
+  inset: -8px -4px -8px;
+}
+.fight.tight .statuses {
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 2;
+}
+.fight.tight .unit.hero .forecast,
+.fight.tight .unit.hero .warn-chip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+}
+.fight.tight .unit.hero .warn-chip {
+  top: 28px;
+}
+.fight.tight .unit-items {
+  display: none;
+}
+.fight.tight .tray {
+  --lock-up: -20px;
+}
+
+/* the set badge: a 44 px tap target around a low chip */
+.set-banner {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  margin: -9px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  font-weight: 900;
+}
+.set-banner.none {
+  min-height: 0;
+  margin: 0;
+}
+.set-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--ivory);
+  text-shadow: none;
+}
+.shield-badge {
+  top: -25px;
+  right: 0;
+}
+.fight.tight .statuses {
+  left: 0;
+  right: auto;
+  bottom: 22px;
+  align-items: flex-start;
+}
+.fight.tight .unit.hero .statuses {
+  bottom: 22px;
+}
+.intent-row b {
+  display: inline-flex;
+  line-height: 0;
+}
+.fight.tight .intent {
+  min-height: var(--tap);
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+.fight.tight .intent::before {
+  display: none;
+}
+.fight.tight .intent::after {
+  bottom: calc(-4px - var(--kit-bubble_tail-h) + 2px);
+}
+.fight.tight .unit {
+  padding-bottom: 0;
+}
+
+/* statuses never push a miniature out of line: they stack beside it, just above its bar */
+.statuses {
+  position: absolute;
+  left: 0;
+  bottom: 26px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 0;
+  z-index: 2;
+}
+.unit.hero .statuses {
+  bottom: calc(26px + var(--below-bar, 18px));
+}
+.fight.tight .unit.hero .statuses,
+.fight.tight .statuses {
+  bottom: 22px;
+}
+.unit.hero:has(.unit-items) {
+  --below-bar: 64px;
+}
+
+/* ------------------------------------------------------------ boxes that hold exactly what is in them */
+.screen.fight {
+  background-image: linear-gradient(var(--ink-20), var(--ink-40)), var(--screen-bg);
+}
+/* the bubble's pointer is its own little piece under the bubble */
+.intent::after {
+  display: none;
+}
+.intent {
+  margin-bottom: 0;
+  height: auto;
+}
+.intent-tail {
+  flex: 0 0 auto;
+  width: var(--kit-bubble_tail-w);
+  height: var(--kit-bubble_tail-h);
+  margin-top: -4px;
+  margin-bottom: 0;
+  background: var(--kit-bubble_tail) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+  z-index: 1;
+}
+.fight.tight .intent {
+  margin-bottom: 0;
+}
+.intent-line {
+  line-height: 14px;
+}
+/* the die column is as wide as the socket the die stands in */
+.die-col {
+  min-width: var(--kit-slot-w);
+}
+.die-overlay {
+  z-index: 2;
+}
+.die-value {
+  z-index: 3;
+}
+/* the number of a jammed or locked die stays on top of the chain / rim */
+.die .die-face {
+  z-index: auto;
+}
+.hp {
+  height: 22px;
+}
+.hp-text {
+  top: 3px;
+}
+.hp-heart {
+  top: 2px;
+}
+.hp .preview {
+  margin: 0;
+}
+.fury-badge {
+  margin: 0;
+  min-height: var(--tap);
+}
+/* set badge: the 44 px target reaches up into the tray's rim, never down onto the dice */
+.set-banner {
+  margin: -18px 0 0;
+  align-items: flex-end;
+  padding-bottom: 2px;
+}
+.set-banner.none {
+  margin: 0;
+  padding: 0;
+}
+.hint-line {
+  font-size: 12px;
+  line-height: 13px;
+  max-height: 26px;
+}
+.tray-head {
+  min-height: 26px;
+  overflow: visible;
+}
+.reroll-text,
+.end-text {
+  grid-auto-rows: auto;
+}
+.reroll-text > *,
+.end-text > * {
+  height: auto;
+  min-height: 14px;
+}
+
+.fight.tight .intent {
+  min-height: 34px;
+  margin-top: 0;
+}
+.hp {
+  height: 18px;
+}
+.hp-text {
+  top: 2px;
+  height: 14px;
+}
+.hp-heart {
+  top: 0;
+}
+
+.status-chip,
+.shield-badge,
+.forecast,
+.preview,
+.warn-chip,
+.tier,
+.fury-badge,
+.set-chip {
+  margin: 0;
+}
+.status-chip > *,
+.shield-badge > *,
+.forecast > *,
+.preview > *,
+.set-chip > *,
+.gold > *,
+.price > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.forecast.safe,
+.warn-chip,
+.tier,
+.forecast.down span,
+.preview .ko,
+.set-chip span,
+.fury-badge {
+  line-height: 18px;
+}
+.fury-badge {
+  min-height: var(--tap);
+  border: 0;
+  border-image: none;
+  padding: 0;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+}
+/* a preview chip is exactly as tall as the bar it sits on: the chip art's top and bottom edges reach in under the number */
+.hp .preview {
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+}
+
+/* ------------------------------------------------------------ tight, part 3 */
+/* the padlock already covers 20 px of its die's foot here: a kept die does not sink further under it */
+.fight.tight .die.locked {
+  transform: none;
+}
+/* no room for the bubble's pointer: the bubble sits right on its enemy's head */
+.fight.tight .intent-tail {
+  display: none;
+}
+/* held items stand beside the miniature (over the empty side of its picture) instead of in a row of their own */
+.fight.tight .unit-items {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  top: 0;
+  min-height: 0;
+  z-index: 2;
+}
+.fight.tight .unit-items.empty {
+  display: none;
+}
+.fight.tight .unit.hero:has(.unit-items) {
+  --below-bar: 18px;
+}
+.fight.tight .unit-items {
+  z-index: 4;
+}
+.shield-badge {
+  pointer-events: none;
+}
+/* the tutorial card takes the place of the status bar here (it has its own Skip); there is no room for both */
+.fight.tight:has(.coach) .fight-status {
+  display: none;
 }

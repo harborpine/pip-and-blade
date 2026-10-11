@@ -1,6 +1,7 @@
 import type { HeroId } from '@shared';
-import { spriteImg } from '../art';
+import { icon, spriteImg } from '../art';
 import { h, replace } from '../dom';
+import { scrollBox } from '../scroll';
 import { content, engine } from '../engine';
 import { showHeroDefInfo } from '../info';
 import { dispatch, game, go } from '../store';
@@ -30,7 +31,7 @@ export function buildHeroSelect(): Screen {
     replace(el,
       topBar('Choose your party', () => go('home')),
       h('p', { class: 'hint center', testid: 'party-count', text: `Pick ${size} heroes (${picked.length}/${size})` }),
-      h('div', { class: 'scrollable hero-grid' },
+      scrollBox('heroselect', { class: 'hero-grid' },
         ...content.heroes.map((d) => {
           const open = unlocked.has(d.id);
           const on = picked.includes(d.id);
@@ -39,7 +40,7 @@ export function buildHeroSelect(): Screen {
             h('strong', { text: d.name }),
             h('span', { class: 'hint', text: open ? `${d.title} · HP ${d.maxHp}` : unlockHint(d.id) }),
             on ? h('span', { class: 'picked-mark', text: `#${picked.indexOf(d.id) + 1}` }) : null,
-            h('span', { class: 'info-btn', testid: `hero-info-${d.id}`, text: 'i', attrs: { role: 'button', 'aria-label': `About ${d.name}` } }),
+            h('span', { class: 'info-btn', testid: `hero-info-${d.id}`, attrs: { role: 'button', 'aria-label': `About ${d.name}` } }, icon('ui.info', 24)),
           );
           card.querySelector('.info-btn')?.addEventListener('click', (ev) => {
             ev.stopPropagation();

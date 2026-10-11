@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { CONTENT } from '@content';
 import type { ArtManifest, Condition, ContentDB, Effect, EnemyAi, FaceDef, TriggeredEffect } from '@shared';
 import {
-  APP_ICON_FILES, ASSET_IDS, BOSS_ROSTER, ENEMY_ROSTER, FACE_EFFECTS, HERO_ROSTER, ITEM_ROSTER, KEYWORDS, REQUIRED_COUNTS,
+  APP_ICON_FILES, ASSET_IDS, ASSET_LIST, STRETCHY_KIT_IDS, BOSS_ROSTER, ENEMY_ROSTER, FACE_EFFECTS, HERO_ROSTER, ITEM_ROSTER, KEYWORDS, REQUIRED_COUNTS,
   STARTER_HEROES, STATUSES, SYMBOLS,
 } from '@shared';
 
@@ -43,6 +43,38 @@ for (const id of ASSET_IDS) needArt(id);
 for (const f of APP_ICON_FILES) if (!existsSync(`${root}public/icons/${f}`)) fail(`App icon file missing: public/icons/${f}`);
 if (!existsSync(`${root}public/gallery.html`)) fail('Art gallery missing: public/gallery.html');
 if (manifest && manifest.palette.length > 28) fail(`Palette has ${manifest.palette.length} colours; the shared palette must be about 24 (max 28).`);
+
+// ---------------------------------------------------------------- one toy set (0.2.0)
+// Every character and every icon must be a voxel model drawn by the isometric renderer:
+// no flat icons anywhere. The generator sets `render` from the code path it really used.
+const VOXEL_CATEGORIES: readonly string[] = ['hero', 'enemy', 'boss', 'sym', 'fx', 'kw', 'status', 'intent', 'door', 'set', 'ui', 'item', 'die', 'app'];
+const MIN_ICON_PX = 32;
+const ICON_CATEGORIES = ['sym', 'fx', 'kw', 'status', 'intent', 'set', 'ui', 'die', 'item', 'door'];
+const flat: string[] = [];
+const tooSmall: string[] = [];
+const renderCount: Record<string, { voxel: number; total: number }> = {};
+for (const a of ASSET_LIST) {
+  const info = manifest?.sprites[a.id];
+  if (!info) continue;
+  const rc = (renderCount[a.category] ??= { voxel: 0, total: 0 });
+  rc.total += 1;
+  if (info.render === 'voxel') rc.voxel += 1;
+  if (VOXEL_CATEGORIES.includes(a.category) && info.render !== 'voxel') flat.push(a.id);
+  if (a.category === 'kit' && info.render !== 'kit') fail(`Kit piece ${a.id} is not marked render "kit".`);
+  if (a.category === 'bg' && info.render !== 'scene') fail(`Background ${a.id} is not marked render "scene".`);
+  if (ICON_CATEGORIES.includes(a.category) && VOXEL_CATEGORIES.includes(a.category) && Math.max(info.w, info.h) < MIN_ICON_PX) {
+    tooSmall.push(`${a.id} (${info.w}x${info.h})`);
+  }
+}
+if (flat.length > 0) fail(`Flat (non-voxel) sprites remain: ${flat.slice(0, 20).join(', ')}${flat.length > 20 ? ', ...' : ''}`);
+if (tooSmall.length > 0) fail(`Icons under ${MIN_ICON_PX}px native: ${tooSmall.slice(0, 20).join(', ')}`);
+for (const id of STRETCHY_KIT_IDS) {
+  const sl = manifest?.sprites[id]?.slice;
+  if (!sl || sl.length !== 4 || sl.some((n) => !Number.isInteger(n) || n < 0)) fail(`Stretchable kit piece ${id} has no valid 9-slice insets.`);
+}
+for (const f of ['font.json', 'palette.json', 'palette.css']) {
+  if (!existsSync(`${root}src/art/generated/${f}`)) fail(`Generated art file missing: src/art/generated/${f}`);
+}
 
 // ---------------------------------------------------------------- helpers
 
@@ -329,6 +361,14 @@ console.log(`Keywords:   ${count.keywords}  ${withArt(c.keywords.map((k) => `kw.
 console.log(`Events:     ${count.events}`);
 console.log(`Tiers:      ${count.tiers}`);
 console.log(`Encounters: ${count.encounters}    Reward faces: ${count.rewardFaces}`);
+const rc = (cats: string[]): string => {
+  const v = cats.reduce((n, k) => n + (renderCount[k]?.voxel ?? 0), 0);
+  const t = cats.reduce((n, k) => n + (renderCount[k]?.total ?? 0), 0);
+  return `${v}/${t} voxel toy objects, ${t - v} flat`;
+};
+console.log(`Icons:      symbols ${rc(['sym'])}; face effects ${rc(['fx'])}; keywords ${rc(['kw'])}; statuses ${rc(['status'])}`);
+console.log(`            intents ${rc(['intent'])}; doors ${rc(['door'])}; sets ${rc(['set'])}; interface ${rc(['ui'])}; items ${rc(['item'])}; dice ${rc(['die'])}`);
+console.log(`Kit:        ${renderCount['kit']?.total ?? 0} interface-kit pieces (${STRETCHY_KIT_IDS.length} stretchable, all with 9-slice insets)    Backgrounds: ${renderCount['bg']?.total ?? 0}`);
 console.log(`Asset list: ${ASSET_IDS.length} sprites required, ${ASSET_IDS.length - ASSET_IDS.filter((id) => !hasArt(id)).length} present, ${ASSET_IDS.filter((id) => !hasArt(id)).length} missing`);
 
 const missing = [...new Set(artMissing)];

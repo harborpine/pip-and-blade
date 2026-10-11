@@ -23,7 +23,7 @@ function buildClass(prefix: string, recipes: Recipes, mirror: boolean, anchorZ: 
   const out = new Map<string, Sprite>();
   for (const { id, r } of rendered) {
     const placed: Canvas = placeOn(r, W, H, left + pad, up + pad).outline();
-    out.set(`${prefix}.${id}`, { canvas: placed, ax: left + pad, ay: up + pad });
+    out.set(`${prefix}.${id}`, { canvas: placed, ax: left + pad, ay: up + pad, render: 'voxel' });
   }
   return out;
 }

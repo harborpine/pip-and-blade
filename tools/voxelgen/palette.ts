@@ -30,6 +30,13 @@ export const PALETTE: Record<string, string> = {
 };
 
 export const PALETTE_KEYS = Object.keys(PALETTE);
+
+/** Readable names for the palette keys (used for the CSS variables the UI imports). */
+export const PALETTE_NAMES: Record<string, string> = {
+  k: 'ink', s: 'slate', g: 'steel', w: 'white', c: 'cream', r: 'red', x: 'crimson', o: 'orange', y: 'gold', l: 'lime',
+  e: 'green', f: 'forest', t: 'teal', a: 'deepteal', b: 'sky', n: 'navy', i: 'indigo', v: 'violet', p: 'lilac',
+  m: 'magenta', q: 'pink', h: 'tan', u: 'brown', z: 'mud',
+};
 export const INK = 'k';
 
 export type Shade = 'top' | 'mid' | 'dark';

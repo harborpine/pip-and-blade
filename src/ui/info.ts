@@ -1,6 +1,6 @@
 /** Info sheets: exact rules text for dice, heroes, enemies, intents, items and keywords. */
 import type { DieView, ItemId } from '@shared';
-import { spriteImg } from './art';
+import { icon, picture, spriteImg } from './art';
 import { h } from './dom';
 import { content } from './engine';
 import { faceGrid, itemRows } from './parts';
@@ -16,20 +16,21 @@ export function showItemInfo(id: ItemId | string): void {
   infoSheet({
     testid: 'info-item',
     title: d?.name ?? id,
-    icon: spriteImg(`item.${id}`, 2),
+    icon: picture(`item.${id}`),
     lines: [d ? `${d.rarity[0]?.toUpperCase()}${d.rarity.slice(1)} item.` : '', d?.text ?? ''].filter(Boolean),
   });
 }
 
 export function showKeywordInfo(id: string): void {
-  infoSheet({ testid: 'info-keyword', title: keywordDef(id)?.name ?? id, icon: spriteImg(`kw.${id}`, 2), lines: [keywordText(id)] });
+  infoSheet({ testid: 'info-keyword', title: keywordDef(id)?.name ?? id, icon: icon(`kw.${id}`, 36), lines: [keywordText(id)] });
 }
 
-export function showDieInfo(dv: DieView): void {
+export function showDieInfo(dv: DieView, opts: { previews?: string[]; onClose?: () => void } = {}): void {
   const run = game().run;
   const hero = run?.heroes[dv.hero];
   const face = hero?.faces[dv.faceIndex];
   const lines: (string | Node)[] = [];
+  if (hero) lines.push(`${heroName(hero.heroId)}’s die.`);
   const what = dv.effect === 'blank' ? 'Blank: does nothing.' : `${EFFECT_NAME[dv.effect]} ${dv.value} right now. ${EFFECT_TEXT[dv.effect]}`;
   lines.push(what);
   if (dv.cursed) lines.push('Cursed: this face is blank for the rest of the fight.');
@@ -39,10 +40,14 @@ export function showDieInfo(dv: DieView): void {
   if (dv.echoOf !== null) lines.push('Echo: copying the neighbouring die.');
   if (face && face.upgrades > 0) lines.push(`Upgraded ${face.upgrades} time${face.upgrades === 1 ? '' : 's'}.`);
   lines.push(...kwLines(dv.keywords));
+  if (opts.previews && opts.previews.length > 0) {
+    lines.push(section('If you use it now'), h('div', { class: 'peek-lines', testid: 'peek-lines' }, ...opts.previews.map((p) => h('p', { text: p }))));
+  }
   infoSheet({
+    onClose: opts.onClose,
     testid: 'info-die',
-    title: `${face?.name ?? 'Die'} (${hero ? heroName(hero.heroId) : ''})`,
-    icon: spriteImg(dv.symbol ? `sym.${dv.symbol}` : `fx.${dv.effect}`, 2),
+    title: face?.name ?? 'Die',
+    icon: icon(dv.effect === 'blank' ? 'die.blank' : `fx.${dv.effect}`, 36),
     lines,
   });
 }
@@ -83,14 +88,14 @@ export function showIntentInfo(uid: number): void {
   infoSheet({
     testid: 'info-intent',
     title: `${d?.name ?? ''}: ${es.intent.moveName}`,
-    icon: spriteImg('ui.info', 2),
+    icon: icon('ui.info', 36),
     lines: [...describeIntent(run, es.intent), 'Exact numbers: this is what happens when you end your turn (before your shields and the forecast on your heroes).'],
   });
 }
 
 export function showSetInfo(kind: string, symbol: string | null): void {
   const set = content.sets.find((s) => s.kind === kind && s.symbol === (symbol ?? undefined)) ?? content.sets.find((s) => s.kind === kind && !s.symbol);
-  infoSheet({ testid: 'info-set', title: set?.name ?? kind, icon: spriteImg(`set.${kind}`, 2), lines: [set?.text ?? ''] });
+  infoSheet({ testid: 'info-set', title: set?.name ?? kind, icon: icon(`set.${kind}`, 36), lines: [set?.text ?? ''] });
 }
 
 /** Info for a hero from content (hero select, collection): faces, HP, slots. Locked heroes are a mystery. */
@@ -99,7 +104,7 @@ export function showHeroDefInfo(id: string, known = true): void {
   if (!d) return;
   if (!known) {
     const feat = content.feats.find((x) => x.unlocks?.heroes?.includes(id as never));
-    infoSheet({ testid: 'info-hero-locked', title: '???', icon: spriteImg('ui.unknown', 2), lines: feat ? [`Locked. Feat: ${feat.name}`, feat.text] : ['Not unlocked yet. Complete its feat to meet this hero.'] });
+    infoSheet({ testid: 'info-hero-locked', title: '???', icon: icon('ui.unknown', 36), lines: feat ? [`Locked. Feat: ${feat.name}`, feat.text] : ['Not unlocked yet. Complete its feat to meet this hero.'] });
     return;
   }
   const lines: (string | Node)[] = [`${d.title}. ${d.blurb}`, `HP ${d.maxHp}. ${d.itemSlots} item slots.`, section('Die faces')];
@@ -123,7 +128,7 @@ export function showFuryInfo(): void {
   infoSheet({
     testid: 'info-fury',
     title: 'Fury',
-    icon: spriteImg('status.strength', 2),
+    icon: icon('status.strength', 36),
     lines: [
       `From turn ${fury.fromTurn} of a fight, every enemy gains ${fury.strengthPerTurn} Strength at the start of every enemy turn, for the rest of the fight.`,
       'Strength makes all of its attacks hit harder for the rest of the fight. It stops fights from dragging on forever: finish them before it builds up.',

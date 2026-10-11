@@ -6,6 +6,10 @@ export interface Sprite {
   /** Anchor in native pixels. */
   ax: number;
   ay: number;
+  /** The code path that really produced the image (copied into the manifest). */
+  render?: 'voxel' | 'kit' | 'scene';
+  /** 9-slice insets [top, right, bottom, left] for stretchable interface-kit pieces. */
+  slice?: [number, number, number, number];
 }
 
 /** A contact sheet: sprites laid out in a grid on a solid backdrop, scaled up. For reviewing output. */

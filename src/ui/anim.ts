@@ -88,3 +88,47 @@ export function animate(el: Element, keyframes: Keyframe[], opts: KeyframeAnimat
   const a = el.animate(kf, options);
   return track(a.finished.then(() => undefined, () => undefined));
 }
+
+// ------------------------------------------------------------ input gate
+// While an animation that the player must see is in flight (a die flying, dice still tumbling,
+// the enemies acting) taps are not lost: they wait in a short queue and run when the gate opens.
+
+let gateUntil = 0;
+let queued: (() => void)[] = [];
+
+function flushInputs(): void {
+  while (queued.length > 0 && performance.now() >= gateUntil - 1) {
+    const fn = queued.shift();
+    fn?.();
+  }
+}
+
+/** Hold player input for ms from now (no-op under reduced motion, where nothing needs watching). */
+export function gateInput(ms: number): void {
+  if (ms <= 0 || motionReduced()) return;
+  const until = performance.now() + ms;
+  if (until <= gateUntil) return;
+  gateUntil = until;
+  void track(new Promise<void>((resolve) => setTimeout(() => {
+    flushInputs();
+    resolve();
+  }, ms)));
+}
+
+export function inputGated(): boolean {
+  return performance.now() < gateUntil - 1 || queued.length > 0;
+}
+
+/** Run a tap handler now, or queue it until the gate opens (at most 4 wait; older ones run first). */
+export function onInput(fn: () => void): void {
+  if (!inputGated()) {
+    fn();
+    return;
+  }
+  if (queued.length < 4) queued.push(fn);
+}
+
+export function clearInputs(): void {
+  queued = [];
+  gateUntil = 0;
+}

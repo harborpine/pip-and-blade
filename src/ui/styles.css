@@ -1,28 +1,58 @@
-/* Pip & Blade: base styles. Portrait phone first. Animations use transform/opacity only. */
+/*
+ * Pip & Blade: every screen except the fight (fight.css). Portrait phone first.
+ *
+ * ONE TOY SET. Nothing here is a flat "app" surface:
+ *  - colours come only from the art palette (--pal-*, imported from src/art/generated/palette.css)
+ *    through the handful of role names in section 1;
+ *  - every button, panel, sheet, chip, bar, tab and toggle is a piece of art's interface kit,
+ *    drawn with border-image (9-slice) from the --kit-* variables that kit.ts publishes.
+ *    Section 3 is the ONE place that says which element wears which piece;
+ *  - titles, buttons and numbers use art's pixel fonts (section 4); body text is the phone's
+ *    rounded system face.
+ * Animations use transform/opacity only and nothing loops while idle.
+ */
+
+/* ------------------------------------------------------------ 1. tokens */
 :root {
-  --bg: #0f2a2e;
-  --bg-2: #14393f;
-  --panel: #1b464d;
-  --panel-2: #235760;
-  --line: #2f7079;
-  --text: #f6f0df;
-  --muted: #a9c4c4;
-  --gold: #f2c14e;
-  --gold-dark: #b8892a;
-  --red: #e4572e;
-  --red-dark: #9c3418;
-  --green: #5fc66b;
-  --blue: #5aa9e6;
-  --violet: #9a7fe0;
+  /* roles -> palette */
+  --ink: var(--pal-ink);
+  --ivory: var(--pal-white);
+  --paper: var(--pal-cream);
+  --felt: var(--pal-deepteal);
+  --felt-dark: var(--pal-deepteal-dark);
+  --gold: var(--pal-gold);
+  --red: var(--pal-red);
+  --red-dark: var(--pal-crimson);
+  --green: var(--pal-green);
+  --blue: var(--pal-sky);
+  --violet: var(--pal-violet);
+  /* text on the scenery (dark) by default; panels switch these to ink (section 3) */
+  --text: var(--ivory);
+  --muted: var(--pal-steel-light);
+  --text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), 0 2px 0 var(--ink);
+
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px);
   --sar: env(safe-area-inset-right, 0px);
   --tap: 44px;
-  --radius: 14px;
+  /* Visible height: dvh follows Safari's toolbars; --vvh (set by scroll.ts from visualViewport) is the fallback. */
+  --app-h: 100vh;
+  --fade: 30px;
   font-family: ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+@supports (height: 100dvh) {
+  :root {
+    --app-h: min(100dvh, var(--vvh, 100dvh));
+  }
+}
+@supports not (height: 100dvh) {
+  :root {
+    --app-h: var(--vvh, 100vh);
+  }
+}
 
+/* ------------------------------------------------------------ 2. page */
 *,
 *::before,
 *::after {
@@ -40,7 +70,7 @@ body {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  background: var(--bg);
+  background: var(--ink);
   color: var(--text);
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
@@ -51,15 +81,16 @@ body {
   position: fixed;
   inset: 0;
   width: 100%;
-  height: 100dvh;
+  height: var(--app-h);
   font-size: 16px;
+  font-weight: 700;
   line-height: 1.3;
 }
 
 #app {
   position: absolute;
-  inset: 0;
-  height: 100dvh;
+  inset: 0 0 auto 0;
+  height: var(--app-h);
   padding: var(--sat) var(--sar) var(--sab) var(--sal);
   display: flex;
   flex-direction: column;
@@ -69,27 +100,54 @@ img,
 .sprite {
   -webkit-user-drag: none;
   image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
+  flex: 0 0 auto;
 }
-
 .sprite-missing {
   display: inline-block;
-  background: var(--panel);
-  border: 2px dashed var(--line);
-  border-radius: 6px;
+  border: 2px dashed var(--muted);
+}
+button {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+  touch-action: manipulation;
+}
+p,
+h1,
+h2,
+h3,
+ol {
+  margin: 0;
 }
 
-/* ------------------------------------------------------------ screens */
+/* Screens stand on the tabletop: the menu table, or the act's diorama during a run. */
 .screen {
+  --screen-bg: var(--bg-menu);
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   padding: 0 16px 12px;
-  background: radial-gradient(120% 80% at 50% 0%, var(--bg-2), var(--bg));
+  background-color: var(--felt-dark);
+  background-image: linear-gradient(var(--ink-40), var(--ink-60)), var(--screen-bg);
+  background-size: cover;
+  background-position: center bottom;
+  image-rendering: pixelated;
+  text-shadow: var(--text-shadow);
 }
-
+body[data-act='1'] .screen.flow,
+body[data-act='1'] .screen.fight {
+  --screen-bg: var(--bg-act1);
+}
+body[data-act='2'] .screen.flow,
+body[data-act='2'] .screen.fight {
+  --screen-bg: var(--bg-act2);
+}
+body[data-act='3'] .screen.flow,
+body[data-act='3'] .screen.fight {
+  --screen-bg: var(--bg-act3);
+}
 .screen-enter {
   animation: screen-in 160ms ease-out;
 }
@@ -102,16 +160,430 @@ img,
   }
 }
 
-.scrollable {
+/* The ONE scroll container (see scroll.ts). The page never scrolls; these do, with a finger. */
+.scroll-y {
+  overflow-x: hidden;
   overflow-y: auto;
-  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   min-height: 0;
   flex: 1 1 auto;
-  -webkit-user-select: none;
+  scrollbar-width: none;
+}
+.scroll-y::-webkit-scrollbar {
+  display: none;
+}
+/* "More this way" hint: the edge that still hides content fades out. (Masks are see-through steps, not colours.) */
+.scroll-y[data-more-bottom='true'] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fade)), #0002);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fade)), #0002);
+}
+.scroll-y[data-more-top='true'] {
+  -webkit-mask-image: linear-gradient(to bottom, #0002, #000 var(--fade));
+  mask-image: linear-gradient(to bottom, #0002, #000 var(--fade));
+}
+.scroll-y[data-more-top='true'][data-more-bottom='true'] {
+  -webkit-mask-image: linear-gradient(to bottom, #0002, #000 var(--fade), #000 calc(100% - var(--fade)), #0002);
+  mask-image: linear-gradient(to bottom, #0002, #000 var(--fade), #000 calc(100% - var(--fade)), #0002);
+}
+
+/* ------------------------------------------------------------ 3. the interface kit: who wears what */
+
+/* Every stretchable piece is drawn the same way; each element only names its piece (--k). */
+.btn,
+.tab,
+.modal-card,
+.sheet,
+.tray,
+.intent,
+.gold,
+.status-chip,
+.shield-badge,
+.forecast,
+.preview,
+.warn-chip,
+.tier,
+.fury-badge,
+.set-chip,
+.banner,
+.ribbon-tag,
+.hp-track,
+.coach,
+.toast,
+.face-art,
+.reward-card,
+.shop-slot,
+.door-card,
+.event-choice,
+.choice,
+.hero-card,
+.tile,
+.feat,
+.stat-row,
+.setting-row,
+.mini-hero,
+.tip-card,
+.notice,
+.end-feats,
+.face-card.compact,
+.event-text,
+.price {
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--kw);
+  border-image: var(--k) var(--ks) / var(--kw) stretch;
+  background: none;
+  image-rendering: pixelated;
+  text-shadow: none;
+}
+
+/*
+ * Buttons and panels also carry their own fill colour (--kf, the colour of the piece's middle, published by
+ * kit.ts) as a plain rectangle underneath, 4 px inside the piece's edge. Where a box is a fraction of a pixel
+ * wide (thirds of a row on a 2x phone) the browser leaves hairline gaps between the nine slices; with the
+ * fill underneath, the gaps cannot show the table through.
+ */
+.btn,
+.tab,
+.modal-card,
+.reward-card,
+.shop-slot,
+.door-card,
+.event-choice,
+.choice,
+.hero-card,
+.tile,
+.feat,
+.stat-row,
+.setting-row,
+.mini-hero,
+.tip-card,
+.notice,
+.end-feats,
+.event-text,
+.coach {
+  background: linear-gradient(var(--kf), var(--kf)) center / calc(100% - 8px) calc(100% - 8px) no-repeat border-box;
+}
+/* a tab's art starts lower than its box (the unselected ones sit back): its fill starts lower too */
+.tab {
+  background-position: center bottom 4px;
+  background-size: calc(100% - 8px) calc(100% - 20px);
+}
+
+/* Buttons: ivory toy blocks; gold = the main action; red = danger. Pressed = sunk into the table. */
+.btn {
+  --k: var(--kit-button);
+  --kf: var(--kit-button-fill);
+  --ks: var(--kit-button-slice);
+  --kw: var(--kit-button-bw);
+  --px-small-font: var(--font-small-ink);
+  color: var(--ink);
+}
+.btn:active:not(:disabled):not([aria-disabled='true']) {
+  --k: var(--kit-button_pressed);
+  --kf: var(--kit-button_pressed-fill);
+  --ks: var(--kit-button_pressed-slice);
+  --kw: var(--kit-button_pressed-bw);
+}
+.btn.primary {
+  --k: var(--kit-button_primary);
+  --kf: var(--kit-button_primary-fill);
+}
+.btn.primary:active:not(:disabled):not([aria-disabled='true']) {
+  --k: var(--kit-button_primary_pressed);
+  --kf: var(--kit-button_primary_pressed-fill);
+}
+.btn.danger {
+  --k: var(--kit-button_danger);
+  --kf: var(--kit-button_danger-fill);
+  --px-small-font: var(--font-small-ivory);
+  color: var(--ivory);
+}
+.btn.danger:active:not(:disabled) {
+  --k: var(--kit-button_danger_pressed);
+  --kf: var(--kit-button_danger_pressed-fill);
+}
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  --k: var(--kit-button_disabled);
+  --kf: var(--kit-button_disabled-fill);
+  --ks: var(--kit-button_disabled-slice);
+  --kw: var(--kit-button_disabled-bw);
+}
+
+/* Light panels (game cards): ink text. */
+.modal-card,
+.reward-card,
+.shop-slot,
+.door-card,
+.event-choice,
+.choice,
+.hero-card,
+.tile,
+.feat,
+.stat-row,
+.setting-row,
+.mini-hero,
+.tip-card,
+.notice,
+.end-feats,
+.event-text,
+.coach,
+.sheet {
+  --k: var(--kit-panel);
+  --kf: var(--kit-panel-fill);
+  --ks: var(--kit-panel-slice);
+  --kw: var(--kit-panel-bw);
+  --text: var(--ink);
+  --muted: var(--pal-slate);
+  --px-small-font: var(--font-small-ink);
+  color: var(--text);
+}
+/* Selected / highlighted cards wear the gold frame. */
+.hero-card.picked,
+.feat.done,
+.tip-card,
+.coach,
+.rarity-rare {
+  --k: var(--kit-panel_selected);
+  --kf: var(--kit-panel_selected-fill);
+  --ks: var(--kit-panel_selected-slice);
+  --kw: var(--kit-panel_selected-bw);
+}
+/* Dark inset panels and chips: ivory text. */
+.face-art,
+.face-card.compact,
+.toast {
+  --k: var(--kit-panel_dark);
+  --ks: var(--kit-panel_dark-slice);
+  --kw: var(--kit-panel_dark-bw);
+  --text: var(--ivory);
+  --muted: var(--pal-steel-light);
+  --px-small-font: var(--font-small-ivory);
+  color: var(--text);
+}
+.gold,
+.price,
+.status-chip,
+.shield-badge,
+.forecast,
+.preview,
+.warn-chip,
+.tier,
+.fury-badge,
+.set-chip {
+  --k: var(--kit-chip);
+  --ks: var(--kit-chip-slice);
+  --kw: var(--kit-chip-bw);
+  --px-small-font: var(--font-small-ivory);
+  color: var(--ivory);
+}
+.sheet {
+  --k: var(--kit-sheet);
+  --ks: var(--kit-sheet-slice);
+  --kw: var(--kit-sheet-bw);
+}
+.tray {
+  --k: var(--kit-tray);
+  --ks: var(--kit-tray-slice);
+  --kw: var(--kit-tray-bw);
+  --px-small-font: var(--font-small-ivory);
+}
+.intent {
+  --k: var(--kit-bubble);
+  --ks: var(--kit-bubble-slice);
+  --kw: var(--kit-bubble-bw);
+  --text: var(--ink);
+  --px-small-font: var(--font-small-ink);
+  color: var(--ink);
+}
+.banner,
+.ribbon-tag {
+  --k: var(--kit-banner);
+  --ks: var(--kit-banner-slice);
+  --kw: var(--kit-banner-bw);
+  --px-small-font: var(--font-small-ivory);
+  color: var(--ivory);
+}
+.hp-track {
+  --k: var(--kit-bar_frame);
+  --ks: var(--kit-bar_frame-slice);
+  --kw: var(--kit-bar_frame-bw);
+}
+.tab {
+  --k: var(--kit-tab);
+  --kf: var(--kit-tab-fill);
+  --ks: var(--kit-tab-slice);
+  --kw: var(--kit-tab-bw);
+  --px-small-font: var(--font-small-ink);
+  color: var(--ink);
+}
+.tab.on {
+  --k: var(--kit-tab_active);
+  --kf: var(--kit-tab_active-fill);
+  --ks: var(--kit-tab_active-slice);
+  --kw: var(--kit-tab_active-bw);
+}
+/* The padlock under a die is one whole piece of art (44 x 44, drawn 1:1). */
+.lock-btn {
+  border: 0;
+  background: var(--kit-lock_open) center / 44px 44px no-repeat;
+  image-rendering: pixelated;
+}
+.lock-btn.closed {
+  background-image: var(--kit-lock_closed);
+}
+.lock-btn.chain {
+  background-image: var(--kit-lock_chain);
+}
+/* Fixed pieces. */
+.toggle {
+  flex: 0 0 auto;
+  width: 72px;
+  height: var(--tap);
+  border: 0;
+  background: var(--kit-toggle_off) center / var(--kit-toggle_off-w) var(--kit-toggle_off-h) no-repeat;
+  image-rendering: pixelated;
+  font-size: 0;
+  color: transparent;
+}
+.toggle.on {
+  background-image: var(--kit-toggle_on);
+}
+.sheet::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: var(--kit-sheet_grip-w);
+  height: var(--kit-sheet_grip-h);
+  margin-left: calc(var(--kit-sheet_grip-w) / -2);
+  background: var(--kit-sheet_grip) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+.divider {
+  height: var(--kit-divider-h);
+  background: var(--kit-divider) left center / var(--kit-divider-w) var(--kit-divider-h) repeat-x;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+
+/* ------------------------------------------------------------ 4. pixel text */
+.px {
+  --px-s: 2;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: inherit;
+  vertical-align: middle;
+  line-height: 0;
+  font-size: 0;
+  row-gap: calc(var(--px-s) * 3px);
+  column-gap: calc(var(--px-space, 4) * var(--px-s) * 1px);
+  text-shadow: none;
+}
+.pxw {
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+}
+.pxg {
+  display: block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  color: transparent;
+  width: calc(var(--gw) * var(--px-s) * 1px);
+  height: calc(var(--gh) * var(--px-s) * 1px);
+  margin-right: calc((var(--ga) - var(--gw)) * var(--px-s) * 1px + var(--px-gap, 0px));
+  background-image: var(--px-font);
+  background-repeat: no-repeat;
+  background-size: calc(var(--px-fw) * var(--px-s) * 1px) calc(var(--px-fh) * var(--px-s) * 1px);
+  background-position: calc(var(--gx) * var(--px-s) * -1px) calc(var(--gy) * var(--px-s) * -1px);
+  image-rendering: pixelated;
+}
+.pxw > .pxg:last-child {
+  margin-right: 0;
+}
+/* a space is the gap between words (the character stays in the page for readers and tests) */
+.pxg.pxs {
+  width: 0;
+  height: 0;
+  margin: 0;
+  background: none;
+}
+.px-small {
+  --px-font: var(--px-small-font, var(--font-small-ivory));
+  --px-fw: var(--font-small-w);
+  --px-fh: var(--font-small-h);
+  --px-space: var(--font-small-space);
+}
+.px-big {
+  --px-font: var(--font-big-white);
+  --px-fw: var(--font-big-w);
+  --px-fh: var(--font-big-h);
+  --px-space: var(--font-big-space);
+  flex-wrap: nowrap;
+}
+.btn,
+.tab,
+.topbar h1,
+.end-title,
+.title {
+  justify-content: center;
+}
+.topbar h1,
+.end-title,
+.title {
+  display: flex;
+}
+.screen > h3,
+.sheet-sub {
+  margin-top: 6px;
+}
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.center {
+  text-align: center;
+  margin: 0 0 6px;
+}
+.pad {
+  padding: 0 4px;
+}
+
+/* ------------------------------------------------------------ 5. shared pieces */
+.btn {
+  min-height: 48px;
+  min-width: var(--tap);
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  font-weight: 800;
+}
+.btn.big {
+  min-height: 56px;
+}
+.btn.small {
+  min-height: var(--tap);
+}
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.75;
 }
 
 .topbar {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -119,81 +591,312 @@ img,
   gap: 8px;
 }
 .topbar h1 {
-  margin: 0;
-  font-size: 20px;
-  text-align: center;
   flex: 1;
+  text-align: center;
 }
 .icon-btn {
   width: var(--tap);
   height: var(--tap);
   min-width: var(--tap);
+  padding: 0;
   border: 0;
-  border-radius: 12px;
   background: transparent;
-  color: var(--text);
-  font-size: 32px;
-  line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+.icon-btn:active {
+  transform: translateY(2px);
 }
 .icon-btn.spacer {
   visibility: hidden;
 }
 
-/* ------------------------------------------------------------ buttons */
-.btn {
-  min-height: var(--tap);
-  min-width: var(--tap);
-  padding: 10px 18px;
-  border-radius: var(--radius);
-  border: 2px solid var(--line);
-  background: var(--panel);
-  color: var(--text);
-  font: inherit;
-  font-weight: 700;
-  transition: transform 80ms ease-out, opacity 120ms;
-  touch-action: manipulation;
+/* A number with its icon in a dark chip (gold, prices, statuses). */
+.gold,
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
 }
-.btn:active:not(:disabled) {
-  transform: scale(0.96);
+.gold b,
+.price b,
+.status-chip b,
+.shield-badge b,
+.hp-text {
+  --px-s: 1;
+  display: inline-flex;
+  align-items: center;
 }
-.btn:disabled {
-  opacity: 0.4;
-}
-.btn.primary {
-  background: var(--gold);
-  border-color: var(--gold-dark);
-  color: #2b1d00;
-}
-.btn.danger {
-  background: var(--red);
-  border-color: var(--red-dark);
-  color: #fff;
-}
-.btn.big {
-  min-height: 56px;
-  font-size: 19px;
+.gold b .px,
+.price b .px,
+.status-chip b .px,
+.shield-badge b .px,
+.hp-text .px {
+  --px-s: 1;
 }
 
-.toggle {
-  min-width: 72px;
-  min-height: var(--tap);
-  border-radius: 999px;
-  border: 2px solid var(--line);
-  background: var(--panel);
+/* Tappable cards sink a little when pressed. */
+.reward-card:active:not(:disabled),
+.shop-slot:active:not(:disabled),
+.door-card:active,
+.event-choice:active:not(:disabled),
+.choice:active:not(:disabled),
+.hero-card:active,
+.tile:active,
+.tab:active {
+  transform: translateY(2px);
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.list > * {
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------ 6. dialogs, sheets, toast */
+#overlays {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--app-h);
+  pointer-events: none;
+  z-index: 50;
+}
+#overlays > * {
+  pointer-events: auto;
+}
+.modal-back {
+  position: absolute;
+  inset: 0;
+  background: var(--ink-60);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(12px + var(--sat)) 20px calc(12px + var(--sab));
+  animation: screen-in 120ms ease-out;
+}
+.modal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 100%;
+  width: 100%;
+  max-width: 360px;
+  padding: 8px 6px 6px;
+}
+.modal-card p {
   color: var(--muted);
-  font: inherit;
-  font-weight: 700;
+  font-weight: 600;
 }
-.toggle.on {
-  background: var(--green);
-  border-color: #3b8f45;
-  color: #0b2a10;
+.modal-body {
+  flex: 0 1 auto;
+}
+.modal-buttons {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+}
+.modal-buttons .btn {
+  flex: 1;
+}
+.modal-buttons.stack {
+  flex-direction: column-reverse;
+}
+.sheet-back {
+  align-items: flex-end;
+  padding: 0;
+}
+/* Bottom sheet: never taller than the visible screen. Head and foot stay put, the body scrolls. */
+.sheet {
+  position: relative;
+  align-self: flex-end;
+  width: 100%;
+  max-height: calc(100% - var(--sat) - 12px);
+  padding: 10px 6px calc(6px + var(--sab));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+}
+.sheet-head,
+.sheet-foot {
+  flex: 0 0 auto;
+}
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sheet-head.col {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+.sheet-body {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sheet-body > * {
+  flex-shrink: 0;
+}
+.sheet-foot {
+  display: flex;
+  flex-direction: column;
+}
+.sheet-sub {
+  margin-top: 6px;
+}
+.kw-line strong {
+  font-weight: 900;
+}
+.peek-lines p {
+  font-weight: 900;
+  color: var(--red-dark);
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(96px + var(--sab));
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 4px 10px;
+  text-align: center;
+  animation: screen-in 140ms ease-out;
 }
 
-/* ------------------------------------------------------------ home */
+/* choices inside a sheet (pick a face, a hero, an item) */
+.choose-list {
+  gap: 6px;
+}
+.choice {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-height: 52px;
+  padding: 0 4px;
+}
+.choice:disabled {
+  opacity: 0.45;
+}
+.choice-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------------------------------------------------------ 7. die faces in lists */
+.face-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.face-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 2px;
+}
+.face-art b,
+.face-inline b {
+  display: inline-flex;
+  align-items: center;
+}
+.face-art .word,
+.face-inline .word {
+  font-size: 13px;
+}
+.face-sym {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+}
+.face-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+.face-up {
+  position: absolute;
+  top: -8px;
+  left: -6px;
+  --px-small-font: var(--font-small-ink);
+  background: var(--gold);
+  box-shadow: 0 0 0 2px var(--ink);
+  padding: 2px 3px;
+  display: inline-flex;
+}
+.face-kws {
+  display: flex;
+  gap: 2px;
+}
+.face-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.face-card.compact {
+  padding: 2px 0;
+  min-width: 70px;
+}
+.face-card.compact .face-art,
+.face-card.art-only .face-art {
+  border: 0;
+  border-image: none;
+  padding: 0;
+}
+.face-card.compact .face-name {
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.1;
+  color: var(--ivory);
+}
+.choice .face-card.compact {
+  flex: 0 0 auto;
+  flex-direction: row;
+  gap: 4px;
+  min-width: 84px;
+  justify-content: center;
+}
+.choice .face-card.compact .face-name,
+.face-card.art-only .face-name {
+  display: none;
+}
+.face-card.art-only {
+  min-width: 0;
+}
+.face-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.item-row span {
+  display: flex;
+  flex-direction: column;
+}
+button.item-row {
+  min-height: var(--tap);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
+}
+
+/* ------------------------------------------------------------ 8. home */
 .home {
   justify-content: space-between;
   padding-top: 8px;
@@ -204,163 +907,509 @@ img,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   min-height: 0;
+  overflow: hidden;
+}
+.home-logo .title .px {
+  --px-s: 4;
 }
 .home-logo .title {
-  margin: 8px 0 0;
-  font-size: 40px;
-  letter-spacing: 1px;
-  color: var(--gold);
-  text-shadow: 0 3px 0 #000a;
+  filter: drop-shadow(0 4px 0 var(--ink));
 }
 .tagline {
-  margin: 0;
-  color: var(--muted);
+  color: var(--pal-gold-light);
+}
+.home.short .tagline {
+  display: none;
+}
+.home.short .home-logo .title .px {
+  --px-s: 3;
 }
 .menu-stack {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-bottom: 8px;
+  gap: 8px;
+  padding-bottom: 4px;
 }
 .menu-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 .notice {
+  flex: 0 0 auto;
   text-align: center;
+  padding: 4px 8px;
+  margin: 6px 0;
+  font-weight: 600;
+}
+/* One-time "add to Home Screen" tip (browser tab only). */
+.tip-card {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 0 4px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.25;
+}
+.tip-text {
+  flex: 1;
+  min-width: 0;
+}
+.tip-card ol {
+  margin-top: 2px;
+  padding-left: 18px;
   color: var(--muted);
-  background: var(--panel);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  margin: 8px 0;
+  font-weight: 600;
+}
+.tip-card ol b {
+  color: var(--text);
+}
+.tip-icon {
+  vertical-align: middle;
+  margin-right: 3px;
+}
+.sprite-missing.tip-icon {
+  display: none;
 }
 
-/* ------------------------------------------------------------ settings */
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+/* ------------------------------------------------------------ 9. settings, feats, stats, daily */
 .setting-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  background: var(--panel);
-  border-radius: var(--radius);
-  padding: 10px 12px;
-  min-height: 60px;
+  gap: 10px;
+  padding: 0 2px 0 4px;
+  min-height: 56px;
+}
+.setting-row .btn {
+  flex: 0 0 auto;
+  min-width: 96px;
 }
 .setting-text {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
-.hint {
-  color: var(--muted);
-  font-size: 13px;
+.version {
+  margin-top: 4px;
 }
-.pad {
+.feat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 0 4px;
 }
+.feat:not(.done) {
+  opacity: 0.85;
+}
+.feat-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 600;
+}
+.feat-text strong {
+  font-weight: 900;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  min-height: 40px;
+}
+.daily-party {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 6px;
+}
+.screen > .btn,
+.screen > h3,
+.screen > p {
+  flex: 0 0 auto;
+}
 
-/* ------------------------------------------------------------ modal, sheet, toast */
-#overlays {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
+/* ------------------------------------------------------------ 10. hero select, collection */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: min-content;
+  gap: 8px;
+  align-content: start;
+  align-items: start;
+  padding: 2px 0 8px;
 }
-#overlays > * {
-  pointer-events: auto;
+.hero-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 0 2px;
+  min-height: 128px;
 }
-.modal-back {
-  position: fixed;
-  inset: 0;
-  background: #000a;
+.hero-card.locked .sprite:not(.icon) {
+  filter: brightness(0) opacity(0.55);
+}
+.hero-card-art {
+  height: 80px;
+  display: flex;
+  align-items: flex-end;
+}
+.hero-card .hint {
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.2;
+}
+.picked-mark {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  --px-small-font: var(--font-small-ink);
+  background: var(--gold);
+  box-shadow: 0 0 0 2px var(--ink);
+  padding: 3px 4px;
+  display: inline-flex;
+}
+.info-btn {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: var(--tap);
+  height: var(--tap);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  animation: screen-in 120ms ease-out;
 }
-.modal-card {
-  width: 100%;
-  max-width: 360px;
-  background: var(--bg-2);
-  border: 2px solid var(--line);
-  border-radius: 18px;
-  padding: 18px;
-}
-.modal-card h2 {
-  margin: 0 0 8px;
-  font-size: 20px;
-}
-.modal-card p {
-  margin: 0 0 12px;
-  color: var(--muted);
-}
-.modal-buttons {
+.tier-row {
+  flex: 0 0 auto;
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
 }
-.modal-buttons .btn {
+.tier-btn {
   flex: 1;
+  padding: 0 2px;
 }
-.sheet-back {
+.tabs {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
   align-items: flex-end;
-  padding: 0;
 }
-.sheet {
-  width: 100%;
-  max-height: 80dvh;
-  overflow-y: auto;
-  background: var(--bg-2);
-  border-top: 2px solid var(--line);
-  border-radius: 20px 20px 0 0;
-  padding: 16px 16px calc(16px + var(--sab));
+.tab {
+  flex: 1;
+  min-height: var(--tap);
+  padding: 0 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Rows of three. (A wrapping row, not a grid: Safari sizes grid rows of buttons too low when a name takes two lines.) */
+.tile-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-content: flex-start;
+  padding-top: 4px;
+}
+.tile {
+  flex: 0 0 calc((100% - 12px) / 3);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  min-height: 96px;
+}
+.tile.unknown .sprite {
+  opacity: 0.6;
+}
+/* miniatures are shown at their own size (1 CSS px per pixel), never squeezed */
+.tile-art {
+  flex: 0 0 auto;
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tile-name {
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.1;
+}
+
+/* ------------------------------------------------------------ 11. between-fight screens */
+.flow {
+  gap: 8px;
+  padding-top: 6px;
+}
+.flow-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 52px;
+}
+.flow-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.flow-buttons {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.sheet h2 {
-  margin: 0;
-  font-size: 20px;
+.party-strip {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 6px;
 }
-.sheet p {
-  margin: 0;
+.mini-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  min-height: var(--tap);
+  min-width: 0;
+  line-height: 1.15;
 }
-.sheet-head {
+.mini-hero.downed {
+  opacity: 0.6;
+}
+.mini-hero .hint {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.mini-art {
+  display: flex;
+  justify-content: center;
+}
+.mini-items {
+  display: flex;
+  gap: 2px;
+}
+.mini-item {
+  display: inline-flex;
+}
+.party-strip.compact .mini-hero strong {
+  white-space: nowrap;
+}
+
+/* lists that centre themselves when they fit and scroll when they do not */
+.reward-list,
+.shop-list,
+.door-row,
+.rest-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.shop-list {
+  gap: 5px;
+}
+.reward-list > *,
+.shop-list > *,
+.door-row > *,
+.rest-mid > * {
+  flex-shrink: 0;
+}
+.reward-list > :first-child,
+.shop-list > :first-child,
+.door-row > :first-child,
+.rest-mid > :first-child {
+  margin-top: auto;
+}
+.reward-list > :last-child,
+.shop-list > :last-child,
+.door-row > :last-child,
+.rest-mid > :last-child {
+  margin-bottom: auto;
+}
+
+/* Reward cards: picture left, words right. */
+.reward-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
+  text-align: left;
+  padding: 2px 4px;
+  min-height: 88px;
 }
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(90px + var(--sab));
-  transform: translateX(-50%);
-  max-width: calc(100% - 32px);
-  background: var(--panel-2);
-  border: 2px solid var(--line);
-  border-radius: 999px;
-  padding: 10px 18px;
-  font-weight: 700;
-  text-align: center;
-  animation: screen-in 140ms ease-out;
+.reward-art {
+  flex: 0 0 auto;
+  min-width: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reward-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rarity-tag {
+  opacity: 0.7;
+}
+.reward-line {
+  font-size: 14px;
+}
+.reward-card small {
+  line-height: 1.2;
+}
+.big-plus,
+.plus-icon {
+  display: inline-flex;
+}
+.door-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 2px 6px;
+  min-height: 92px;
+}
+.door-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rest-art {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+.shop-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 0 4px;
+  min-height: 48px;
+}
+.shop-slot:disabled {
+  opacity: 0.6;
+}
+.shop-slot.sold {
+  opacity: 0.35;
+}
+.shop-slot > .sprite,
+.shop-slot > .face-inline,
+.shop-slot > .plus-icon {
+  flex: 0 0 auto;
+  min-width: 36px;
+  justify-content: center;
+}
+.shop-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.shop-text strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shop-text small {
+  font-size: 12px;
+  line-height: 1.15;
+}
+.event-text {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 2px 6px;
+  margin-bottom: 10px;
+}
+.event-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  padding: 2px 6px;
+  margin-bottom: 8px;
+  min-height: 60px;
+}
+.event-choice:disabled {
+  opacity: 0.55;
+}
+.event-choice .cost {
+  color: var(--red-dark);
 }
 
-/* ------------------------------------------------------------ rotate overlay (landscape on a phone) */
+/* victory / defeat */
+.end {
+  justify-content: flex-start;
+}
+.end-top {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 0 6px;
+}
+.end-title .px {
+  --px-s: 4;
+}
+.end-title {
+  filter: drop-shadow(0 4px 0 var(--ink));
+}
+.end-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.end-scroll > * {
+  flex-shrink: 0;
+}
+.end-lines {
+  text-align: center;
+}
+.end-feats {
+  text-align: center;
+  padding: 2px 6px;
+}
+@media (max-height: 700px) {
+  .end-top {
+    padding: 4px 0;
+    gap: 2px;
+  }
+  .end-title .px {
+    --px-s: 3;
+  }
+}
+
+/* ------------------------------------------------------------ 12. rotate overlay (landscape on a phone) */
 #rotate-overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: var(--bg);
+  background: var(--ink);
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -376,28 +1425,14 @@ img,
   align-items: center;
   gap: 12px;
   font-size: 20px;
-  font-weight: 700;
 }
 .rotate-phone {
-  width: 34px;
-  height: 60px;
-  border: 4px solid var(--gold);
-  border-radius: 8px;
-  transform: rotate(90deg);
-  animation: rotate-hint 1.6s ease-in-out infinite;
-}
-@keyframes rotate-hint {
-  0%,
-  30% {
-    transform: rotate(90deg);
-  }
-  70%,
-  100% {
-    transform: rotate(0deg);
-  }
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
 }
 
-/* ------------------------------------------------------------ reduced motion */
+/* ------------------------------------------------------------ 13. reduced motion */
 :root[data-motion='reduced'] *,
 :root[data-motion='reduced'] *::before,
 :root[data-motion='reduced'] *::after {
@@ -415,656 +1450,125 @@ img,
   }
 }
 
-/* ------------------------------------------------------------ hero select */
-.center {
-  text-align: center;
-  margin: 0 0 6px;
+/* choices that show a die face: the toy and its number sit straight on the card */
+.choice .face-card.compact {
+  border: 0;
+  border-image: none;
+  min-width: 78px;
 }
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  align-content: start;
-  padding: 4px 0 8px;
-}
-.hero-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  background: var(--panel);
-  border: 3px solid var(--line);
-  border-radius: var(--radius);
-  padding: 8px 6px;
-  color: var(--text);
-  font: inherit;
-  min-height: 132px;
-}
-.hero-card.picked {
-  border-color: var(--gold);
-  background: var(--panel-2);
-}
-.hero-card.locked .sprite {
-  filter: brightness(0) opacity(0.6);
-}
-.hero-card-art {
-  height: 80px;
-  display: flex;
-  align-items: flex-end;
-}
-.picked-mark {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  background: var(--gold);
-  color: #2b1d00;
-  font-weight: 900;
-  border-radius: 8px;
-  padding: 0 6px;
-}
-.tier-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 0;
-}
-.tier-btn {
-  padding: 4px 10px;
-}
-
-/* ------------------------------------------------------------ between-fight screens */
-.flow {
-  gap: 10px;
-  padding-top: 6px;
-}
-.flow-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 52px;
-}
-.flow-title h1 {
-  margin: 0;
-  font-size: 22px;
-}
-.flow-title p {
-  margin: 0;
-}
-.flow-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: auto;
-}
-.party-strip,
-.daily-party {
-  display: flex;
-  justify-content: space-evenly;
-  gap: 6px;
-}
-.mini-hero {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--panel);
-  border-radius: 12px;
-  padding: 4px;
-  min-height: var(--tap);
-}
-.mini-hero.downed {
-  opacity: 0.6;
-}
-.mini-art {
-  height: 52px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-.mini-items {
-  display: flex;
-  gap: 2px;
-  min-height: 24px;
-}
-.mini-item {
-  display: inline-flex;
-  min-width: 24px;
-  min-height: 24px;
-}
-.reward-list,
-.shop-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.reward-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: var(--panel);
-  border: 3px solid var(--line);
-  border-radius: var(--radius);
-  padding: 22px 12px 12px;
-  color: var(--text);
-  font: inherit;
-  text-align: center;
-  min-height: 110px;
-}
-.reward-card small {
-  color: var(--muted);
-}
-.rarity-uncommon {
-  border-color: var(--blue);
-}
-.rarity-rare {
-  border-color: var(--gold);
-}
-.rarity-tag {
-  position: absolute;
-  top: 6px;
-  left: 10px;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-.big-plus {
-  font-size: 40px;
-  font-weight: 900;
-  color: var(--green);
-}
-.big-plus.small {
-  font-size: 28px;
-}
-.face-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.face-art {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #0006;
-  border-radius: 10px;
-  padding: 4px 10px;
-  font-size: 26px;
-  font-weight: 900;
-}
-.face-sym {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-}
-.face-name {
-  font-size: 13px;
-}
-.face-up {
-  position: absolute;
+.choice .face-sym {
   top: -4px;
   right: -8px;
-  background: var(--gold);
-  color: #2b1d00;
-  border-radius: 8px;
-  padding: 0 5px;
-  font-size: 12px;
-  font-weight: 900;
 }
-.door-row {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-  justify-content: center;
-}
-.door-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  text-align: left;
-  background: var(--panel);
-  border: 3px solid var(--line);
-  border-radius: var(--radius);
-  padding: 12px;
-  color: var(--text);
-  font: inherit;
-  min-height: 110px;
-}
-.door-card > strong,
-.door-card > small {
-  display: block;
-}
-.door-card small {
-  color: var(--muted);
-  display: block;
-}
-.door-elite {
-  border-color: var(--red);
-}
-.door-treasure {
-  border-color: var(--gold);
-}
-.rest-art {
-  display: flex;
-  justify-content: center;
-  padding: 12px;
-}
-.shop-slot {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--panel);
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
-  padding: 8px 10px;
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  min-height: 72px;
-}
+/* cannot afford it: still readable, clearly not for now */
 .shop-slot:disabled {
-  opacity: 0.5;
+  opacity: 1;
+  filter: saturate(0.35) brightness(0.82);
 }
 .shop-slot.sold {
-  opacity: 0.3;
-}
-.shop-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.shop-text small {
-  color: var(--muted);
-}
-.price {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-weight: 900;
-}
-.event-text {
-  font-size: 17px;
-  line-height: 1.4;
-  margin: 8px 0 14px;
-}
-.event-choice {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  width: 100%;
-  text-align: left;
-  background: var(--panel);
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
-  padding: 12px;
-  margin-bottom: 10px;
-  color: var(--text);
-  font: inherit;
-  min-height: 64px;
-}
-.event-choice:disabled {
   opacity: 0.45;
 }
-.event-choice small {
-  color: var(--muted);
+.choice .face-art .word {
+  display: none;
 }
-.event-choice .cost {
-  color: var(--gold);
-}
-.end {
-  justify-content: center;
-}
-.end-top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 0;
-}
-.end-title {
-  margin: 0;
-  font-size: 36px;
-  color: var(--gold);
-}
-.end.lost .end-title {
-  color: var(--red);
-}
-.end-lines {
-  text-align: center;
-}
-.end-lines p,
-.end-feats p {
-  margin: 2px 0;
-}
-.end-feats {
-  text-align: center;
-  background: var(--panel);
-  border-radius: var(--radius);
-  padding: 8px;
-}
-
-/* choose sheet */
-.choose-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.choice {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-  min-height: 56px;
-  background: var(--panel);
-  border: 2px solid var(--line);
-  border-radius: 12px;
-  padding: 6px 10px;
-  color: var(--text);
-  font: inherit;
-}
-.choice:disabled {
-  opacity: 0.4;
-}
-.choice-text {
-  display: flex;
-  flex-direction: column;
-}
-.choice-text small {
-  color: var(--muted);
-}
-.sheet-sub {
-  margin: 6px 0 0;
-  font-size: 15px;
-  color: var(--gold);
-}
-.kw-line {
-  margin: 0;
-}
-
-/* collection, feats, stats */
-.tabs {
-  display: flex;
-  gap: 6px;
-}
-.tab {
-  flex: 1;
-  min-height: var(--tap);
-  border: 2px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel);
-  color: var(--text);
-  font: inherit;
-  font-weight: 700;
-}
-.tab.on {
-  background: var(--gold);
-  color: #2b1d00;
-  border-color: var(--gold-dark);
-}
-.tile-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  align-content: start;
-  padding-top: 6px;
-}
-.tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  background: var(--panel);
-  border: 2px solid var(--line);
-  border-radius: 12px;
-  padding: 6px 2px;
-  color: var(--text);
-  font: inherit;
-  min-height: 96px;
-}
-.tile.unknown .sprite {
-  filter: brightness(0) opacity(0.5);
-}
-.tile-art {
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.tile-name {
-  font-size: 12px;
-  text-align: center;
-  line-height: 1.1;
-}
-.feat {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--panel);
-  border-radius: var(--radius);
-  padding: 8px 10px;
-  opacity: 0.75;
-}
-.feat.done {
+.mini-hero.downed {
   opacity: 1;
-  border: 2px solid var(--gold);
-}
-.feat-text {
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-}
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  background: var(--panel);
-  border-radius: 12px;
-  padding: 10px 12px;
+  filter: grayscale(1) brightness(0.82);
 }
 
-.face-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+/* pictures of items, doors and party miniatures: a box the size of the shown part, the sprite its background */
+.sprite-crop {
+  display: block;
+  flex: 0 0 auto;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
-.face-card.compact {
-  background: #0005;
-  border-radius: 10px;
-  padding: 4px 2px;
-  min-width: 70px;
+.face-sym {
+  position: static;
+  margin-left: -2px;
 }
-.face-card.compact .face-art {
-  font-size: 20px;
-  padding: 2px 6px;
+.choice .face-sym {
+  top: auto;
+  right: auto;
 }
-.face-card.compact .face-name {
-  font-size: 12px;
-  text-align: center;
-  line-height: 1.1;
+.reward-art .big-plus .px {
+  --px-s: 3;
 }
-.face-kws {
-  display: flex;
-  gap: 2px;
+.reward-card {
+  min-height: 92px;
 }
-.item-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+
+/* backdrops: props on the table stay in the picture but never compete with panels and buttons */
+/* menus: the table shows dimly at the top and fades to plain dark where the lists and buttons are */
+.screen {
+  background-image: linear-gradient(var(--ink-80) 0%, var(--ink-80) 20%, var(--ink) 60%), var(--screen-bg);
 }
-.item-row span {
+/* home: the logo stands on the table; the button block has a plain dark backing */
+.screen.home {
+  background-image: linear-gradient(var(--ink-20) 0%, var(--ink-40) 40%, var(--ink) 64%), var(--screen-bg);
+}
+.screen.flow {
+  background-image: linear-gradient(var(--ink-40) 0%, var(--ink-60) 30%, var(--ink-80) 100%), var(--screen-bg);
+}
+/* an event's text and choices sit in the middle of the space they have */
+[data-testid='scroll-event'] {
   display: flex;
   flex-direction: column;
 }
-.item-row small {
-  color: var(--muted);
+[data-testid='scroll-event'] > * {
+  flex-shrink: 0;
 }
-.reward-list > :first-child,
-.shop-list > :first-child {
+[data-testid='scroll-event'] > :first-child {
   margin-top: auto;
 }
-.reward-list > :last-child,
-.shop-list > :last-child {
+[data-testid='scroll-event'] > :last-child {
   margin-bottom: auto;
 }
-.reward-list > *,
-.shop-list > *,
-.list > * {
-  flex-shrink: 0;
+
+/* Chips are low. Their box is honest: half-width borders, the art's edge drawn at full size reaching in under the content. */
+.gold,
+.price,
+.status-chip,
+.shield-badge,
+.forecast,
+.preview,
+.warn-chip,
+.tier,
+.fury-badge,
+.set-chip {
+  border-width: var(--kit-chip-bwh);
+  border-image: var(--k) var(--ks) / var(--kw) stretch;
+  padding: 0 2px;
+  line-height: 0;
 }
-.rest-art {
-  flex: 1;
-  align-items: center;
+.gold > *,
+.price > * {
+  margin-top: 0;
+  margin-bottom: 0;
 }
-.end {
-  justify-content: flex-start;
-}
-.end-scroll {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.end-scroll > * {
-  flex-shrink: 0;
-}
-@media (max-height: 700px) {
-  .end-top {
-    padding: 4px 0;
-    gap: 2px;
-  }
-  .end-title {
-    font-size: 28px;
-  }
+.gold {
+  min-height: 0;
 }
 
-.mini-art .sprite {
-  height: 52px !important;
-  object-fit: cover;
-  object-position: top center;
-}
-.tile-art .sprite {
-  max-height: 64px;
-  object-fit: contain;
-}
-
-.party-strip.compact .mini-hero {
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 2px 6px;
-  padding: 4px 6px;
-  min-height: var(--tap);
-}
-.party-strip.compact .mini-hero .hint {
+.fury-chip {
+  --k: var(--kit-chip);
+  --ks: var(--kit-chip-slice);
+  --kw: var(--kit-chip-bw);
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--kit-chip-bwh);
+  border-image: var(--k) var(--ks) / var(--kw) stretch;
+  image-rendering: pixelated;
+  padding: 0 2px;
   font-size: 12px;
-}
-.shop-list {
-  gap: 6px;
-}
-.shop-slot {
-  min-height: 52px;
-  padding: 4px 10px;
-  gap: 8px;
-}
-.shop-text {
-  min-width: 0;
-}
-.shop-text strong,
-.shop-text small {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.shop-slot > .sprite,
-.shop-slot > .face-inline,
-.shop-slot > .plus-icon {
-  flex: 0 0 auto;
-  min-width: 32px;
-}
-.plus-icon {
-  font-size: 20px;
-  color: var(--green);
-}
-.face-inline {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 16px;
   font-weight: 900;
-}
-.face-art.blank b {
-  font-size: 16px;
-}
-
-.info-btn {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--tap);
-  height: var(--tap);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 18px;
-  font-style: italic;
-  color: var(--gold);
-}
-.hero-card .hint {
-  font-size: 12px;
-  text-align: center;
-}
-.party-strip.compact .mini-hero {
-  flex-direction: column;
-  flex-wrap: nowrap;
-  gap: 0;
-  padding: 4px 6px;
-}
-.party-strip.compact .mini-hero strong,
-.party-strip.compact .mini-hero .hint {
+  line-height: 18px;
+  text-shadow: none;
   white-space: nowrap;
 }
-
-.shop-text strong {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.home {
+  padding-bottom: 16px;
 }
-.shop-text small {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  font-size: 12px;
-  line-height: 1.15;
-}
-.shop-slot {
-  min-height: 48px;
-  padding: 3px 10px;
-}
-.shop-list {
-  gap: 5px;
-}
-.hero-grid {
-  grid-auto-rows: min-content;
-  align-items: start;
-}
-
-button.item-row {
-  min-height: var(--tap);
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: 0;
-  padding: 4px 0;
-  color: var(--text);
-  font: inherit;
+.menu-stack {
+  padding-bottom: 0;
 }

@@ -1,58 +1,43 @@
-/** App icon (a white die with a crossed-sword pip on deep teal) and the title logo. */
+/** App icon (a white toy die and sword on deep teal) and the title logo. */
 import { Canvas } from './canvas';
 import { addBase } from './parts';
 import type { Sprite } from './sheet';
 import { Model, renderModel } from './voxel';
 
-function dieModel(n: number): Model {
-  const m = new Model();
-  const lo = -Math.floor(n / 2);
-  const hi = lo + n - 1;
-  m.box(lo, lo, 0, hi, hi, n - 1, 'w');
-  for (const x of [lo, hi]) for (const y of [lo, hi]) for (const z of [0, n - 1]) m.del(x, y, z);
-  // pips on the side faces
-  const mid = Math.round((lo + hi) / 2);
-  m.set(mid, hi, Math.floor((n - 1) / 2), 'r');
-  m.set(hi, lo + 1, 1, 'k'); m.set(hi, hi - 1, n - 2, 'k');
-  return m;
-}
-
-/** One square, fully opaque icon. `n` is the die size in voxels (smaller = more padding, for maskable). */
+/**
+ * One square, fully opaque icon: a white toy die with a toy sword leaning on it (both drawn by
+ * the isometric renderer) on a flat deep-teal field. `n` is the die size in voxels
+ * (smaller = more padding, for the maskable icon).
+ */
 export function drawAppIcon(size: number, n: number): Canvas {
   const c = new Canvas(size, size);
-  // deep teal field with a soft radial lift
-  const bayer = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const dx = (x - size / 2) / (size / 2);
-      const dy = (y - size / 2) / (size / 2);
-      const d = Math.sqrt(dx * dx + dy * dy);
-      const th = (((bayer[y & 3] as number[])[x & 3] as number) + 0.5) / 16;
-      const spec = d < 0.55 ? (th < (0.55 - d) * 1.2 ? 'a+' : 'a') : th < (d - 0.55) * 0.9 ? 'a-' : 'a';
-      c.set(x, y, spec);
-    }
+  c.rect(0, 0, size, size, 'a');
+  const e = n - 1;
+  const m = new Model();
+  m.box(0, 0, 0, e, e, e, 'w');
+  for (const x of [0, e]) for (const y of [0, e]) for (const z of [0, e]) m.del(x, y, z);
+  const mid = Math.floor(e / 2);
+  m.box(mid, mid, e, mid + (n > 6 ? 1 : 0), mid + (n > 6 ? 1 : 0), e, 'r'); // one red pip on top
+  for (const [y, z] of [[1, e - 1], [e - 1, 1], [mid, mid]] as [number, number][]) m.set(e, y, z, 'k');
+  // the sword, leaning across the near-left face
+  const s = new Model();
+  const len = n;
+  for (let i = 0; i < len; i++) {
+    const col = i === 0 ? 'u' : i === 1 ? 'y' : 'g';
+    s.box(i, e + 1, i, i + 1, e + 1, i, col);
+    if (i > 1) s.set(i, e + 1, i, 'w');
   }
-  const r = renderModel(dieModel(n), { anchorZ: n - 1 });
-  const ox = Math.round(size / 2 - r.ax);
-  const oy = Math.round((size - r.canvas.h) / 2);
-  // soft shadow under the die
-  c.ellipse(size / 2, oy + r.canvas.h - 2, r.canvas.w * 0.4, size / 20, 'a-');
+  s.box(0, e + 1, 2, 0, e + 1, 2, 'y'); s.box(3, e + 1, 0, 3, e + 1, 0, 'y');
+  const r = renderModel(m, { anchorZ: 0, front: s });
   const body = new Canvas(size, size);
+  const ox = Math.round((size - r.canvas.w) / 2);
+  const oy = Math.round((size - r.canvas.h) / 2);
+  // a flat darker diamond under the die: its shadow on the table
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    if (Math.abs(x - size / 2) / 2 + Math.abs(y - (oy + r.canvas.h - n)) <= n + 3) c.set(x, y, 'a-');
+  }
   body.blit(r.canvas, ox, oy);
   c.blit(body.outline(), 0, 0);
-  // crossed swords on the top face
-  const cx = ox + r.ax;
-  const cy = oy + r.ay;
-  const k = Math.max(0.5, (r.canvas.w - 4) / 36);
-  const L = Math.round(11 * k);
-  const H = Math.round(5.5 * k);
-  const t = size >= 48 ? 3 : 2;
-  // dark underlay so both swords stand out from the white top face
-  c.line(cx - L, cy - H, cx + L, cy + H, 'k', t + 2);
-  c.line(cx - L, cy + H, cx + L, cy - H, 'k', t + 2);
-  c.line(cx - L, cy - H, cx + L, cy + H, 'r', t);
-  c.line(cx - L, cy + H, cx + L, cy - H, 'n', t);
-  c.rect(cx - 1, cy - 1, 3, 3, 'y');
   return c;
 }
 
@@ -84,5 +69,5 @@ export function buildLogo(): Sprite {
   const r = renderModel(m, { anchorZ: 1, front: s });
   const c = new Canvas(r.canvas.w + 4, r.canvas.h + 4);
   c.blit(r.canvas, 2, 2);
-  return { canvas: c.outline(), ax: 2 + r.ax, ay: 2 + r.ay };
+  return { canvas: c.outline(), ax: 2 + r.ax, ay: 2 + r.ay, render: 'voxel' };
 }

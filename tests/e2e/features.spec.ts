@@ -81,9 +81,11 @@ test('intent label: Lock die, and the jammed die then cannot be rerolled', async
   const owner = g.run?.fight?.enemies.find((e) => e.intent?.actions.some((a) => a.type === 'lockDie'));
   const action = owner?.intent?.actions.find((a) => a.type === 'lockDie');
   if (!owner || !action) throw new Error('no lock intent');
-  await expect(page.getByTestId(`intent-${owner.uid}`)).toContainText('Lock die');
+  // 0.2.0 look: the bubble shows icons and numbers; the words live in its aria-label and the intent sheet.
+  await expect(page.getByTestId(`intent-${owner.uid}`)).toHaveAttribute('aria-label', /intends/);
   await page.getByTestId(`intent-${owner.uid}`).tap();
   await expect(page.getByTestId('info-intent')).toBeVisible();
+  await expect(page.getByTestId('info-intent')).toContainText(/cannot be rerolled/i);
   await page.getByTestId('info-close').tap();
 
   g = await perform(page, g, { type: 'endTurn' });
@@ -99,8 +101,14 @@ test('intent label: Lock die, and the jammed die then cannot be rerolled', async
   const faceBefore = g.run?.fight?.dice[di]?.face;
   if (eng.canApply(g, { type: 'reroll' })) g = await perform(page, g, { type: 'reroll' });
   expect(g.run?.fight?.dice[di]?.face, 'a jammed die keeps its face on reroll').toBe(faceBefore);
-  await el.tap();
-  await expect(page.getByTestId('toast')).toContainText(/jammed/i);
+  // 0.2.0: the jammed die shows a chain instead of a padlock; tapping it changes nothing and explains why.
+  const lockEl = page.getByTestId(`lock-${di}`);
+  await expect(lockEl).toHaveAttribute('data-jammed', 'true');
+  await expect(lockEl).toHaveClass(/chain/);
+  const beforeChain = JSON.stringify(await state(page));
+  await lockEl.tap();
+  await expect(page.getByTestId('hint-line')).toContainText(/jammed/i);
+  expect(JSON.stringify(await state(page)), 'tapping the chain changes nothing').toBe(beforeChain);
 });
 
 test('intent label: Curse face, and the face is then cursed', async ({ page }) => {
@@ -111,8 +119,9 @@ test('intent label: Curse face, and the face is then cursed', async ({ page }) =
   const owner = g.run?.fight?.enemies.find((e) => e.intent?.actions.some((a) => a.type === 'curseFace'));
   const action = owner?.intent?.actions.find((a) => a.type === 'curseFace');
   if (!owner || !action) throw new Error('no curse intent');
-  await expect(page.getByTestId(`intent-${owner.uid}`)).toContainText(/Curse /);
+  await expect(page.getByTestId(`intent-${owner.uid}`)).toHaveAttribute('aria-label', /intends/);
   await page.getByTestId(`intent-${owner.uid}`).tap();
+  await expect(page.getByTestId('info-intent')).toContainText(/curse/i);
   await expect(page.getByTestId('info-intent')).toContainText(/blank/i);
   await page.getByTestId('info-close').tap();
   g = await perform(page, g, { type: 'endTurn' });
@@ -146,13 +155,16 @@ test('intent label: Steal reroll, and the party then has fewer rerolls', async (
   const owner = g.run?.fight?.enemies.find((e) => e.intent?.actions.some((a) => a.type === 'stealReroll'));
   const action = owner?.intent?.actions.find((a) => a.type === 'stealReroll');
   if (!owner || !action) throw new Error('no steal intent');
-  await expect(page.getByTestId(`intent-${owner.uid}`)).toContainText(/Steal/);
+  await expect(page.getByTestId(`intent-${owner.uid}`)).toHaveAttribute('aria-label', /intends/);
+  await page.getByTestId(`intent-${owner.uid}`).tap();
+  await expect(page.getByTestId('info-intent')).toContainText(/steal/i);
+  await page.getByTestId('info-close').tap();
   const before = g.run?.fight?.rerollsLeft ?? 0;
   g = await perform(page, g, { type: 'endTurn' });
   expect(g.run?.phase).toBe('fight');
   const after = g.run?.fight?.rerollsLeft ?? 0;
   expect(after, 'rerolls this turn after the steal').toBeLessThan(before);
-  await expect(page.getByTestId('rerolls-left')).toHaveText(new RegExp(`\\(${after}\\)`));
+  await expect(page.getByTestId('btn-reroll')).toHaveAttribute('data-rerolls', String(after));
 });
 
 test('hero select: the info button shows all six faces, a locked hero shows its feat', async ({ page }) => {

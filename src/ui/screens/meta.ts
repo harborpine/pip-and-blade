@@ -1,6 +1,7 @@
 /** Collection, Feats, Stats, Daily. */
-import { spriteImg } from '../art';
+import { icon, portrait, spriteImg } from '../art';
 import { h, replace } from '../dom';
+import { scrollBox } from '../scroll';
 import { content, engine } from '../engine';
 import { showEnemyDefInfo, showHeroDefInfo, showItemInfo } from '../info';
 import { dispatch, game, go, localDateKey } from '../store';
@@ -36,13 +37,13 @@ export function buildCollection(): Screen {
     let tiles: HTMLElement[];
     let count: string;
     if (tab === 'heroes') {
-      tiles = content.heroes.map((d) => tile(`coll-hero-${d.id}`, seenH.has(d.id), d.name, spriteImg(seenH.has(d.id) ? `hero.${d.id}` : 'ui.unknown', 1), () => showHeroDefInfo(d.id, seenH.has(d.id))));
+      tiles = content.heroes.map((d) => tile(`coll-hero-${d.id}`, seenH.has(d.id), d.name, seenH.has(d.id) ? portrait(`hero.${d.id}`) : icon('ui.unknown', 48), () => showHeroDefInfo(d.id, seenH.has(d.id))));
       count = `${content.heroes.filter((d) => seenH.has(d.id)).length}/${content.heroes.length}`;
     } else if (tab === 'items') {
-      tiles = content.items.map((d) => tile(`coll-item-${d.id}`, seenI.has(d.id), d.name, spriteImg(seenI.has(d.id) ? `item.${d.id}` : 'ui.unknown', 2), () => (seenI.has(d.id) ? showItemInfo(d.id) : toast('Not found yet.'))));
+      tiles = content.items.map((d) => tile(`coll-item-${d.id}`, seenI.has(d.id), d.name, icon(seenI.has(d.id) ? `item.${d.id}` : 'ui.unknown', 48), () => (seenI.has(d.id) ? showItemInfo(d.id) : toast('Not found yet.'))));
       count = `${content.items.filter((d) => seenI.has(d.id)).length}/${content.items.length}`;
     } else {
-      tiles = content.enemies.map((d) => tile(`coll-enemy-${d.id}`, seenE.has(d.id), d.name, spriteImg(seenE.has(d.id) ? enemySpriteId(d.id) : 'ui.unknown', 1), () => (seenE.has(d.id) ? showEnemyDefInfo(d.id) : toast('Not met yet.'))));
+      tiles = content.enemies.map((d) => tile(`coll-enemy-${d.id}`, seenE.has(d.id), d.name, seenE.has(d.id) ? spriteImg(enemySpriteId(d.id), 1) : icon('ui.unknown', 48), () => (seenE.has(d.id) ? showEnemyDefInfo(d.id) : toast('Not met yet.'))));
       count = `${content.enemies.filter((d) => seenE.has(d.id)).length}/${content.enemies.length}`;
     }
     replace(el,
@@ -53,7 +54,7 @@ export function buildCollection(): Screen {
         ),
       ),
       h('p', { class: 'hint center', testid: 'coll-count', text: `Seen ${count}` }),
-      h('div', { class: 'scrollable tile-grid' }, ...tiles),
+      scrollBox('collection', { class: 'tile-grid' }, ...tiles),
     );
   }
   paint();
@@ -68,7 +69,7 @@ export function buildFeats(): Screen {
   const el = h('main', { class: 'screen', testid: 'screen-feats' },
     topBar('Feats', back),
     h('p', { class: 'hint center', testid: 'feats-count', text: `${content.feats.filter((f) => done.has(f.id)).length} of ${content.feats.length} done` }),
-    h('div', { class: 'scrollable list' },
+    scrollBox('feats', { class: 'list' },
       ...content.feats.map((f) => {
         const ok = done.has(f.id);
         const rewards = [
@@ -76,7 +77,7 @@ export function buildFeats(): Screen {
           ...(f.unlocks?.items ?? []).map((x) => `Item: ${itemName(x)}`),
         ];
         return h('div', { class: `feat${ok ? ' done' : ''}`, testid: `feat-${f.id}`, attrs: { 'data-done': String(ok) } },
-          spriteImg(ok ? 'ui.feat' : 'ui.feat_locked', 2),
+          icon(ok ? 'ui.feat' : 'ui.feat_locked', 36),
           h('div', { class: 'feat-text' }, h('strong', { text: f.name }), h('span', { text: f.text }), rewards.length ? h('small', { class: 'hint', text: `Unlocks ${rewards.join(', ')}` }) : null),
         );
       }),
@@ -95,7 +96,7 @@ export function buildStats(): Screen {
     h('div', { class: 'stat-row', testid }, h('span', { text: label }), h('b', { text: value, testid: `${testid}-value` }));
   const el = h('main', { class: 'screen', testid: 'screen-stats' },
     topBar('Stats', back),
-    h('div', { class: 'scrollable list' },
+    scrollBox('stats', { class: 'list' },
       row('Runs played', String(s.runsPlayed), 'stat-runs'),
       row('Runs won', String(s.runsWon), 'stat-wins'),
       row('Win rate', `${rate}%`, 'stat-winrate'),
@@ -126,7 +127,7 @@ export function buildDaily(): Screen {
     topBar('Daily run', back),
     h('p', { class: 'center', testid: 'daily-date', text: key }),
     h('div', { class: 'daily-party' },
-      ...heroes.map((id) => h('div', { class: 'mini-hero' }, h('div', { class: 'mini-art' }, spriteImg(`hero.${id}`, 1)), h('strong', { text: shortName(id) }))),
+      ...heroes.map((id) => h('div', { class: 'mini-hero' }, h('div', { class: 'mini-art' }, portrait(`hero.${id}`)), h('strong', { text: shortName(id) }))),
     ),
     h('p', { class: 'hint center', text: 'Same party, same fights, same rewards every try today.' }),
     h('p', { class: 'center', testid: 'daily-best', text: rec ? `Best today: ${rec.bestScore}${rec.won ? ' (won)' : ''} · ${rec.attempts} attempt${rec.attempts === 1 ? '' : 's'}` : 'Not played yet today' }),
@@ -144,9 +145,11 @@ export function buildDaily(): Screen {
       },
     }),
     h('h3', { class: 'sheet-sub', text: 'History' }),
-    h('div', { class: 'scrollable list', testid: 'daily-history' },
-      history.length === 0 ? h('p', { class: 'hint', text: 'No daily runs yet.' }) : null,
-      ...history.map(([date, r]) => h('div', { class: 'stat-row', testid: `daily-${date}` }, h('span', { text: date }), h('b', { text: `${r.bestScore}${r.won ? ' won' : ''} (${r.attempts}x)` }))),
+    scrollBox('daily', {},
+      h('div', { class: 'list', testid: 'daily-history' },
+        history.length === 0 ? h('p', { class: 'hint', text: 'No daily runs yet.' }) : null,
+        ...history.map(([date, r]) => h('div', { class: 'stat-row', testid: `daily-${date}` }, h('span', { text: date }), h('b', { text: `${r.bestScore}${r.won ? ' won' : ''} (${r.attempts}x)` }))),
+      ),
     ),
   );
   return { el };

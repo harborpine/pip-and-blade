@@ -5,6 +5,7 @@
  */
 import type { Action, GameEvent, GameState, HeroId, SaveFile, Settings } from '@shared';
 import { engine } from './engine';
+import { resetPrefs } from './prefs';
 import { clearTutorialOffer } from './tutorial';
 import { loadSaveText, requestPersistence, saveText } from './storage';
 
@@ -115,6 +116,7 @@ export function resetProgress(): void {
   const eng = engine;
   const keep = settings();
   clearTutorialOffer();
+  resetPrefs();
   const fresh = eng.newSave();
   fresh.settings = { ...fresh.settings, ...keep };
   s.save = fresh;

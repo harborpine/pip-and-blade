@@ -1,36 +1,50 @@
 /** public/gallery.html: every sprite with its id and name, grouped by category, on light and dark backdrops. */
 import { ASSET_LIST } from '../../src/shared/assets';
-import type { AssetCategory } from '../../src/shared/assets';
 import { PALETTE, PALETTE_KEYS } from './palette';
 import type { Sprite } from './sheet';
 
-const TITLES: Record<AssetCategory, string> = {
+/** Section titles. Keyed loosely so a new asset category (such as 'kit') cannot break the build before it has a title here. */
+const TITLES: Record<string, string> = {
   hero: 'Heroes', enemy: 'Enemies', boss: 'Bosses', item: 'Items', sym: 'Dice symbols', fx: 'Face effects', kw: 'Keywords',
   status: 'Statuses', die: 'Dice and overlays', intent: 'Enemy intents', door: 'Doors', set: 'Set badges', ui: 'Interface icons',
-  bg: 'Backgrounds', app: 'App icon',
+  bg: 'Backgrounds', app: 'App icon', kit: 'Interface kit',
 };
+const titleOf = (k: string): string => TITLES[k] ?? k;
 
 const esc = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 export function buildGallery(all: Map<string, Sprite>): string {
-  const groups = new Map<AssetCategory, string[]>();
-  for (const a of ASSET_LIST) {
-    const s = all.get(a.id);
+  const groups = new Map<string, string[]>();
+  const names = new Map(ASSET_LIST.map((a) => [a.id, a.name]));
+  // asset-list order first, then anything else the generator builds
+  const ids = [...new Set([...ASSET_LIST.map((a) => a.id), ...all.keys()])];
+  for (const id of ids) {
+    const s = all.get(id);
     if (!s) continue;
+    const category = id.split('.')[0] as string;
+    const name = names.get(id) ?? id.split('.').slice(1).join('.').replace(/_/g, ' ');
     const w = s.canvas.w;
     const h = s.canvas.h;
     const big = Math.min(6, Math.max(2, Math.floor(300 / Math.max(w, h))));
-    const img = (scale: number): string => `<img src="art/${a.id}.png" width="${w * scale}" height="${h * scale}" alt="${esc(a.name)}">`;
-    const card = `<figure class="card"><div class="pair"><div class="pane light">${img(1)}${img(big)}</div><div class="pane dark">${img(1)}${img(big)}</div></div><figcaption><b>${esc(a.name)}</b><code>${a.id}</code><span>${w}x${h}</span></figcaption></figure>`;
-    const list = groups.get(a.category) ?? [];
+    const img = (scale: number): string => `<img src="art/${id}.png" width="${w * scale}" height="${h * scale}" alt="${esc(name)}">`;
+    // stretchable kit pieces are also shown stretched, by the browser, the way the game uses them
+    let stretched = '';
+    if (s.slice) {
+      const [t, r, b, l] = s.slice;
+      const box = (bw: number, bh: number): string => `<div class="nine" style="width:${bw}px;height:${bh}px;border-width:${t * 2}px ${r * 2}px ${b * 2}px ${l * 2}px;border-image:url(art/${id}.png) ${t} ${r} ${b} ${l} fill / ${t * 2}px ${r * 2}px ${b * 2}px ${l * 2}px"></div>`;
+      stretched = `<div class="stretch">${box(Math.max(150, w * 2), Math.max(h * 2, 44))}${box(Math.max(64, w * 2), Math.max(h * 2, 44) + 40)}</div>`;
+    }
+    const tag = `${s.render ?? 'flat'}${s.slice ? ` slice ${s.slice.join(',')}` : ''}`;
+    const card = `<figure class="card"><div class="pair"><div class="pane light">${img(1)}${img(big)}</div><div class="pane dark">${img(1)}${img(big)}</div></div>${stretched}<figcaption><b>${esc(name)}</b><code>${id}</code><span>${w}x${h} ${tag}</span></figcaption></figure>`;
+    const list = groups.get(category) ?? [];
     list.push(card);
-    groups.set(a.category, list);
+    groups.set(category, list);
   }
-  const sections = (Object.keys(TITLES) as AssetCategory[])
-    .filter((k) => groups.has(k))
-    .map((k) => `<section id="${k}"><h2>${TITLES[k]} <small>${groups.get(k)?.length}</small></h2><div class="grid">${(groups.get(k) ?? []).join('')}</div></section>`)
+  const order = [...new Set([...Object.keys(TITLES), ...groups.keys()])].filter((k) => groups.has(k));
+  const sections = order
+    .map((k) => `<section id="${k}"><h2>${titleOf(k)} <small>${groups.get(k)?.length}</small></h2><div class="grid">${(groups.get(k) ?? []).join('')}</div></section>`)
     .join('\n');
-  const nav = (Object.keys(TITLES) as AssetCategory[]).filter((k) => groups.has(k)).map((k) => `<a href="#${k}">${TITLES[k]}</a>`).join(' ');
+  const nav = order.map((k) => `<a href="#${k}">${titleOf(k)}</a>`).join(' ');
   const swatches = PALETTE_KEYS.map((k) => `<i title="${k} ${PALETTE[k]}" style="background:${PALETTE[k]}"></i>`).join('');
   return `<!doctype html>
 <html lang="en">
@@ -53,6 +67,8 @@ export function buildGallery(all: Map<string, Sprite>): string {
   .pane { display: flex; align-items: flex-end; justify-content: center; gap: 8px; padding: 8px; border-radius: 6px; min-height: 60px; overflow: hidden; }
   .light { background: #e8e4d6; } .dark { background: #2a2540; }
   img { image-rendering: pixelated; image-rendering: crisp-edges; image-rendering: pixelated; max-width: 100%; height: auto; }
+  .stretch { display: flex; gap: 10px; align-items: flex-start; padding: 8px; background: #4b5169; border-radius: 6px; margin-top: 6px; overflow: hidden; }
+  .nine { box-sizing: border-box; border-style: solid; image-rendering: pixelated; flex: none; }
   figcaption { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; margin-top: 6px; }
   figcaption code { color: #8bd23f; } figcaption span { color: #9099b0; margin-left: auto; }
 </style>

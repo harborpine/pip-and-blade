@@ -1,6 +1,8 @@
-import { spriteImg } from '../art';
+import { icon, spriteImg, spriteInfo } from '../art';
 import { h } from '../dom';
 import { engine } from '../engine';
+import { prefs, setPrefs } from '../prefs';
+import { isStandalone } from '../scroll';
 import { dispatch, game, go, loadProblem, localDateKey } from '../store';
 import { tutorialReset } from '../tutorial';
 import { modal } from '../ui';
@@ -11,14 +13,43 @@ export function buildHome(): Screen {
   const g = engine ? game() : null;
   const dailyDone = g?.profile.daily[localDateKey()];
 
-  const el = h('main', { class: 'screen home', testid: 'screen-home' },
+  // In a browser tab (not launched from the Home Screen): a one-time tip that installing gives more room.
+  let tip: HTMLElement | null = null;
+  if (!isStandalone() && !prefs().installTipDismissed) {
+    tip = h('aside', { class: 'tip-card', testid: 'install-tip' },
+      h('div', { class: 'tip-text' },
+        h('strong', { text: 'Tip: add Pip & Blade to your Home Screen for a bigger play area' }),
+        h('ol', {},
+          h('li', {}, 'Tap ', icon('ui.install', 18, 'tip-icon'), h('b', { text: 'Share' }), ' in Safari’s toolbar'),
+          h('li', {}, 'Choose ', h('b', { text: 'Add to Home Screen' })),
+          h('li', {}, 'Tap ', h('b', { text: 'Add' })),
+        ),
+      ),
+      h('button', {
+        class: 'btn small',
+        testid: 'install-tip-dismiss',
+        text: 'Got it',
+        onClick: () => {
+          setPrefs({ installTipDismissed: true });
+          tip?.remove();
+        },
+      }),
+    );
+  }
+
+  // The logo takes whatever height is left over, at a whole-number scale so its pixels stay crisp.
+  const room = window.innerHeight - 290 - (tip ? 100 : 0) - 70;
+  const logoScale = Math.max(1, Math.min(4, Math.floor(room / (spriteInfo('ui.logo')?.h ?? 48))));
+
+  const el = h('main', { class: `screen home${logoScale < 2 ? ' short' : ''}`, testid: 'screen-home' },
     h('div', { class: 'home-logo' },
-      spriteImg('ui.logo', 4, 'logo-art'),
+      spriteImg('ui.logo', logoScale, 'logo-art'),
       h('h1', { class: 'title', testid: 'title', text: 'Pip & Blade' }),
       h('p', { class: 'tagline', text: 'Roll. Lock. Strike.' }),
     ),
     !engine ? h('p', { class: 'notice', testid: 'engine-missing', text: 'The game engine is not available in this build.' }) : null,
     loadProblem() ? h('p', { class: 'notice', testid: 'load-problem', text: 'Your last save could not be read, so a fresh one was started. The old data is kept aside on this phone.' }) : null,
+    tip,
     h('nav', { class: 'menu-stack' },
       h('button', { class: 'btn primary big', testid: 'btn-new-run', text: 'New run', disabled: !engine, onClick: () => go('heroselect') }),
       h('button', { class: 'btn plain big', testid: 'btn-daily', text: dailyDone ? 'Daily run (played)' : 'Daily run', disabled: !engine, onClick: () => go('daily') }),
@@ -33,7 +64,25 @@ export function buildHome(): Screen {
     ),
   );
   if (engine) queueMicrotask(maybeOfferTutorial);
-  return { el };
+  return {
+    el,
+    // Now that it is on screen: if the logo block does not fit, step the logo down, then drop the tagline.
+    mounted: () => {
+      const box = el.querySelector<HTMLElement>('.home-logo');
+      const logo = el.querySelector<HTMLElement>('.logo-art');
+      const native = spriteInfo('ui.logo');
+      if (!box || !logo || !native) return;
+      let scale = logoScale;
+      const fits = (): boolean => box.scrollHeight <= box.clientHeight + 1;
+      while (!fits() && scale > 1) {
+        scale -= 1;
+        logo.style.width = `${native.w * scale}px`;
+        logo.style.height = `${native.h * scale}px`;
+      }
+      if (!fits()) el.classList.add('short');
+      if (!fits()) logo.style.display = 'none';
+    },
+  };
 }
 
 const OFFERED_KEY = 'pip-and-blade.tutorialOffered';

@@ -6,15 +6,19 @@ has no sound, no accounts, no ads, and costs nothing to host.
 
 ## Needs Harborpine
 
-These are the only things that could not be done for you. Nothing else is waiting on you.
+Nothing is waiting on you right now.
 
-1. **Publish it and put it on your phone.** This needs your GitHub login, so it was left for
-   you on purpose. Follow "Publish and install" below (about 10 minutes, one time).
-2. **Try it on your real iPhone.** Everything was tested on this PC in Safari's engine at
-   iPhone size, but a real phone could not be tested from here. After installing, check:
-   it fills the screen with no browser bars, nothing hides under the notch or the home bar,
-   it feels smooth, and it still opens with Airplane Mode on. If anything is off, say what
-   you see and it can be fixed.
+- **Published:** done on 11 Oct 2026. The game is live at
+  https://harborpine.github.io/pip-and-blade/
+- **Tried on a real iPhone:** version 0.1.0 was tried by the owner on 11 Oct 2026, in a
+  Safari browser tab. It found three things the PC tests missed. Version 0.2.0 fixes them:
+  the "replace a face" sheet that could not be scrolled, icons and interface that did not
+  match the character art, and a clumsy lock-then-use dice flow.
+- **Please check 0.2.0 on your phone.** Open the game with a signal, then close and reopen
+  it once. Settings should say "Version 0.2.0". Try the replace-a-face sheet (pick a "new
+  face" reward) and the new dice: tap a die to use it, tap the padlock under a die to keep it.
+- **After each update:** only you can confirm it on the real phone, because a physical iPhone
+  cannot be tested from this PC.
 
 ## Publish and install
 
@@ -65,8 +69,11 @@ You do this once. After that, any future change is published by the same "push" 
 
 - Pick 3 heroes. Each has one six-sided die; its faces are that hero's actions.
 - Enemies always show exactly what they will do next.
-- Each turn your dice roll. Tap dice to lock them, tap **Reroll** (2 per turn) to reroll the rest.
-- Then tap a die and tap a target. **Undo** works until you press **End Turn**.
+- Each turn your dice roll. Tap the **padlock under a die** to keep it, then tap **Reroll**
+  (2 per turn) to reroll the rest.
+- **Tap a die to use it.** If it could hit more than one target, tap who to hit.
+  **Undo** works until you press **End Turn**, and gives your rerolls back.
+- Hold a finger on a die to see exactly what it would do, without using it.
 - The End Turn button tells you exactly how much damage is coming.
 - Matching symbols across your dice make a pair or a triple for bonus effects.
 - After each fight pick 1 of 3 rewards: a new face, an upgrade, or an item. Then choose a door.
@@ -86,7 +93,8 @@ but not on PATH), then `docs/design.md`, `docs/DECISIONS.md` and `docs/PROGRESS.
 
 Limitations and risks:
 
-- Never tested on a physical iPhone (see "Needs Harborpine").
+- Automated tests run on this PC in Safari's engine at iPhone size. A physical iPhone cannot
+  be tested from here; the owner checks each version on their own phone.
 - This folder is inside OneDrive, which also syncs the large `node_modules` working folder.
   If you see file-locking errors while building, pause OneDrive syncing and try again.
 - On the smallest iPhones (the 375-wide size, such as an iPhone SE) boss fights draw the

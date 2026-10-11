@@ -1,5 +1,7 @@
 /** Small shared UI pieces: modal, info sheet, toast, long-press, top bar. */
+import { icon } from './art';
 import { clear, h } from './dom';
+import { scrollBox } from './scroll';
 
 const overlays = (): HTMLElement => {
   const el = document.getElementById('overlays');
@@ -20,8 +22,8 @@ export function modal(opts: { testid: string; title: string; body?: (string | No
   const close = (): void => back.remove();
   const card = h('div', { class: 'modal-card', testid: opts.testid, attrs: { role: 'dialog', 'aria-modal': 'true' } },
     h('h2', { text: opts.title }),
-    ...(opts.body ?? []).map((b) => (typeof b === 'string' ? h('p', { text: b }) : b)),
-    h('div', { class: 'modal-buttons' },
+    scrollBox(opts.testid, { class: 'modal-body' }, ...(opts.body ?? []).map((b) => (typeof b === 'string' ? h('p', { text: b }) : b))),
+    h('div', { class: `modal-buttons${opts.buttons.length > 2 || opts.buttons.some((b) => b.label.length > 9) ? ' stack' : ''}` },
       ...opts.buttons.map((b) =>
         h('button', {
           class: `btn ${b.kind ?? 'plain'}`,
@@ -55,16 +57,20 @@ export function confirmDialog(opts: { testid: string; title: string; text: strin
 }
 
 /** A bottom sheet with exact rules text. */
-export function infoSheet(opts: { testid?: string; title: string; icon?: Node | null; lines: (string | Node)[] }): { close: () => void } {
+export function infoSheet(opts: { testid?: string; title: string; icon?: Node | null; lines: (string | Node)[]; onClose?: () => void }): { close: () => void } {
   const back = h('div', { class: 'modal-back sheet-back', testid: 'info-sheet-back' });
-  const close = (): void => back.remove();
+  const close = (): void => {
+    back.remove();
+    opts.onClose?.();
+  };
   back.addEventListener('click', (e) => {
     if (e.target === back) close();
   });
-  const sheet = h('div', { class: 'sheet', testid: opts.testid ?? 'info-sheet', attrs: { role: 'dialog' } },
+  const id = opts.testid ?? 'info-sheet';
+  const sheet = h('div', { class: 'sheet', testid: id, attrs: { role: 'dialog' } },
     h('div', { class: 'sheet-head' }, opts.icon ?? null, h('h2', { text: opts.title })),
-    ...opts.lines.map((l) => (typeof l === 'string' ? h('p', { text: l }) : l)),
-    h('button', { class: 'btn primary', testid: 'info-close', text: 'Close', onClick: close }),
+    scrollBox(id, { class: 'sheet-body' }, ...opts.lines.map((l) => (typeof l === 'string' ? h('p', { text: l }) : l))),
+    h('div', { class: 'sheet-foot' }, h('button', { class: 'btn primary', testid: 'info-close', text: 'Close', onClick: close })),
   );
   back.append(sheet);
   overlays().append(back);
@@ -89,7 +95,7 @@ export function closeAllOverlays(): void {
  * Long-press (about half a second) opens info without also triggering the tap.
  * The timer only exists while a finger is down.
  */
-export function onLongPress(el: HTMLElement, handler: () => void, ms = 450): void {
+export function onLongPress(el: HTMLElement, handler: () => void, ms = 350): void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let fired = false;
   let sx = 0;
@@ -126,7 +132,7 @@ export function onLongPress(el: HTMLElement, handler: () => void, ms = 450): voi
 
 export function topBar(title: string, onBack?: () => void): HTMLElement {
   return h('header', { class: 'topbar' },
-    onBack ? h('button', { class: 'icon-btn', testid: 'btn-back', text: '‹', attrs: { 'aria-label': 'Back' }, onClick: onBack }) : h('span', { class: 'icon-btn spacer' }),
+    onBack ? h('button', { class: 'icon-btn', testid: 'btn-back', attrs: { 'aria-label': 'Back' }, onClick: onBack }, icon('ui.back', 36)) : h('span', { class: 'icon-btn spacer' }),
     h('h1', { text: title, testid: 'screen-title' }),
     h('span', { class: 'icon-btn spacer' }),
   );
@@ -152,9 +158,8 @@ export function chooseSheet(opts: { testid: string; title: string; hint?: string
       if (e.target === back) done(null);
     });
     const sheet = h('div', { class: 'sheet choose', testid: opts.testid, attrs: { role: 'dialog' } },
-      h('h2', { text: opts.title }),
-      opts.hint ? h('p', { class: 'hint', text: opts.hint }) : null,
-      h('div', { class: 'choose-list' },
+      h('div', { class: 'sheet-head col' }, h('h2', { text: opts.title }), opts.hint ? h('p', { class: 'hint', text: opts.hint }) : null),
+      scrollBox(opts.testid, { class: 'sheet-body choose-list' },
         ...opts.items.map((it, i) =>
           h('button', { class: 'choice', testid: it.testid, disabled: it.disabled, onClick: () => done(i) },
             it.icon ?? null,
@@ -162,7 +167,7 @@ export function chooseSheet(opts: { testid: string; title: string; hint?: string
           ),
         ),
       ),
-      h('button', { class: 'btn plain', testid: `${opts.testid}-cancel`, text: 'Cancel', onClick: () => done(null) }),
+      h('div', { class: 'sheet-foot' }, h('button', { class: 'btn plain', testid: `${opts.testid}-cancel`, text: 'Cancel', onClick: () => done(null) })),
     );
     back.append(sheet);
     overlays().append(back);

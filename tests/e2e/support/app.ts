@@ -15,6 +15,7 @@ export const PARTY = STARTERS.slice(0, 3) as [HeroId, HeroId, HeroId];
 
 export const ORIGIN = process.env.PIP_E2E_ORIGIN ?? 'http://127.0.0.1:47613';
 export const OFFERED_KEY = 'pip-and-blade.tutorialOffered';
+export const PREFS_KEY = 'pip-and-blade.prefs';
 
 interface PipHook {
   getState(): GameState | null;
@@ -69,6 +70,11 @@ export interface OpenOptions {
   offerTutorial?: boolean;
   /** Extra init script source to run before the app starts. */
   init?: string;
+  /**
+   * Interface preferences written before the app starts (localStorage `pip-and-blade.prefs`).
+   * Default hides the one-time Home Screen install tip; pass `null` to leave prefs untouched (fresh install).
+   */
+  prefs?: Record<string, unknown> | null;
   /** Start from this saved game instead of a fresh profile (only used if nothing is stored yet). */
   save?: SaveFile;
 }
@@ -83,6 +89,18 @@ export async function openApp(page: Page, opts: OpenOptions = {}): Promise<void>
         /* ignore */
       }
     }, OFFERED_KEY);
+  }
+  if (opts.prefs !== null) {
+    await page.addInitScript(
+      ([key, value]) => {
+        try {
+          if (!localStorage.getItem(key as string)) localStorage.setItem(key as string, value as string);
+        } catch {
+          /* ignore */
+        }
+      },
+      [PREFS_KEY, JSON.stringify(opts.prefs ?? { installTipDismissed: true })],
+    );
   }
   if (opts.save) {
     const text = eng.save(opts.save);
@@ -150,10 +168,26 @@ export async function dispatchRaw(page: Page, a: Action): Promise<void> {
   await idle(page);
 }
 
-/** Real tap on a test id. */
-export async function tap(page: Page, testid: string): Promise<void> {
-  await page.getByTestId(testid).tap();
+const tapCounts = new WeakMap<Page, number>();
+
+/** How many real taps this helper has made on `page` so far (used to test the tap budget). */
+export const tapsSoFar = (page: Page): number => tapCounts.get(page) ?? 0;
+
+/** Real tap on a test id (counted). */
+export async function tap(page: Page, testid: string, opts: { force?: boolean } = {}): Promise<void> {
+  tapCounts.set(page, tapsSoFar(page) + 1);
+  await page.getByTestId(testid).first().tap(opts);
 }
+
+/** Read the interface preferences record from the page. */
+export const readPrefs = (page: Page): Promise<Record<string, unknown>> =>
+  page.evaluate((k) => {
+    try {
+      return JSON.parse(localStorage.getItem(k) ?? '{}') as Record<string, unknown>;
+    } catch {
+      return {};
+    }
+  }, PREFS_KEY);
 
 /** Make sure `a` and `b` are the same game, reporting a readable diff on failure. */
 export function expectSameGame(actual: GameState, expected: GameState, what: string): void {

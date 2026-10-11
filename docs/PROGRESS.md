@@ -15,6 +15,48 @@ teammates are only needed for fixes (respawn by name with the ownership table in
 
 All 5 phases complete. `npm run verify` passes all 7 gates.
 
+## Update 0.2.0 ("one toy set", BRIEF-2.md): complete
+
+| # | Step | Status |
+|---|---|---|
+| A | Spec (`docs/redesign.md`), 0.1.0 save fixture, version plumbing | complete |
+| B | Scrolling fix and audit (ui) | complete |
+| C | Tap-to-use dice flow, padlocks, animations, tutorial (ui) | complete |
+| D | Art: every icon as a voxel toy, interface kit, pixel font, backgrounds, dice (art) | complete |
+| E | Restyle every screen with the kit (ui) | complete |
+| F | Tests: finger scrolling, dice flow, old save, tutorial, full run, screenshots (qa) | complete |
+| G | Lead screenshot review | complete (see below) |
+| H | Full verify, publish clean snapshot, confirm live 0.2.0 | see the end of this section |
+
+Team used: art (Opus), ui (Opus, replaced once by a fresh ui teammate when the first ran
+out of room), qa (Sonnet). Never more than 3 at once. engine and designer were not needed:
+no game rule or number changed. All teammates are shut down.
+
+### Lead's screenshot review (11 Oct 2026)
+
+I reviewed the committed screenshots in `tests/e2e/screenshots/390x664/` (the owner's
+Safari-tab size) and `390x844/` (installed size): Home, Hero select, Fight (rolling, a die
+lifted with targets and previews, rolling over, blank, cursed and jammed dice, four enemies,
+each act's boss), Reward, the replace-a-face sheet, Shop, Collection, Settings and Victory,
+plus the art review sheets in `tools/voxelgen/stylesheet/`.
+
+**Nothing flat or off-style remains.** Every icon is a voxel toy object drawn by the same
+renderer as the characters (the content check counts 0 flat in every icon category and
+fails the build if one returns). Every button, panel, sheet, chip, bar, tab and the dice
+tray is an interface-kit piece. Titles, button labels and numbers use the code-generated
+pixel font; longer descriptions use the phone's own font so they stay easy to read, which
+is a deliberate choice, not a leftover. Backgrounds are tabletop dioramas.
+
+Known soft spots, accepted:
+
+- On the smallest phone size (375x548) the layout is dense: enemy intentions shrink to an
+  icon and a number, and the tutorial's first fight overlaps by about 10 px.
+- The shop list scrolls in a Safari tab (full item text is kept); scrolling there works.
+- A few small icons are weaker than the rest (the undo "rewind" arrows, the weakened sword).
+- A physical iPhone cannot be tested from this PC. True native finger scrolling is proven
+  in Chromium's engine and, in Safari's engine, by proving the game no longer cancels the
+  drag. The owner's phone is the final check.
+
 ## Who owns what
 
 See the table in `CLAUDE.md`. Team mode used: real named teammates (engine, art, ui,
@@ -22,8 +64,9 @@ designer, qa), never more than 3 working at once. All teammates are shut down.
 
 ## Active now
 
-- Nobody. Waiting on the owner for the two items under "Needs Harborpine" in `README.md`
-  (publish to GitHub; try it on a real iPhone).
+- Nobody. Version 0.1.0 is published and the owner has played it on their iPhone.
+  Their feedback is written up as `BRIEF-2.md` (scrolling fix, tap-to-use dice, toy-set
+  restyle). That work starts when the owner sends its goal.
 
 ## Done
 
@@ -47,7 +90,7 @@ designer, qa), never more than 3 working at once. All teammates are shut down.
 
 ## Next (only if the owner asks)
 
-- Publish and install (README). Fix anything found on the real phone.
+- Carry out `BRIEF-2.md` when the owner sends its goal.
 - Known soft spots: boss fights are small on the smallest iPhones (375x667); the pinned
   winning seed in `tests/e2e/pinned.ts` must be re-pinned after any balance change.
 

@@ -5,12 +5,14 @@ A single-player dice-builder roguelike PWA for iPhone. Read these first, in this
 1. `BRIEF.md`: what the owner (Harborpine, a non-programmer) asked for. It is the requirement.
 2. `docs/design.md`: the specification. `src/shared/` is the binding contract (types).
 3. `docs/PROGRESS.md`: current phase, who owns what, what is next.
+4. For the 0.2.0 update: `BRIEF-2.md` (the owner's second brief) and `docs/redesign.md`
+   (its exact specification). Game rules and numbers are frozen in this update.
 
 ## Team and ownership
 
 | Name | Owns (may edit) |
 |---|---|
-| lead | `docs/`, `CLAUDE.md`, `README.md`, `package.json`, config files in the repo root, `scripts/`, `tools/check-content.ts`, `.github/`, `src/shared/` |
+| lead | `docs/`, `CLAUDE.md`, `README.md`, `BRIEF*.md`, `package.json`, config files in the repo root, `scripts/`, `tools/check-content.ts`, `tests/fixtures/`, `.github/`, `src/shared/` |
 | engine | `src/engine/` |
 | designer | `src/content/`, `tools/sim/` |
 | art | `tools/voxelgen/`, `src/art/`, `public/art/`, `public/icons/`, `public/gallery.html` |
@@ -69,6 +71,12 @@ The project path contains a space and an ampersand (`Pip & Blade`): always quote
 | `npm run verify` | all of the above gates in order: the single source of truth for "done" |
 
 Long-running commands (dev server, sim) must not be left running when you finish.
+
+`dist/` and the Playwright run are shared by everyone: only one teammate may run
+`npm run build` or the e2e suite at a time. Tell the lead before a long run, and pass
+`--output <your scratch folder>` to Playwright so runs do not wipe each other's results.
+The e2e preview server uses port 47613 (another project on this PC uses 4173).
+`tests/fixtures/` (lead-owned) holds save files made by released versions.
 
 ## Code conventions
 

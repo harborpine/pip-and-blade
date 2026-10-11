@@ -16,7 +16,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: true,
   retries: 0,
-  workers: 3,
+  // The suite grew a lot in 0.2.0 (many phone sizes); this PC has plenty of cores.
+  workers: 6,
   timeout: 120_000,
   expect: { timeout: 10_000 },
   reporter: [['list']],

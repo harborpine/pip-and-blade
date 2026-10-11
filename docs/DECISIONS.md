@@ -83,3 +83,36 @@ The ones a player could notice:
 34. **The phone tests use their own private local address (port 47613).** Another project on
     this PC uses the usual one, and its test runs stopped this project's test server halfway
     through a run. The game itself was not at fault.
+
+## Update 0.2.0 (11 Oct 2026)
+
+36. **Why the "replace a face" sheet could not be scrolled.** The game blocks finger drags
+    across the whole page (to stop the page bouncing), and the pop-up sheets were never put
+    on the list of places where dragging is allowed. A mouse wheel still worked, which is
+    why the PC tests passed. The sheet was also taller than a Safari tab on the owner's
+    phone. Fixed at the root: one shared scrolling area used by every sheet and list, sheets
+    sized to the visible screen with their buttons pinned, and tests that use touch.
+37. **The owner plays in a Safari tab, which is about a fifth shorter than the installed
+    app.** Both must work. A one-time tip on the home screen suggests installing.
+38. **Dice: tap to use, a padlock under each die** (the owner's choice). No modes. A die with
+    one possible target fires on one tap; Undo gives rerolls back.
+39. **Two interface preferences are stored on the phone outside the save file** (install tip
+    dismissed; "always choose the target myself"), so the save format did not have to
+    change. Trade-off: those two switches are not included in an exported backup.
+40. **Art and ui run on the stronger model for this update**, because look and feel are the
+    whole point.
+41. **A code-generated pixel font** is used for titles, buttons and numbers because it
+    matches the toys far better than normal phone text. Longer descriptions stay in the
+    phone's own font for readability. No font is downloaded.
+42. **Tests were not loosened to fit the new look.** The tester briefly allowed content to
+    spill 3 px instead of 2; the lead reverted that and the screens were fixed instead. The
+    one excused overlap is a padlock sitting over the foot of its own die, a design choice,
+    and both must stay full-size and tappable.
+43. **Frame pictures are loaded once at start-up.** A screen could briefly appear without
+    its speech bubbles or tray because the pictures were fetched on first use.
+44. **Item pictures are shown at double size on reward cards**, because each toy fills only
+    about half of its picture frame.
+45. **Smallest phones get a denser fight layout** (icon-and-number intentions, hidden hero
+    names) rather than shrinking the miniatures further.
+46. **A jammed die says "Jammed by an enemy"** without naming which one; naming it would
+    need a rules-code change and rules were frozen for this update.

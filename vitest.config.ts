@@ -3,6 +3,7 @@ import { aliases } from './aliases.ts';
 
 export default defineConfig({
   resolve: { alias: aliases },
+  define: { __APP_VERSION__: JSON.stringify('test') },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'tools/**/*.test.ts'],

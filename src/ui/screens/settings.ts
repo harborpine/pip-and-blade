@@ -1,5 +1,7 @@
 import { h } from '../dom';
+import { scrollBox } from '../scroll';
 import { engine } from '../engine';
+import { prefs, setPrefs } from '../prefs';
 import { downloadText } from '../storage';
 import { dispatch, game, go, localDateKey, replaceSave, resetProgress, saveFile, settings, setSettings } from '../store';
 import { tutorialReset } from '../tutorial';
@@ -24,6 +26,20 @@ export function buildSettings(): Screen {
     attrs: { role: 'switch', 'aria-checked': String(settings().reduceMotion) },
     text: settings().reduceMotion ? 'On' : 'Off',
     onClick: () => setSettings({ reduceMotion: !settings().reduceMotion }),
+  });
+
+  const target = h('button', {
+    class: `toggle${prefs().chooseTarget ? ' on' : ''}`,
+    testid: 'btn-choose-target',
+    attrs: { role: 'switch', 'aria-checked': String(prefs().chooseTarget) },
+    text: prefs().chooseTarget ? 'On' : 'Off',
+  });
+  target.addEventListener('click', () => {
+    const on = !prefs().chooseTarget;
+    setPrefs({ chooseTarget: on });
+    target.classList.toggle('on', on);
+    target.setAttribute('aria-checked', String(on));
+    target.textContent = on ? 'On' : 'Off';
   });
 
   const fileInput = h('input', { testid: 'input-import', attrs: { type: 'file', accept: '.json,application/json', hidden: 'true' } });
@@ -55,8 +71,9 @@ export function buildSettings(): Screen {
 
   const el = h('main', { class: 'screen settings', testid: 'screen-settings' },
     topBar('Settings', back),
-    h('div', { class: 'scrollable list' },
+    scrollBox('settings', { class: 'list' },
       row('Reduce motion', 'Replaces movement with quick fades.', motion, 'row-reduce-motion'),
+      row('Always choose the target myself', 'Off: a die with only one possible target is used with one tap.', target, 'row-choose-target'),
       row('Tutorial', 'A short guided first fight.', h('button', {
         class: 'btn plain',
         testid: 'btn-replay-tutorial',
@@ -104,6 +121,7 @@ export function buildSettings(): Screen {
         },
       }), 'row-reset'),
       fileInput,
+      h('p', { class: 'hint center version', testid: 'app-version', text: `Version ${__APP_VERSION__}` }),
     ),
   );
   return { el };

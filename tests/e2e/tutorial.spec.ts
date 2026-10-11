@@ -26,9 +26,9 @@ test('a fresh profile is offered the tutorial and can finish it, step by step', 
   await page.getByTestId(`intent-${first?.uid}`).tap();
   await expect(page.getByTestId('info-intent').or(page.getByTestId('info-sheet'))).toBeVisible();
   await page.getByTestId('info-close').tap();
-  // Step 2: lock a die.
+  // Step 2: keep a die with its padlock (0.2.0: the padlock under the die, not the die itself).
   await expect(page.getByTestId('tutorial-card')).toHaveAttribute('data-step', 'lock');
-  await page.getByTestId('die-0').tap();
+  await page.getByTestId('lock-0').tap();
   await idle(page);
   expect((await state(page)).run?.fight?.dice[0]?.locked).toBe(true);
   // Step 3: reroll.
@@ -39,23 +39,33 @@ test('a fresh profile is offered the tutorial and can finish it, step by step', 
   const afterReroll = await state(page);
   expect(afterReroll.run?.fight?.rerollsLeft).toBe((before.run?.fight?.rerollsLeft ?? 0) - 1);
   expect(afterReroll.run?.fight?.dice[0]?.face, 'the locked die keeps its face').toBe(before.run?.fight?.dice[0]?.face);
-  // Step 4: Use dice.
-  await expect(page.getByTestId('tutorial-card')).toHaveAttribute('data-step', 'usemode');
-  await page.getByTestId('btn-use-dice').tap();
-  // Step 5: pick a die and a target.
-  await expect(page.getByTestId('tutorial-card')).toHaveAttribute('data-step', 'target');
+  // Step 4: tap a die to use it. No "Use dice" button any more (replaces the old usemode/target steps).
+  await expect(page.getByTestId('tutorial-card')).toHaveAttribute('data-step', 'use');
+  await expect(page.getByTestId('tutorial-card')).toHaveAttribute('data-sub', 'first');
+  await expect(page.getByTestId('btn-use-dice')).toHaveCount(0);
   g = await state(page);
-  const dv = eng.dice(g).find((d) => d.usable && d.needsTarget);
-  expect(dv, 'a die that needs a target').toBeTruthy();
-  if (!dv?.targets[0]) throw new Error('no target');
-  await page.getByTestId(`die-${dv.die}`).tap();
-  const t = dv.targets[0];
-  const tid = t.side === 'enemy' ? `enemy-${t.uid}` : `hero-${t.index}`;
-  await page.getByTestId(tid).tap();
-  await idle(page);
+  const usable = eng.dice(g).filter((d) => d.usable && d.effect !== 'blank');
+  const multi = usable.find((d) => d.needsTarget && d.targets.length > 1);
+  expect(usable.length, 'the tutorial hand has dice to use').toBeGreaterThan(0);
+  if (multi) {
+    // A die with several targets lifts and the card says to tap who to hit.
+    await page.getByTestId(`die-${multi.die}`).tap();
+    await expect(page.getByTestId('tutorial-card')).toHaveAttribute('data-sub', 'target');
+    await expect(page.getByTestId(`die-${multi.die}`)).toHaveClass(/selected/);
+    const t = multi.targets[0];
+    if (!t) throw new Error('no target');
+    await page.getByTestId(t.side === 'enemy' ? `enemy-${t.uid}` : `hero-${t.index}`).tap();
+    await idle(page);
+  }
+  // Use further dice until the card moves on (two dice used, or none left).
+  for (let i = 0; i < 4 && (await step(page)) === 'use'; i++) {
+    g = await state(page);
+    const next = nextAction(eng, g, DEFAULT_BOT);
+    g = await perform(page, g, next.type === 'useDie' ? next : (() => { const d = eng.dice(g).find((x) => x.usable && x.effect !== 'blank'); if (!d) throw new Error('no die'); return d.needsTarget && d.targets[0] ? { type: 'useDie' as const, die: d.die, target: d.targets[0] } : { type: 'useDie' as const, die: d.die }; })());
+  }
   await expect(page.getByTestId('tutorial-card')).toHaveAttribute('data-step', 'end');
   expect(await step(page)).toBe('end');
-  // Step 6: finish the fight by playing normally.
+  // Step 5 (End Turn) and then finish the fight by playing normally.
   g = await state(page);
   for (let i = 0; i < 80 && g.run?.phase === 'fight'; i++) g = await perform(page, g, nextAction(eng, g, DEFAULT_BOT));
   await expectScreen(page, 'victory');

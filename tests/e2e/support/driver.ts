@@ -4,16 +4,16 @@
  */
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import type { Action, GameState, RewardOption } from '@shared';
-import { eng, idle, state } from './app';
+import type { Action, GameState, RewardOption, TargetRef } from '@shared';
+import { eng, idle, readPrefs, state, tap } from './app';
 
 async function visible(page: Page, testid: string): Promise<boolean> {
   return page.getByTestId(testid).first().isVisible();
 }
 
-async function tapId(page: Page, testid: string): Promise<void> {
-  await page.getByTestId(testid).first().tap();
-}
+const tapId = (page: Page, testid: string): Promise<void> => tap(page, testid);
+
+export const targetId = (t: TargetRef): string => (t.side === 'enemy' ? `enemy-${t.uid}` : `hero-${t.index}`);
 
 async function chooseHeroAndFace(page: Page, hero: number, face: number): Promise<void> {
   await tapId(page, `place-hero-${hero}`);
@@ -26,21 +26,29 @@ export async function tapAction(page: Page, g: GameState, a: Action): Promise<vo
   if (!run) throw new Error('no run');
   switch (a.type) {
     case 'toggleLock':
-      await tapId(page, `die-${a.die}`);
+      // 0.2.0: the padlock under the die (tapping the die would USE it).
+      await tapId(page, `lock-${a.die}`);
       return;
     case 'reroll':
       await tapId(page, 'btn-reroll');
       return;
     case 'useDie': {
-      const f = run.fight;
-      if (f && f.phase === 'rolling') {
-        // Rolling phase: the "Use dice" button switches the tray into target-picking mode.
-        const useBtn = page.getByTestId('btn-use-dice');
-        if ((await useBtn.count()) > 0 && (await useBtn.isEnabled())) await useBtn.tap();
-      }
+      // 0.2.0: no modes. A die needing no target or having exactly one is used by ONE tap; with
+      // several targets the die lifts and a second tap on the target uses it.
+      const dv = eng.dice(g).find((d) => d.die === a.die);
+      if (!dv) throw new Error(`no die ${a.die}`);
+      const expectTargets = dv.needsTarget ? dv.targets.length : 0;
+      const shown = Number(await page.getByTestId(`die-${a.die}`).getAttribute('data-targets'));
+      expect(shown, `die-${a.die} data-targets equals the rules engine's target count`).toBe(expectTargets);
+      const choose = (await readPrefs(page))['chooseTarget'] === true;
+      const direct = expectTargets === 0 || (expectTargets === 1 && !choose);
       await tapId(page, `die-${a.die}`);
-      if (a.target) await tapId(page, a.target.side === 'enemy' ? `enemy-${a.target.uid}` : `hero-${a.target.index}`);
-      else await tapId(page, `die-${a.die}`);
+      if (direct) {
+        if (a.target) expect(a.target, 'the lone target is the one used').toEqual(dv.targets[0]);
+      } else {
+        if (!a.target) throw new Error('several targets but the action names none');
+        await tapId(page, targetId(a.target));
+      }
       return;
     }
     case 'undo':

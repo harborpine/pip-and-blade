@@ -6,7 +6,7 @@
  *  - every visible interactive element is at least 44x44 CSS px
  *  - nothing interactive sticks out of the viewport
  *  - nothing interactive covers another interactive element, and each one is really hit by a tap at its centre
- *  - in a fight, the dice, Reroll, Undo, Use dice and End Turn sit in the lower half of the screen
+ *  - in a fight, the dice, padlocks, Reroll, Undo and End Turn sit in the lower half of the screen
  */
 import type { Page } from '@playwright/test';
 
@@ -18,6 +18,12 @@ export interface LayoutOptions {
 export async function layoutIssues(page: Page, opts: LayoutOptions = {}): Promise<string[]> {
   return page.evaluate((o) => {
     const issues: string[] = [];
+    // Words that are in the DOM but intentionally not drawn (padlock and die words) must not count as spilling content.
+    const hidden = [...document.querySelectorAll<HTMLElement>('.lock-word, .die-word')];
+    const prevDisplay = hidden.map((e) => e.style.display);
+    hidden.forEach((e) => {
+      e.style.display = 'none';
+    });
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const se = document.scrollingElement as HTMLElement;
@@ -45,7 +51,8 @@ export async function layoutIssues(page: Page, opts: LayoutOptions = {}): Promis
     // Text or pictures that spill out of the box that is meant to hold them (cut off, or poking out over a neighbour).
     const spill = new Set<string>();
     for (const el of document.querySelectorAll<HTMLElement>('#app *, #overlays *')) {
-      if (el.closest('.fx-layer') || el instanceof SVGElement || el.tagName === 'IMG') continue;
+      // Pixel-font text is invisible glyph boxes (.px) and die/padlock words are not drawn (.die-word, .lock-word): see src/ui/TESTING.md.
+      if (el.closest('.fx-layer, .px, .die-word, .lock-word') || el instanceof SVGElement || el.tagName === 'IMG') continue;
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.display === 'inline' || /(auto|scroll)/.test(cs.overflowY)) continue;
       if (el.clientHeight === 0 || el.clientWidth === 0) continue;
@@ -56,6 +63,38 @@ export async function layoutIssues(page: Page, opts: LayoutOptions = {}): Promis
       }
     }
     issues.push(...spill);
+
+    // The pixel-font text itself: the hidden DOM text inside .px is ignored above, but the box that DRAWS each
+    // piece of pixel text must lie inside the box that holds it and inside the screen (same strictness as plain text).
+    const pxSeen = new Set<string>();
+    for (const px of document.querySelectorAll<HTMLElement>('.px')) {
+      if (px.parentElement?.closest('.px') || px.closest('.fx-layer')) continue;
+      const pr = px.getBoundingClientRect();
+      if (pr.width === 0 || pr.height === 0) continue;
+      const cs = getComputedStyle(px);
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      if (pr.right < 0 || pr.left > vw || pr.bottom < 0 || pr.top > vh) continue;
+      let host: HTMLElement | null = px.parentElement;
+      while (host && host.closest('.px')) host = host.parentElement;
+      if (host && host !== document.body) {
+        const hr = host.getBoundingClientRect();
+        const l = hr.left;
+        let t = hr.top;
+        const r = hr.right;
+        let b = hr.bottom;
+        const hs = getComputedStyle(host);
+        if (/(auto|scroll)/.test(hs.overflowY)) {
+          // inside a scroll box the text may be scrolled out of view; only the horizontal fit is measured
+          t = -Infinity;
+          b = Infinity;
+        }
+        if (pr.left < l - 2 || pr.right > r + 2 || pr.top < t - 2 || pr.bottom > b + 2) {
+          pxSeen.add(`pixel text spills out of its box: "${(px.textContent ?? '').slice(0, 20)}" ${Math.round(pr.width)}x${Math.round(pr.height)} in ${name(host)} ${Math.round(hr.width)}x${Math.round(hr.height)}`);
+        }
+      }
+      if (pr.left < -0.5 || pr.right > vw + 0.5) pxSeen.add(`pixel text outside the screen: "${(px.textContent ?? '').slice(0, 20)}"`);
+    }
+    issues.push(...pxSeen);
 
     const modal = document.querySelector('#overlays .modal-back');
     const scope: ParentNode = modal ?? document;
@@ -117,19 +156,36 @@ export async function layoutIssues(page: Page, opts: LayoutOptions = {}): Promis
         if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
         const w = Math.min(a.vis.r, b.vis.r) - Math.max(a.vis.l, b.vis.l);
         const h = Math.min(a.vis.b, b.vis.b) - Math.max(a.vis.t, b.vis.t);
-        if (w > 2 && h > 2) issues.push(`overlapping controls: ${name(a.el)} and ${name(b.el)} (${Math.round(w)}x${Math.round(h)} px)`);
+        // A padlock overlaps the foot of its own die by up to 20 px on the tightest layouts, on purpose.
+        const ia = a.el.dataset['testid'] ?? '';
+        const ib = b.el.dataset['testid'] ?? '';
+        const lockOverDie = ((ia.startsWith('die-') && ib === 'lock-' + ia.slice(4)) || (ib.startsWith('die-') && ia === 'lock-' + ib.slice(4))) && h <= 20;
+        if (lockOverDie && w > 2 && h > 2) {
+          // Approved overlap (padlock over the foot of its own die): the padlock must stay fully on top and tappable.
+          const lockEl = ia.startsWith('lock-') ? a : b;
+          const dieEl = ia.startsWith('lock-') ? b : a;
+          const ox = (Math.max(a.vis.l, b.vis.l) + Math.min(a.vis.r, b.vis.r)) / 2;
+          const oy = (Math.max(a.vis.t, b.vis.t) + Math.min(a.vis.b, b.vis.b)) / 2;
+          const hit = document.elementFromPoint(ox, oy);
+          if (!hit || !(lockEl.el === hit || lockEl.el.contains(hit))) issues.push(`padlock art is hidden by its die: ${name(lockEl.el)} under ${name(dieEl.el)} at the overlap`);
+          if (dieEl.rect.width < 43.5 || dieEl.rect.height < 43.5 || lockEl.rect.width < 43.5 || lockEl.rect.height < 43.5) issues.push(`die/padlock pair too small: ${name(dieEl.el)} ${Math.round(dieEl.rect.width)}x${Math.round(dieEl.rect.height)}, ${name(lockEl.el)} ${Math.round(lockEl.rect.width)}x${Math.round(lockEl.rect.height)}`);
+        }
+        if (w > 2 && h > 2 && !lockOverDie) issues.push(`overlapping controls: ${name(a.el)} and ${name(b.el)} (${Math.round(w)}x${Math.round(h)} px)`);
       }
     }
 
     if (document.body.dataset['screen'] === 'fight') {
       for (const it of items) {
         const id = it.el.dataset['testid'] ?? '';
-        if (/^(die-\d+|btn-reroll|btn-undo|btn-use-dice|btn-end-turn|btn-back-to-lock)$/.test(id)) {
+        if (/^(die-\d+|lock-\d+|btn-reroll|btn-undo|btn-end-turn)$/.test(id)) {
           const mid = (it.rect.top + it.rect.bottom) / 2;
           if (mid < vh / 2) issues.push(`primary control not in the lower half: [${id}] centre at y=${Math.round(mid)} of ${vh}`);
         }
       }
     }
+    hidden.forEach((e, i) => {
+      e.style.display = prevDisplay[i] ?? '';
+    });
     return issues;
   }, opts);
 }

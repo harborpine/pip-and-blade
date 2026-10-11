@@ -23,7 +23,9 @@ async function expectIntentsShown(page: Page, g: GameState): Promise<void> {
     expect(e.intent, `enemy ${e.uid} has an intent in state`).not.toBeNull();
     const bubble = page.getByTestId(`intent-${e.uid}`);
     await expect(bubble, `intent of enemy ${e.uid} is visible`).toBeVisible();
-    expect((await bubble.locator('.chip').count()), `intent of enemy ${e.uid} shows at least one action`).toBeGreaterThan(0);
+    // 0.2.0 look: icons + numbers; the sentence is the aria-label ("<Enemy> intends <move>"), and at least one icon is drawn.
+    await expect(bubble, `intent of enemy ${e.uid} is described`).toHaveAttribute('aria-label', /intends/);
+    expect(await bubble.locator('img, canvas, svg, .px').count(), `intent of enemy ${e.uid} shows at least one action`).toBeGreaterThan(0);
   }
 }
 
@@ -33,25 +35,43 @@ async function checkPreviewAndUse(page: Page, g: GameState, die: number, target:
   const f = run?.fight;
   if (!run || !f) throw new Error('not in a fight');
   const pv = eng.previewDie(g, die, target);
-  if (f.phase === 'rolling') {
-    const useBtn = page.getByTestId('btn-use-dice');
-    if ((await useBtn.count()) > 0 && (await useBtn.isEnabled())) await useBtn.tap();
+  const dieEl = page.getByTestId(`die-${die}`);
+  const nTargets = Number(await dieEl.getAttribute('data-targets'));
+  const peeked = !!target && nTargets === 1;
+  if (peeked) {
+    // 0.2.0: a die with ONE target is used by a single tap, so its preview is read by peeking
+    // (a long-press shows the previews without using the die).
+    const box = await dieEl.boundingBox();
+    if (!box) throw new Error('no die box');
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(500); // a long press is a held finger: the hold time is the thing being tested
+    await page.mouse.up();
+  } else {
+    await dieEl.tap();
   }
-  await page.getByTestId(`die-${die}`).tap();
   if (target) {
     const id = target.side === 'enemy' ? `preview-enemy-${target.uid}` : `preview-hero-${target.index}`;
     const box = page.getByTestId(id);
     await expect(box, 'a preview is shown on the target').toBeVisible();
-    const shown = (await box.textContent()) ?? '';
+    // 0.2.0 look: the chip holds icon + number parts; its words are in aria-label ("-3 HP", "+2 shield", "KO, -3 HP").
+    const shown = (await box.getAttribute('aria-label')) ?? '';
     const hit = pv.hits.find((h) => (target.side === 'enemy' ? h.target.side === 'enemy' && h.target.uid === target.uid : h.target.side === 'hero' && h.target.index === target.index));
     if (hit) {
-      expect(num(shown, /-(\d+)(?!\S*\u{1F6E1})/u) , `HP loss shown "${shown}"`).toBe(hit.hpLoss);
+      expect(num(shown, /-(\d+) HP/), `HP loss shown "${shown}"`).toBe(hit.hpLoss);
       if (hit.kills) expect(shown).toContain('KO');
-      if (hit.heal > 0) expect(num(shown, /\+(\d+)HP/)).toBe(hit.heal);
-      if (hit.shieldGain > 0) expect(num(shown, /\+(\d+)\u{1F6E1}/u)).toBe(hit.shieldGain);
-      if (hit.poison > 0) expect(num(shown, /(\d+) poison/)).toBe(hit.poison);
+      if (hit.heal > 0) expect(num(shown, /\+(\d+) HP/), `heal shown "${shown}"`).toBe(hit.heal);
+      if (hit.shieldGain > 0) expect(num(shown, /\+(\d+) shield/), `shield shown "${shown}"`).toBe(hit.shieldGain);
+      if (hit.poison > 0) expect(num(shown, /(\d+) poison/), `poison shown "${shown}"`).toBe(hit.poison);
     }
-    await page.getByTestId(id.startsWith('preview-enemy') ? `enemy-${(target as { uid: number }).uid}` : `hero-${(target as { index: number }).index}`).tap();
+    if (peeked) {
+      await page.getByTestId('info-close').tap();
+      await expect(page.getByTestId('info-close')).toHaveCount(0);
+      expect(JSON.stringify(await state(page)), 'peeking does not use the die').toBe(JSON.stringify(g));
+      await dieEl.tap(); // the single-target die is now used by one tap
+    } else {
+      await page.getByTestId(id.startsWith('preview-enemy') ? `enemy-${(target as { uid: number }).uid}` : `hero-${(target as { index: number }).index}`).tap();
+    }
     await idle(page);
     const after = await state(page);
     // The real change equals the previewed change.
@@ -68,7 +88,7 @@ async function checkPreviewAndUse(page: Page, g: GameState, die: number, target:
     expect(JSON.stringify(after)).toBe(JSON.stringify(eng.apply(g, { type: 'useDie', die, target }).game));
     return after;
   }
-  await page.getByTestId(`die-${die}`).tap();
+  await dieEl.tap();
   await idle(page);
   return state(page);
 }
@@ -106,7 +126,8 @@ test('previews and the End Turn forecast match what actually happens', async ({ 
           else if ((want?.hpLoss ?? 0) > 0) expect(chip, `forecast chip for hero ${idx}`).toBe(`-${want?.hpLoss}`);
           else expect(['safe', 'blocked']).toContain(chip);
         }
-        const summary = (await page.getByTestId('end-turn-forecast').textContent()) ?? '';
+        // 0.2.0 look: visible text is "4/0/3"; the sentence ("incoming 4/0/3") is the aria-label.
+        const summary = (await page.getByTestId('end-turn-forecast').getAttribute('aria-label')) ?? '';
         if (!fc.partyWipe && !fc.heroes.some((h) => h.downed) && fc.heroes.some((h) => h.hpLoss > 0)) {
           expect(summary.replace(/\s+/g, ''), 'End Turn summary lists the exact damage per hero').toBe(`incoming${fc.heroes.map((h) => h.hpLoss).join('/')}`);
         }
