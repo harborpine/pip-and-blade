@@ -1,0 +1,33 @@
+﻿{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "WebWorker"],
+    "types": ["node", "vite/client"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@shared": ["./src/shared/index.ts"],
+      "@shared/*": ["./src/shared/*"],
+      "@engine": ["./src/engine/index.ts"],
+      "@engine/*": ["./src/engine/*"],
+      "@content": ["./src/content/index.ts"],
+      "@content/*": ["./src/content/*"],
+      "@art": ["./src/art/index.ts"],
+      "@art/*": ["./src/art/*"],
+      "@ui/*": ["./src/ui/*"]
+    }
+  },
+  "include": ["src", "tools", "tests", "scripts", "*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

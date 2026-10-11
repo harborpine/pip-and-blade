@@ -1,0 +1,36 @@
+{
+  "name": "pip-and-blade",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pip & Blade: a single-player dice-builder roguelike PWA.",
+  "scripts": {
+    "dev": "node node_modules/vite/bin/vite.js",
+    "build": "node node_modules/vite/bin/vite.js build",
+    "preview": "node node_modules/vite/bin/vite.js preview",
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+    "lint": "node node_modules/eslint/bin/eslint.js . --max-warnings 0",
+    "test": "node node_modules/vitest/vitest.mjs run",
+    "test:watch": "node node_modules/vitest/vitest.mjs",
+    "art": "node node_modules/tsx/dist/cli.mjs tools/voxelgen/main.ts",
+    "check:content": "node node_modules/tsx/dist/cli.mjs tools/check-content.ts",
+    "sim": "node node_modules/tsx/dist/cli.mjs tools/sim/main.ts",
+    "e2e": "node node_modules/@playwright/test/cli.js test",
+    "e2e:install": "node node_modules/@playwright/test/cli.js install webkit",
+    "verify": "node scripts/verify.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
+    "@types/pngjs": "^6.0.5",
+    "eslint": "^10.12.0",
+    "pngjs": "^7.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.0.3"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Pip & Blade",
+  "short_name": "Pip & Blade",
+  "description": "A dice-builder roguelike for your pocket.",
+  "start_url": "/pip-and-blade/",
+  "scope": "/pip-and-blade/",
+  "id": "/pip-and-blade/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f2a2e",
+  "theme_color": "#0f2a2e",
+  "icons": [
+    { "src": "/pip-and-blade/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pip-and-blade/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pip-and-blade/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

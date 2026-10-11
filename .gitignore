@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dev-dist/
+coverage/
+test-results/
+playwright-report/
+tests/e2e/.cache/
+tools/sim/out/
+*.log
+.DS_Store
+Thumbs.db
+.vite/

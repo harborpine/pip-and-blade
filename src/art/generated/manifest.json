@@ -1,0 +1,1270 @@
+{
+ "generatedBy": "voxelgen",
+ "palette": [
+  "#1b1730",
+  "#4b5169",
+  "#9099b0",
+  "#f6f3ea",
+  "#e8dcb8",
+  "#e5463f",
+  "#9e2b45",
+  "#f28a2e",
+  "#f6c833",
+  "#8bd23f",
+  "#2f9d50",
+  "#1e6342",
+  "#2cb6a9",
+  "#146a78",
+  "#4ba6f2",
+  "#2d4aa6",
+  "#4d3b9e",
+  "#9a5fdc",
+  "#cbb0f2",
+  "#dd58a4",
+  "#f5a9bd",
+  "#dba76a",
+  "#8c5a36",
+  "#5a3a2a"
+ ],
+ "sprites": {
+  "app.icon": {
+   "file": "art/app.icon.png",
+   "w": 64,
+   "h": 64,
+   "ax": 32,
+   "ay": 32
+  },
+  "bg.act1": {
+   "file": "art/bg.act1.png",
+   "w": 180,
+   "h": 320,
+   "ax": 90,
+   "ay": 160
+  },
+  "bg.act2": {
+   "file": "art/bg.act2.png",
+   "w": 180,
+   "h": 320,
+   "ax": 90,
+   "ay": 160
+  },
+  "bg.act3": {
+   "file": "art/bg.act3.png",
+   "w": 180,
+   "h": 320,
+   "ax": 90,
+   "ay": 160
+  },
+  "bg.menu": {
+   "file": "art/bg.menu.png",
+   "w": 180,
+   "h": 320,
+   "ax": 90,
+   "ay": 160
+  },
+  "boss.bramble_king": {
+   "file": "art/boss.bramble_king.png",
+   "w": 64,
+   "h": 90,
+   "ax": 32,
+   "ay": 69
+  },
+  "boss.drowned_bell": {
+   "file": "art/boss.drowned_bell.png",
+   "w": 64,
+   "h": 90,
+   "ax": 32,
+   "ay": 69
+  },
+  "boss.pip_eater": {
+   "file": "art/boss.pip_eater.png",
+   "w": 64,
+   "h": 90,
+   "ax": 32,
+   "ay": 69
+  },
+  "die.automaton": {
+   "file": "art/die.automaton.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.blank": {
+   "file": "art/die.blank.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "die.bulwark": {
+   "file": "art/die.bulwark.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.cursed": {
+   "file": "art/die.cursed.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.duelist": {
+   "file": "art/die.duelist.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.gambler": {
+   "file": "art/die.gambler.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.grower": {
+   "file": "art/die.grower.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.herbalist": {
+   "file": "art/die.herbalist.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.hexer": {
+   "file": "art/die.hexer.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.jammed": {
+   "file": "art/die.jammed.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.locked": {
+   "file": "art/die.locked.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.redhand": {
+   "file": "art/die.redhand.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "die.used": {
+   "file": "art/die.used.png",
+   "w": 32,
+   "h": 37,
+   "ax": 16,
+   "ay": 8
+  },
+  "door.elite": {
+   "file": "art/door.elite.png",
+   "w": 32,
+   "h": 32,
+   "ax": 16,
+   "ay": 16
+  },
+  "door.event": {
+   "file": "art/door.event.png",
+   "w": 32,
+   "h": 32,
+   "ax": 16,
+   "ay": 16
+  },
+  "door.onward": {
+   "file": "art/door.onward.png",
+   "w": 32,
+   "h": 32,
+   "ax": 16,
+   "ay": 16
+  },
+  "door.rest": {
+   "file": "art/door.rest.png",
+   "w": 32,
+   "h": 32,
+   "ax": 16,
+   "ay": 16
+  },
+  "door.shop": {
+   "file": "art/door.shop.png",
+   "w": 32,
+   "h": 32,
+   "ax": 16,
+   "ay": 16
+  },
+  "door.treasure": {
+   "file": "art/door.treasure.png",
+   "w": 32,
+   "h": 32,
+   "ax": 16,
+   "ay": 16
+  },
+  "enemy.anchor_hulk": {
+   "file": "art/enemy.anchor_hulk.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.ash_cultist": {
+   "file": "art/enemy.ash_cultist.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.barnacle_golem": {
+   "file": "art/enemy.barnacle_golem.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.bell_diver": {
+   "file": "art/enemy.bell_diver.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.bramble_imp": {
+   "file": "art/enemy.bramble_imp.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.chain_warden": {
+   "file": "art/enemy.chain_warden.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.cinder_bat": {
+   "file": "art/enemy.cinder_bat.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.coin_mimic": {
+   "file": "art/enemy.coin_mimic.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.crab_knight": {
+   "file": "art/enemy.crab_knight.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.drowned_sailor": {
+   "file": "art/enemy.drowned_sailor.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.eel_lancer": {
+   "file": "art/enemy.eel_lancer.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.ember_whelp": {
+   "file": "art/enemy.ember_whelp.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.forge_smith": {
+   "file": "art/enemy.forge_smith.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.gnaw_rat": {
+   "file": "art/enemy.gnaw_rat.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.hollow_stag": {
+   "file": "art/enemy.hollow_stag.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.ink_squid": {
+   "file": "art/enemy.ink_squid.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.magpie_thief": {
+   "file": "art/enemy.magpie_thief.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.mud_slime": {
+   "file": "art/enemy.mud_slime.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.mushroom_brute": {
+   "file": "art/enemy.mushroom_brute.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.obsidian_knight": {
+   "file": "art/enemy.obsidian_knight.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.slag_golem": {
+   "file": "art/enemy.slag_golem.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.soot_hexer": {
+   "file": "art/enemy.soot_hexer.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.tide_witch": {
+   "file": "art/enemy.tide_witch.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.twig_archer": {
+   "file": "art/enemy.twig_archer.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "enemy.web_spinner": {
+   "file": "art/enemy.web_spinner.png",
+   "w": 52,
+   "h": 83,
+   "ax": 24,
+   "ay": 65
+  },
+  "fx.blank": {
+   "file": "art/fx.blank.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "fx.damage": {
+   "file": "art/fx.damage.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "fx.focus": {
+   "file": "art/fx.focus.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "fx.heal": {
+   "file": "art/fx.heal.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "fx.shield": {
+   "file": "art/fx.shield.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "fx.weaken": {
+   "file": "art/fx.weaken.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "hero.automaton": {
+   "file": "art/hero.automaton.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "hero.bulwark": {
+   "file": "art/hero.bulwark.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "hero.duelist": {
+   "file": "art/hero.duelist.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "hero.gambler": {
+   "file": "art/hero.gambler.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "hero.grower": {
+   "file": "art/hero.grower.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "hero.herbalist": {
+   "file": "art/hero.herbalist.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "hero.hexer": {
+   "file": "art/hero.hexer.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "hero.redhand": {
+   "file": "art/hero.redhand.png",
+   "w": 58,
+   "h": 75,
+   "ax": 24,
+   "ay": 58
+  },
+  "intent.attack": {
+   "file": "art/intent.attack.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.attack_all": {
+   "file": "art/intent.attack_all.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.buff": {
+   "file": "art/intent.buff.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.charge": {
+   "file": "art/intent.charge.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.curseFace": {
+   "file": "art/intent.curseFace.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.debuff": {
+   "file": "art/intent.debuff.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.heal": {
+   "file": "art/intent.heal.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.lockDie": {
+   "file": "art/intent.lockDie.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.shield": {
+   "file": "art/intent.shield.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.stealReroll": {
+   "file": "art/intent.stealReroll.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "intent.summon": {
+   "file": "art/intent.summon.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "item.battle_drum": {
+   "file": "art/item.battle_drum.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.bone_charm": {
+   "file": "art/item.bone_charm.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.cleaver_hook": {
+   "file": "art/item.cleaver_hook.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.crown_of_three": {
+   "file": "art/item.crown_of_three.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.double_or_nothing": {
+   "file": "art/item.double_or_nothing.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.echo_bell": {
+   "file": "art/item.echo_bell.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.executioners_hood": {
+   "file": "art/item.executioners_hood.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.field_medic_kit": {
+   "file": "art/item.field_medic_kit.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.first_pick_glove": {
+   "file": "art/item.first_pick_glove.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.gamblers_ante": {
+   "file": "art/item.gamblers_ante.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.glass_cannon": {
+   "file": "art/item.glass_cannon.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.healers_satchel": {
+   "file": "art/item.healers_satchel.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.hollow_die": {
+   "file": "art/item.hollow_die.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.iron_ration": {
+   "file": "art/item.iron_ration.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.kings_die": {
+   "file": "art/item.kings_die.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.last_word": {
+   "file": "art/item.last_word.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.leech_fang": {
+   "file": "art/item.leech_fang.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.loaded_pip": {
+   "file": "art/item.loaded_pip.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.lucky_coin": {
+   "file": "art/item.lucky_coin.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.merchants_scale": {
+   "file": "art/item.merchants_scale.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.mirror_shard": {
+   "file": "art/item.mirror_shard.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.oak_buckler": {
+   "file": "art/item.oak_buckler.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.patient_hourglass": {
+   "file": "art/item.patient_hourglass.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.phoenix_feather": {
+   "file": "art/item.phoenix_feather.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.pip_magnet": {
+   "file": "art/item.pip_magnet.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.plague_censer": {
+   "file": "art/item.plague_censer.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.purse_string": {
+   "file": "art/item.purse_string.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.rainbow_prism": {
+   "file": "art/item.rainbow_prism.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.reckless_idol": {
+   "file": "art/item.reckless_idol.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.red_bandana": {
+   "file": "art/item.red_bandana.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.seedling_pot": {
+   "file": "art/item.seedling_pot.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.spiked_pommel": {
+   "file": "art/item.spiked_pommel.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.thorn_mail": {
+   "file": "art/item.thorn_mail.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.tortoise_shell": {
+   "file": "art/item.tortoise_shell.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.twin_charm": {
+   "file": "art/item.twin_charm.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.unjam_oil": {
+   "file": "art/item.unjam_oil.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.venom_vial": {
+   "file": "art/item.venom_vial.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.void_pip": {
+   "file": "art/item.void_pip.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.ward_stone": {
+   "file": "art/item.ward_stone.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "item.whetstone": {
+   "file": "art/item.whetstone.png",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12
+  },
+  "kw.cleave": {
+   "file": "art/kw.cleave.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.echo": {
+   "file": "art/kw.echo.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.execute": {
+   "file": "art/kw.execute.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.growth": {
+   "file": "art/kw.growth.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.momentum": {
+   "file": "art/kw.momentum.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.pierce": {
+   "file": "art/kw.pierce.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.poised": {
+   "file": "art/kw.poised.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.rally": {
+   "file": "art/kw.rally.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.reckless": {
+   "file": "art/kw.reckless.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.twin": {
+   "file": "art/kw.twin.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.venom": {
+   "file": "art/kw.venom.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "kw.ward": {
+   "file": "art/kw.ward.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "set.pair": {
+   "file": "art/set.pair.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "set.rainbow": {
+   "file": "art/set.rainbow.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "set.triple": {
+   "file": "art/set.triple.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "status.mark": {
+   "file": "art/status.mark.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "status.poison": {
+   "file": "art/status.poison.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "status.regen": {
+   "file": "art/status.regen.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "status.strength": {
+   "file": "art/status.strength.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "status.thorns": {
+   "file": "art/status.thorns.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "status.weak": {
+   "file": "art/status.weak.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "sym.blade": {
+   "file": "art/sym.blade.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "sym.guard": {
+   "file": "art/sym.guard.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "sym.heart": {
+   "file": "art/sym.heart.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "sym.skull": {
+   "file": "art/sym.skull.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "sym.spark": {
+   "file": "art/sym.spark.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.act": {
+   "file": "art/ui.act.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.back": {
+   "file": "art/ui.back.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.boss": {
+   "file": "art/ui.boss.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.check": {
+   "file": "art/ui.check.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.close": {
+   "file": "art/ui.close.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.collection": {
+   "file": "art/ui.collection.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.daily": {
+   "file": "art/ui.daily.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.downed": {
+   "file": "art/ui.downed.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.end_turn": {
+   "file": "art/ui.end_turn.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.export": {
+   "file": "art/ui.export.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.feat": {
+   "file": "art/ui.feat.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.feat_locked": {
+   "file": "art/ui.feat_locked.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.fight": {
+   "file": "art/ui.fight.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.gold": {
+   "file": "art/ui.gold.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.hp": {
+   "file": "art/ui.hp.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.import": {
+   "file": "art/ui.import.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.info": {
+   "file": "art/ui.info.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.lock": {
+   "file": "art/ui.lock.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.logo": {
+   "file": "art/ui.logo.png",
+   "w": 58,
+   "h": 65,
+   "ax": 30,
+   "ay": 44
+  },
+  "ui.motion": {
+   "file": "art/ui.motion.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.play": {
+   "file": "art/ui.play.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.reroll": {
+   "file": "art/ui.reroll.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.reset": {
+   "file": "art/ui.reset.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.rotate": {
+   "file": "art/ui.rotate.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.settings": {
+   "file": "art/ui.settings.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.shield": {
+   "file": "art/ui.shield.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.skip": {
+   "file": "art/ui.skip.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.stats": {
+   "file": "art/ui.stats.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.tier": {
+   "file": "art/ui.tier.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.tutorial": {
+   "file": "art/ui.tutorial.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.undo": {
+   "file": "art/ui.undo.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.unknown": {
+   "file": "art/ui.unknown.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.unlock": {
+   "file": "art/ui.unlock.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  },
+  "ui.ward": {
+   "file": "art/ui.ward.png",
+   "w": 16,
+   "h": 16,
+   "ax": 8,
+   "ay": 8
+  }
+ }
+}
