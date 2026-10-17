@@ -1,35 +1,34 @@
 /*
  * Pip & Blade: every screen except the fight (fight.css). Portrait phone first.
  *
- * ONE TOY SET. Nothing here is a flat "app" surface:
- *  - colours come only from the art palette (--pal-*, imported from src/art/generated/palette.css)
- *    through the handful of role names in section 1;
- *  - every button, panel, sheet, chip, bar, tab and toggle is a piece of art's interface kit,
- *    drawn with border-image (9-slice) from the --kit-* variables that kit.ts publishes.
- *    Section 3 is the ONE place that says which element wears which piece;
- *  - titles, buttons and numbers use art's pixel fonts (section 4); body text is the phone's
- *    rounded system face.
+ * THE FLAT LOOK (docs/flat-style.md). Solid fills, rounded corners, no gradients, no shading, no
+ * pixel art. Colours come only from the shared palette (--c-*, --hero-*) through the role names in
+ * section 1. Every button, panel, sheet, chip, bar, tab and switch is drawn here in CSS (section 3);
+ * there are no picture frames. All text is the phone's rounded system lettering, never under 12px.
  * Animations use transform/opacity only and nothing loops while idle.
  */
 
 /* ------------------------------------------------------------ 1. tokens */
 :root {
   /* roles -> palette */
-  --ink: var(--pal-ink);
-  --ivory: var(--pal-white);
-  --paper: var(--pal-cream);
-  --felt: var(--pal-deepteal);
-  --felt-dark: var(--pal-deepteal-dark);
-  --gold: var(--pal-gold);
-  --red: var(--pal-red);
-  --red-dark: var(--pal-crimson);
-  --green: var(--pal-green);
-  --blue: var(--pal-sky);
-  --violet: var(--pal-violet);
-  /* text on the scenery (dark) by default; panels switch these to ink (section 3) */
+  --ink: var(--c-ink);
+  --ink-soft: var(--c-ink-soft);
+  --ivory: var(--c-ivory);
+  --ivory-dim: var(--c-ivory-dim);
+  --paper: var(--c-paper);
+  --slate: var(--c-slate);
+  --slate-2: var(--c-slate-2);
+  --slate-3: var(--c-slate-3);
+  --gold: var(--c-gold);
+  --gold-ink: var(--c-gold-ink);
+  --red: var(--c-red);
+  --green: var(--c-green);
+  --blue: var(--c-blue);
+  --purple: var(--c-purple);
+  --lime: var(--c-lime);
+  /* text on the dark screens by default; light panels switch these to ink (section 3) */
   --text: var(--ivory);
-  --muted: var(--pal-steel-light);
-  --text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), 0 2px 0 var(--ink);
+  --muted: var(--ivory-dim);
 
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
@@ -39,7 +38,8 @@
   /* Visible height: dvh follows Safari's toolbars; --vvh (set by scroll.ts from visualViewport) is the fallback. */
   --app-h: 100vh;
   --fade: 30px;
-  font-family: ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font: ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  font-family: var(--font);
 }
 @supports (height: 100dvh) {
   :root {
@@ -70,7 +70,7 @@ body {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  background: var(--ink);
+  background: var(--slate);
   color: var(--text);
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
@@ -82,8 +82,9 @@ body {
   inset: 0;
   width: 100%;
   height: var(--app-h);
-  font-size: 16px;
-  font-weight: 700;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 500;
   line-height: 1.3;
 }
 
@@ -99,14 +100,15 @@ body {
 img,
 .sprite {
   -webkit-user-drag: none;
-  image-rendering: pixelated;
   flex: 0 0 auto;
 }
 .sprite-missing {
   display: inline-block;
-  border: 2px dashed var(--muted);
+  border: 2px dashed var(--slate-3);
+  border-radius: 6px;
 }
-button {
+button,
+input {
   color: inherit;
   font: inherit;
   margin: 0;
@@ -119,22 +121,44 @@ h3,
 ol {
   margin: 0;
 }
+h1 {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+h2 {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+h3 {
+  font-size: 16px;
+  font-weight: 800;
+}
+strong,
+b {
+  font-weight: 800;
+}
+.num {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
 
-/* Screens stand on the tabletop: the menu table, or the act's diorama during a run. */
+/* Screens stand on a calm backdrop: the menu field, or the act's backdrop during a run. */
 .screen {
   --screen-bg: var(--bg-menu);
+  /* a flat veil over the backdrop keeps text readable (lighter once the backdrops are calm vectors) */
+  --veil: rgba(36, 54, 64, 0.55);
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   padding: 0 16px 12px;
-  background-color: var(--felt-dark);
-  background-image: linear-gradient(var(--ink-40), var(--ink-60)), var(--screen-bg);
+  background-color: var(--slate);
+  background-image: linear-gradient(var(--veil), var(--veil)), var(--screen-bg);
   background-size: cover;
   background-position: center bottom;
-  image-rendering: pixelated;
-  text-shadow: var(--text-shadow);
 }
 body[data-act='1'] .screen.flow,
 body[data-act='1'] .screen.fight {
@@ -188,131 +212,51 @@ body[data-act='3'] .screen.fight {
   mask-image: linear-gradient(to bottom, #0002, #000 var(--fade), #000 calc(100% - var(--fade)), #0002);
 }
 
-/* ------------------------------------------------------------ 3. the interface kit: who wears what */
+/* ------------------------------------------------------------ 3. surfaces (flat-style.md section 6) */
 
-/* Every stretchable piece is drawn the same way; each element only names its piece (--k). */
-.btn,
-.tab,
-.modal-card,
-.sheet,
-.tray,
-.intent,
-.gold,
-.status-chip,
-.shield-badge,
-.forecast,
-.preview,
-.warn-chip,
-.tier,
-.fury-badge,
-.set-chip,
-.banner,
-.ribbon-tag,
-.hp-track,
-.coach,
-.toast,
-.face-art,
-.reward-card,
-.shop-slot,
-.door-card,
-.event-choice,
-.choice,
-.hero-card,
-.tile,
-.feat,
-.stat-row,
-.setting-row,
-.mini-hero,
-.tip-card,
-.notice,
-.end-feats,
-.face-card.compact,
-.event-text,
-.price {
-  border-style: solid;
-  border-color: transparent;
-  border-width: var(--kw);
-  border-image: var(--k) var(--ks) / var(--kw) stretch;
-  background: none;
-  image-rendering: pixelated;
-  text-shadow: none;
-}
-
-/*
- * Buttons and panels also carry their own fill colour (--kf, the colour of the piece's middle, published by
- * kit.ts) as a plain rectangle underneath, 4 px inside the piece's edge. Where a box is a fraction of a pixel
- * wide (thirds of a row on a 2x phone) the browser leaves hairline gaps between the nine slices; with the
- * fill underneath, the gaps cannot show the table through.
- */
-.btn,
-.tab,
-.modal-card,
-.reward-card,
-.shop-slot,
-.door-card,
-.event-choice,
-.choice,
-.hero-card,
-.tile,
-.feat,
-.stat-row,
-.setting-row,
-.mini-hero,
-.tip-card,
-.notice,
-.end-feats,
-.event-text,
-.coach {
-  background: linear-gradient(var(--kf), var(--kf)) center / calc(100% - 8px) calc(100% - 8px) no-repeat border-box;
-}
-/* a tab's art starts lower than its box (the unselected ones sit back): its fill starts lower too */
-.tab {
-  background-position: center bottom 4px;
-  background-size: calc(100% - 8px) calc(100% - 20px);
-}
-
-/* Buttons: ivory toy blocks; gold = the main action; red = danger. Pressed = sunk into the table. */
+/* Buttons: ivory with ink text and a 2px darker bottom edge; gold = the main action; red = danger. */
 .btn {
-  --k: var(--kit-button);
-  --kf: var(--kit-button-fill);
-  --ks: var(--kit-button-slice);
-  --kw: var(--kit-button-bw);
-  --px-small-font: var(--font-small-ink);
+  border: 0;
+  border-radius: 12px;
+  background: var(--ivory);
+  box-shadow: inset 0 -2px 0 var(--ivory-dim);
   color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
 }
 .btn:active:not(:disabled):not([aria-disabled='true']) {
-  --k: var(--kit-button_pressed);
-  --kf: var(--kit-button_pressed-fill);
-  --ks: var(--kit-button_pressed-slice);
-  --kw: var(--kit-button_pressed-bw);
+  background: var(--ivory-dim);
+  box-shadow: none;
 }
 .btn.primary {
-  --k: var(--kit-button_primary);
-  --kf: var(--kit-button_primary-fill);
+  background: var(--gold);
+  box-shadow: inset 0 -2px 0 rgba(74, 53, 0, 0.25);
+  color: var(--gold-ink);
 }
 .btn.primary:active:not(:disabled):not([aria-disabled='true']) {
-  --k: var(--kit-button_primary_pressed);
-  --kf: var(--kit-button_primary_pressed-fill);
+  background: var(--gold);
+  box-shadow: none;
+  transform: translateY(1px);
 }
 .btn.danger {
-  --k: var(--kit-button_danger);
-  --kf: var(--kit-button_danger-fill);
-  --px-small-font: var(--font-small-ivory);
+  background: var(--red);
+  box-shadow: inset 0 -2px 0 rgba(28, 36, 48, 0.25);
   color: var(--ivory);
 }
-.btn.danger:active:not(:disabled) {
-  --k: var(--kit-button_danger_pressed);
-  --kf: var(--kit-button_danger_pressed-fill);
+.btn.danger:active:not(:disabled):not([aria-disabled='true']) {
+  background: var(--red);
+  box-shadow: none;
+  transform: translateY(1px);
 }
 .btn:disabled,
 .btn[aria-disabled='true'] {
-  --k: var(--kit-button_disabled);
-  --kf: var(--kit-button_disabled-fill);
-  --ks: var(--kit-button_disabled-slice);
-  --kw: var(--kit-button_disabled-bw);
+  background: var(--slate-2);
+  box-shadow: none;
+  color: var(--slate-3);
 }
 
-/* Light panels (game cards): ink text. */
+/* Light panels / cards: paper, ink text, a 1px ivory-dim edge. */
 .modal-card,
 .reward-card,
 .shop-slot,
@@ -331,38 +275,33 @@ body[data-act='3'] .screen.fight {
 .event-text,
 .coach,
 .sheet {
-  --k: var(--kit-panel);
-  --kf: var(--kit-panel-fill);
-  --ks: var(--kit-panel-slice);
-  --kw: var(--kit-panel-bw);
   --text: var(--ink);
-  --muted: var(--pal-slate);
-  --px-small-font: var(--font-small-ink);
+  --muted: var(--ink-soft);
+  background: var(--paper);
+  border: 1px solid var(--ivory-dim);
+  border-radius: 14px;
   color: var(--text);
 }
-/* Selected / highlighted cards wear the gold frame. */
+/* Selected / highlighted cards: a gold ring. */
 .hero-card.picked,
 .feat.done,
 .tip-card,
 .coach,
 .rarity-rare {
-  --k: var(--kit-panel_selected);
-  --kf: var(--kit-panel_selected-fill);
-  --ks: var(--kit-panel_selected-slice);
-  --kw: var(--kit-panel_selected-bw);
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 2px var(--gold);
 }
-/* Dark inset panels and chips: ivory text. */
+/* Dark panels: slate-2, ivory text. */
 .face-art,
-.face-card.compact,
 .toast {
-  --k: var(--kit-panel_dark);
-  --ks: var(--kit-panel_dark-slice);
-  --kw: var(--kit-panel_dark-bw);
   --text: var(--ivory);
-  --muted: var(--pal-steel-light);
-  --px-small-font: var(--font-small-ivory);
+  --muted: var(--ivory-dim);
+  background: var(--slate-2);
+  border: 0;
+  border-radius: 14px;
   color: var(--text);
 }
+/* Chips: slate-2, ivory text, fully rounded. */
 .gold,
 .price,
 .status-chip,
@@ -371,160 +310,186 @@ body[data-act='3'] .screen.fight {
 .preview,
 .warn-chip,
 .tier,
-.fury-badge,
-.set-chip {
-  --k: var(--kit-chip);
-  --ks: var(--kit-chip-slice);
-  --kw: var(--kit-chip-bw);
-  --px-small-font: var(--font-small-ivory);
+.set-chip,
+.fury-chip {
+  background: var(--slate-2);
+  border-radius: 999px;
   color: var(--ivory);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
 }
 .sheet {
-  --k: var(--kit-sheet);
-  --ks: var(--kit-sheet-slice);
-  --kw: var(--kit-sheet-bw);
-}
-.tray {
-  --k: var(--kit-tray);
-  --ks: var(--kit-tray-slice);
-  --kw: var(--kit-tray-bw);
-  --px-small-font: var(--font-small-ivory);
-}
-.intent {
-  --k: var(--kit-bubble);
-  --ks: var(--kit-bubble-slice);
-  --kw: var(--kit-bubble-bw);
-  --text: var(--ink);
-  --px-small-font: var(--font-small-ink);
-  color: var(--ink);
-}
-.banner,
-.ribbon-tag {
-  --k: var(--kit-banner);
-  --ks: var(--kit-banner-slice);
-  --kw: var(--kit-banner-bw);
-  --px-small-font: var(--font-small-ivory);
-  color: var(--ivory);
-}
-.hp-track {
-  --k: var(--kit-bar_frame);
-  --ks: var(--kit-bar_frame-slice);
-  --kw: var(--kit-bar_frame-bw);
-}
-.tab {
-  --k: var(--kit-tab);
-  --kf: var(--kit-tab-fill);
-  --ks: var(--kit-tab-slice);
-  --kw: var(--kit-tab-bw);
-  --px-small-font: var(--font-small-ink);
-  color: var(--ink);
-}
-.tab.on {
-  --k: var(--kit-tab_active);
-  --kf: var(--kit-tab_active-fill);
-  --ks: var(--kit-tab_active-slice);
-  --kw: var(--kit-tab_active-bw);
-}
-/* The padlock under a die is one whole piece of art (44 x 44, drawn 1:1). */
-.lock-btn {
   border: 0;
-  background: var(--kit-lock_open) center / 44px 44px no-repeat;
-  image-rendering: pixelated;
+  border-radius: 20px 20px 0 0;
 }
-.lock-btn.closed {
-  background-image: var(--kit-lock_closed);
-}
-.lock-btn.chain {
-  background-image: var(--kit-lock_chain);
-}
-/* Fixed pieces. */
-.toggle {
-  flex: 0 0 auto;
-  width: 72px;
-  height: var(--tap);
-  border: 0;
-  background: var(--kit-toggle_off) center / var(--kit-toggle_off-w) var(--kit-toggle_off-h) no-repeat;
-  image-rendering: pixelated;
-  font-size: 0;
-  color: transparent;
-}
-.toggle.on {
-  background-image: var(--kit-toggle_on);
-}
+/* the sheet's grip bar */
 .sheet::before {
   content: '';
   position: absolute;
-  top: -4px;
+  top: 6px;
   left: 50%;
-  width: var(--kit-sheet_grip-w);
-  height: var(--kit-sheet_grip-h);
-  margin-left: calc(var(--kit-sheet_grip-w) / -2);
-  background: var(--kit-sheet_grip) center / 100% 100% no-repeat;
-  image-rendering: pixelated;
+  width: 40px;
+  height: 4px;
+  margin-left: -20px;
+  border-radius: 2px;
+  background: var(--slate-3);
+}
+/* Tabs: slate-2 idle, paper when selected. */
+.tab {
+  border: 0;
+  border-radius: 12px;
+  background: var(--slate-2);
+  color: var(--ivory);
+  font-size: 16px;
+  font-weight: 700;
+}
+.tab.on {
+  background: var(--paper);
+  color: var(--ink);
+}
+/* Switch: a standard pill, gold when on. Its On / Off words stay in the page for readers but are not drawn. */
+.toggle {
+  position: relative;
+  flex: 0 0 auto;
+  width: 64px;
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  font-size: 12px;
+  overflow: hidden;
+}
+.toggle::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 8px;
+  bottom: 8px;
+  border-radius: 999px;
+  background: var(--slate-3);
+  transition: background-color 150ms ease-out;
+}
+.toggle::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ivory);
+  transition: transform 150ms ease-out;
+}
+.toggle.on::before {
+  background: var(--gold);
+}
+.toggle.on::after {
+  transform: translateX(28px);
 }
 .divider {
-  height: var(--kit-divider-h);
-  background: var(--kit-divider) left center / var(--kit-divider-w) var(--kit-divider-h) repeat-x;
-  image-rendering: pixelated;
+  height: 1px;
+  background: var(--ivory-dim);
   flex: 0 0 auto;
 }
 
-/* ------------------------------------------------------------ 4. pixel text */
-.px {
-  --px-s: 2;
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: inherit;
-  vertical-align: middle;
-  line-height: 0;
-  font-size: 0;
-  row-gap: calc(var(--px-s) * 3px);
-  column-gap: calc(var(--px-space, 4) * var(--px-s) * 1px);
-  text-shadow: none;
+/* ------------------------------------------------------------ 4. icons (flat-style.md section 5) */
+/* A single-colour vector icon is a mask filled with the text colour, so it can be tinted. */
+.icon.tint {
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
 }
-.pxw {
-  display: inline-flex;
-  flex: 0 0 auto;
-  flex-wrap: nowrap;
+/* Icons whose colour carries meaning. */
+[data-sprite='ui.gold'],
+[data-sprite^='set.'],
+[data-sprite='intent.buff'],
+[data-sprite='intent.charge'],
+[data-sprite='intent.stealReroll'],
+[data-sprite='sym.spark'] {
+  color: var(--gold);
 }
-.pxg {
+[data-sprite='ui.hp'],
+[data-sprite='intent.attack'],
+[data-sprite='intent.attack_all'],
+[data-sprite='status.strength'],
+[data-sprite='status.thorns'],
+[data-sprite='sym.blade'],
+[data-sprite='ui.downed'] {
+  color: var(--red);
+}
+[data-sprite='ui.shield'],
+[data-sprite='ui.ward'],
+[data-sprite='intent.shield'],
+[data-sprite='sym.guard'] {
+  color: var(--blue);
+}
+[data-sprite='intent.heal'],
+[data-sprite='status.regen'],
+[data-sprite='sym.heart'] {
+  color: var(--green);
+}
+[data-sprite='intent.debuff'],
+[data-sprite='intent.curseFace'],
+[data-sprite='status.weak'],
+[data-sprite='status.mark'],
+[data-sprite='sym.skull'],
+[data-sprite='die.cursed'] {
+  color: var(--purple);
+}
+[data-sprite='status.poison'] {
+  color: var(--lime);
+}
+[data-sprite='intent.lockDie'],
+[data-sprite='intent.summon'],
+[data-sprite='die.jammed'],
+[data-sprite='fx.blank'] {
+  color: var(--slate-3);
+}
+/* An effect icon takes its hero's colour where one is known (dice, face cards). */
+.die [data-sprite^='fx.']:not([data-sprite='fx.blank']),
+.face-art [data-sprite^='fx.']:not([data-sprite='fx.blank']) {
+  color: var(--hc, var(--ink));
+}
+/* on light panels, a gold or lime icon needs a darker shade to stand out */
+.reward-card [data-sprite='ui.gold'],
+.shop-slot [data-sprite='ui.gold'] {
+  color: var(--gold-ink);
+}
+
+/* ------------------------------------------------------------ 5. tokens (flat-style.md section 4) */
+.token {
   display: block;
-  flex: 0 0 auto;
+  border-radius: 50%;
+}
+/* Until the vector tokens land, the old miniature stands on a CSS coin of the same kind. */
+.token-disc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  color: transparent;
-  width: calc(var(--gw) * var(--px-s) * 1px);
-  height: calc(var(--gh) * var(--px-s) * 1px);
-  margin-right: calc((var(--ga) - var(--gw)) * var(--px-s) * 1px + var(--px-gap, 0px));
-  background-image: var(--px-font);
-  background-repeat: no-repeat;
-  background-size: calc(var(--px-fw) * var(--px-s) * 1px) calc(var(--px-fh) * var(--px-s) * 1px);
-  background-position: calc(var(--gx) * var(--px-s) * -1px) calc(var(--gy) * var(--px-s) * -1px);
-  image-rendering: pixelated;
+  border: 4px solid var(--slate-3);
+  background: var(--slate);
 }
-.pxw > .pxg:last-child {
-  margin-right: 0;
+.token-disc .token-pic {
+  object-fit: contain;
 }
-/* a space is the gap between words (the character stays in the page for readers and tests) */
-.pxg.pxs {
-  width: 0;
-  height: 0;
-  margin: 0;
-  background: none;
+.token-disc.token-hero {
+  border-color: var(--hc, var(--ivory-dim));
+  background: var(--ivory);
 }
-.px-small {
-  --px-font: var(--px-small-font, var(--font-small-ivory));
-  --px-fw: var(--font-small-w);
-  --px-fh: var(--font-small-h);
-  --px-space: var(--font-small-space);
+.token-disc.token-elite {
+  border-color: var(--red);
 }
-.px-big {
-  --px-font: var(--font-big-white);
-  --px-fw: var(--font-big-w);
-  --px-fh: var(--font-big-h);
-  --px-space: var(--font-big-space);
-  flex-wrap: nowrap;
+.token-disc.token-boss {
+  border-color: var(--gold);
+  border-width: 6px;
 }
+
+/* ------------------------------------------------------------ 6. text */
 .btn,
 .tab,
 .topbar h1,
@@ -549,7 +514,7 @@ body[data-act='3'] .screen.fight {
 small {
   color: var(--muted);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .center {
   text-align: center;
@@ -559,27 +524,24 @@ small {
   padding: 0 4px;
 }
 
-/* ------------------------------------------------------------ 5. shared pieces */
+/* ------------------------------------------------------------ 7. shared pieces */
 .btn {
   min-height: 48px;
   min-width: var(--tap);
-  padding: 0 8px;
+  padding: 6px 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   text-align: center;
-  font-weight: 800;
 }
 .btn.big {
-  min-height: 56px;
+  min-height: 54px;
+  font-size: 18px;
 }
 .btn.small {
   min-height: var(--tap);
-}
-.btn:disabled,
-.btn[aria-disabled='true'] {
-  opacity: 0.75;
+  padding: 4px 10px;
 }
 
 .topbar {
@@ -600,41 +562,32 @@ small {
   min-width: var(--tap);
   padding: 0;
   border: 0;
+  border-radius: 12px;
   background: transparent;
+  color: var(--ivory);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 .icon-btn:active {
-  transform: translateY(2px);
+  background: var(--slate-2);
 }
 .icon-btn.spacer {
   visibility: hidden;
 }
 
-/* A number with its icon in a dark chip (gold, prices, statuses). */
+/* A number with its icon in a chip (gold, prices). */
 .gold,
 .price {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   flex: 0 0 auto;
+  min-height: 28px;
+  padding: 4px 8px 4px 5px;
 }
-.gold b,
-.price b,
-.status-chip b,
-.shield-badge b,
-.hp-text {
-  --px-s: 1;
-  display: inline-flex;
-  align-items: center;
-}
-.gold b .px,
-.price b .px,
-.status-chip b .px,
-.shield-badge b .px,
-.hp-text .px {
-  --px-s: 1;
+.price {
+  min-height: 26px;
 }
 
 /* Tappable cards sink a little when pressed. */
@@ -646,7 +599,7 @@ small {
 .hero-card:active,
 .tile:active,
 .tab:active {
-  transform: translateY(2px);
+  transform: translateY(1px);
 }
 .list {
   display: flex;
@@ -657,7 +610,7 @@ small {
   flex-shrink: 0;
 }
 
-/* ------------------------------------------------------------ 6. dialogs, sheets, toast */
+/* ------------------------------------------------------------ 8. dialogs, sheets, toast */
 #overlays {
   position: fixed;
   inset: 0 0 auto 0;
@@ -671,7 +624,7 @@ small {
 .modal-back {
   position: absolute;
   inset: 0;
-  background: var(--ink-60);
+  background: rgba(28, 36, 48, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -681,15 +634,18 @@ small {
 .modal-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   max-height: 100%;
   width: 100%;
   max-width: 360px;
-  padding: 8px 6px 6px;
+  padding: 18px 16px 16px;
+}
+.modal-card h2 {
+  text-align: center;
 }
 .modal-card p {
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 500;
 }
 .modal-body {
   flex: 0 1 auto;
@@ -715,11 +671,10 @@ small {
   align-self: flex-end;
   width: 100%;
   max-height: calc(100% - var(--sat) - 12px);
-  padding: 10px 6px calc(6px + var(--sab));
+  padding: 20px 16px calc(12px + var(--sab));
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-weight: 600;
+  gap: 10px;
 }
 .sheet-head,
 .sheet-foot {
@@ -728,7 +683,7 @@ small {
 .sheet-head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 .sheet-head.col {
   flex-direction: column;
@@ -748,15 +703,12 @@ small {
   display: flex;
   flex-direction: column;
 }
-.sheet-sub {
-  margin-top: 6px;
-}
 .kw-line strong {
-  font-weight: 900;
+  font-weight: 800;
 }
 .peek-lines p {
-  font-weight: 900;
-  color: var(--red-dark);
+  font-weight: 800;
+  color: var(--ink);
 }
 .toast {
   position: fixed;
@@ -764,8 +716,9 @@ small {
   bottom: calc(96px + var(--sab));
   transform: translateX(-50%);
   max-width: calc(100% - 32px);
-  padding: 4px 10px;
+  padding: 10px 16px;
   text-align: center;
+  font-weight: 600;
   animation: screen-in 140ms ease-out;
 }
 
@@ -777,10 +730,10 @@ small {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
-  min-height: 52px;
-  padding: 0 4px;
+  min-height: 56px;
+  padding: 6px 12px;
 }
 .choice:disabled {
   opacity: 0.45;
@@ -791,7 +744,7 @@ small {
   flex-direction: column;
 }
 
-/* ------------------------------------------------------------ 7. die faces in lists */
+/* ------------------------------------------------------------ 9. die faces in lists: small flat dice */
 .face-card {
   position: relative;
   display: flex;
@@ -799,26 +752,37 @@ small {
   align-items: center;
   gap: 2px;
 }
+/* the face itself: a small ivory die with its hero's rim (same anatomy as the fight's dice) */
 .face-art {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  padding: 0 2px;
+  min-width: 72px;
+  height: 52px;
+  padding: 0 16px 0 8px;
+  border: 3px solid var(--hc, var(--slate-3));
+  border-radius: 12px;
+  background: var(--ivory);
+  color: var(--ink);
 }
-.face-art b,
-.face-inline b {
-  display: inline-flex;
-  align-items: center;
+.face-art.blank {
+  border-color: var(--slate-3);
+}
+.face-art .num {
+  font-size: 22px;
+  line-height: 1.3;
 }
 .face-art .word,
 .face-inline .word {
   font-size: 13px;
+  color: var(--ink-soft);
 }
 .face-sym {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: 3px;
+  right: 3px;
 }
 .face-name {
   font-size: 13px;
@@ -828,46 +792,49 @@ small {
   position: absolute;
   top: -8px;
   left: -6px;
-  --px-small-font: var(--font-small-ink);
   background: var(--gold);
-  box-shadow: 0 0 0 2px var(--ink);
-  padding: 2px 3px;
-  display: inline-flex;
+  color: var(--gold-ink);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-weight: 800;
 }
 .face-kws {
   display: flex;
   gap: 2px;
+  min-height: 16px;
+  color: var(--ink-soft);
 }
 .face-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 .face-card.compact {
-  padding: 2px 0;
-  min-width: 70px;
-}
-.face-card.compact .face-art,
-.face-card.art-only .face-art {
-  border: 0;
-  border-image: none;
-  padding: 0;
+  min-width: 72px;
 }
 .face-card.compact .face-name {
   font-size: 12px;
   text-align: center;
-  line-height: 1.1;
-  color: var(--ivory);
+  line-height: 1.3;
+  color: var(--text);
 }
 .choice .face-card.compact {
   flex: 0 0 auto;
   flex-direction: row;
   gap: 4px;
-  min-width: 84px;
+  min-width: 78px;
   justify-content: center;
 }
 .choice .face-card.compact .face-name,
 .face-card.art-only .face-name {
+  display: none;
+}
+.choice .face-kws,
+.face-card.art-only .face-kws:empty {
+  display: none;
+}
+.choice .face-art .word {
   display: none;
 }
 .face-card.art-only {
@@ -878,10 +845,13 @@ small {
   align-items: center;
   gap: 3px;
 }
+.face-inline .num {
+  font-size: 18px;
+}
 .item-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .item-row span {
   display: flex;
@@ -896,10 +866,11 @@ button.item-row {
   padding: 4px 0;
 }
 
-/* ------------------------------------------------------------ 8. home */
+/* ------------------------------------------------------------ 10. home */
 .home {
   justify-content: space-between;
   padding-top: 8px;
+  padding-bottom: 16px;
 }
 .home-logo {
   flex: 1 1 auto;
@@ -911,27 +882,28 @@ button.item-row {
   min-height: 0;
   overflow: hidden;
 }
-.home-logo .title .px {
-  --px-s: 4;
-}
 .home-logo .title {
-  filter: drop-shadow(0 4px 0 var(--ink));
+  line-height: 1.4;
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--ivory);
 }
 .tagline {
-  color: var(--pal-gold-light);
+  color: var(--gold);
+  font-size: 16px;
+  font-weight: 700;
 }
 .home.short .tagline {
   display: none;
 }
-.home.short .home-logo .title .px {
-  --px-s: 3;
+.home.short .home-logo .title {
+  font-size: 30px;
 }
 .menu-stack {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-bottom: 4px;
 }
 .menu-row {
   display: grid;
@@ -941,7 +913,7 @@ button.item-row {
 .notice {
   flex: 0 0 auto;
   text-align: center;
-  padding: 4px 8px;
+  padding: 8px 12px;
   margin: 6px 0;
   font-weight: 600;
 }
@@ -951,10 +923,10 @@ button.item-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 0 0 4px;
+  padding: 8px 8px 8px 12px;
   margin-bottom: 8px;
   font-size: 13px;
-  line-height: 1.25;
+  line-height: 1.3;
 }
 .tip-text {
   flex: 1;
@@ -964,7 +936,7 @@ button.item-row {
   margin-top: 2px;
   padding-left: 18px;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 500;
 }
 .tip-card ol b {
   color: var(--text);
@@ -972,19 +944,20 @@ button.item-row {
 .tip-icon {
   vertical-align: middle;
   margin-right: 3px;
+  color: var(--blue);
 }
 .sprite-missing.tip-icon {
   display: none;
 }
 
-/* ------------------------------------------------------------ 9. settings, feats, stats, daily */
+/* ------------------------------------------------------------ 11. settings, feats, stats, daily */
 .setting-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 0 2px 0 4px;
-  min-height: 56px;
+  padding: 6px 8px 6px 14px;
+  min-height: 60px;
 }
 .setting-row .btn {
   flex: 0 0 auto;
@@ -1002,28 +975,30 @@ button.item-row {
 .feat {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 4px;
+  gap: 12px;
+  padding: 10px 12px;
 }
-.feat:not(.done) {
-  opacity: 0.85;
+.feat .icon {
+  color: var(--slate-3);
+}
+.feat.done .icon {
+  color: var(--gold-ink);
 }
 .feat-text {
   display: flex;
   flex-direction: column;
   font-size: 14px;
-  font-weight: 600;
 }
 .feat-text strong {
-  font-weight: 900;
+  font-weight: 800;
 }
 .stat-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  padding: 0 6px;
-  min-height: 40px;
+  padding: 6px 14px;
+  min-height: 44px;
 }
 .daily-party {
   flex: 0 0 auto;
@@ -1037,7 +1012,7 @@ button.item-row {
   flex: 0 0 auto;
 }
 
-/* ------------------------------------------------------------ 10. hero select, collection */
+/* ------------------------------------------------------------ 12. hero select, collection */
 .hero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1052,42 +1027,49 @@ button.item-row {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  padding: 0 2px;
-  min-height: 128px;
+  gap: 2px;
+  padding: 10px 6px 8px;
+  min-height: 136px;
 }
-.hero-card.locked .sprite:not(.icon) {
-  filter: brightness(0) opacity(0.55);
+.hero-card.locked .token {
+  filter: grayscale(1) brightness(0.55);
+  opacity: 0.6;
 }
 .hero-card-art {
-  height: 80px;
+  height: 76px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+}
+.hero-card strong {
+  text-align: center;
+  line-height: 1.3;
 }
 .hero-card .hint {
   font-size: 12px;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 .picked-mark {
   position: absolute;
-  top: -2px;
-  right: -2px;
-  --px-small-font: var(--font-small-ink);
+  top: 6px;
+  right: 6px;
   background: var(--gold);
-  box-shadow: 0 0 0 2px var(--ink);
-  padding: 3px 4px;
-  display: inline-flex;
+  color: var(--gold-ink);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 13px;
+  font-weight: 800;
 }
 .info-btn {
   position: absolute;
-  top: -8px;
-  left: -8px;
+  top: 0;
+  left: 0;
   width: var(--tap);
   height: var(--tap);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--ink-soft);
 }
 .tier-row {
   flex: 0 0 auto;
@@ -1103,13 +1085,13 @@ button.item-row {
 .tabs {
   flex: 0 0 auto;
   display: flex;
-  gap: 4px;
+  gap: 6px;
   align-items: flex-end;
 }
 .tab {
   flex: 1;
   min-height: var(--tap);
-  padding: 0 2px;
+  padding: 0 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1120,7 +1102,7 @@ button.item-row {
   flex-wrap: wrap;
   gap: 6px;
   align-content: flex-start;
-  padding-top: 4px;
+  padding-top: 6px;
 }
 .tile {
   flex: 0 0 calc((100% - 12px) / 3);
@@ -1128,28 +1110,31 @@ button.item-row {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 0;
-  min-height: 96px;
+  gap: 4px;
+  padding: 8px 4px;
+  min-height: 100px;
 }
 .tile.unknown .sprite {
   opacity: 0.6;
 }
-/* miniatures are shown at their own size (1 CSS px per pixel), never squeezed */
+.tile.unknown .icon {
+  color: var(--slate-3);
+}
 .tile-art {
   flex: 0 0 auto;
-  min-height: 66px;
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .tile-name {
   font-size: 12px;
+  font-weight: 700;
   text-align: center;
-  line-height: 1.1;
+  line-height: 1.3;
 }
 
-/* ------------------------------------------------------------ 11. between-fight screens */
+/* ------------------------------------------------------------ 13. between-fight screens */
 .flow {
   gap: 8px;
   padding-top: 6px;
@@ -1165,7 +1150,7 @@ button.item-row {
 .flow-title {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
 }
 .flow-buttons {
@@ -1185,13 +1170,14 @@ button.item-row {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
+  gap: 2px;
+  padding: 6px 4px;
   min-height: var(--tap);
   min-width: 0;
-  line-height: 1.15;
+  line-height: 1.3;
 }
 .mini-hero.downed {
-  opacity: 0.6;
+  filter: grayscale(1) brightness(0.82);
 }
 .mini-hero .hint {
   font-size: 12px;
@@ -1222,7 +1208,7 @@ button.item-row {
   gap: 8px;
 }
 .shop-list {
-  gap: 5px;
+  gap: 6px;
 }
 .reward-list > *,
 .shop-list > *,
@@ -1248,14 +1234,14 @@ button.item-row {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
-  padding: 2px 4px;
-  min-height: 88px;
+  padding: 10px 12px;
+  min-height: 92px;
 }
 .reward-art {
   flex: 0 0 auto;
-  min-width: 96px;
+  min-width: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1268,25 +1254,49 @@ button.item-row {
   gap: 2px;
 }
 .rarity-tag {
-  opacity: 0.7;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.rarity-uncommon .rarity-tag {
+  color: var(--blue);
+}
+.rarity-rare .rarity-tag {
+  color: var(--gold-ink);
 }
 .reward-line {
   font-size: 14px;
 }
 .reward-card small {
-  line-height: 1.2;
+  line-height: 1.3;
 }
 .big-plus,
 .plus-icon {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--gold-ink);
+}
+.big-plus {
+  width: 64px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--gold);
+  font-size: 28px;
+}
+.plus-icon {
+  font-size: 20px;
 }
 .door-card {
   display: flex;
   align-items: center;
   gap: 12px;
   text-align: left;
-  padding: 2px 6px;
-  min-height: 92px;
+  padding: 10px 12px;
+  min-height: 88px;
 }
 .door-text {
   display: flex;
@@ -1302,22 +1312,23 @@ button.item-row {
 .shop-slot {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   text-align: left;
-  padding: 0 4px;
-  min-height: 48px;
+  padding: 6px 10px;
+  min-height: 52px;
 }
+/* cannot afford it: still readable, clearly not for now */
 .shop-slot:disabled {
   opacity: 0.6;
 }
 .shop-slot.sold {
-  opacity: 0.35;
+  opacity: 0.45;
 }
 .shop-slot > .sprite,
 .shop-slot > .face-inline,
 .shop-slot > .plus-icon {
   flex: 0 0 auto;
-  min-width: 36px;
+  min-width: 40px;
   justify-content: center;
 }
 .shop-text {
@@ -1333,13 +1344,13 @@ button.item-row {
 }
 .shop-text small {
   font-size: 12px;
-  line-height: 1.15;
+  line-height: 1.3;
 }
 .event-text {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
-  padding: 2px 6px;
+  padding: 12px 14px;
   margin-bottom: 10px;
 }
 .event-choice {
@@ -1349,7 +1360,7 @@ button.item-row {
   gap: 2px;
   width: 100%;
   text-align: left;
-  padding: 2px 6px;
+  padding: 10px 14px;
   margin-bottom: 8px;
   min-height: 60px;
 }
@@ -1357,7 +1368,21 @@ button.item-row {
   opacity: 0.55;
 }
 .event-choice .cost {
-  color: var(--red-dark);
+  color: var(--red);
+}
+/* an event's text and choices sit in the middle of the space they have */
+[data-testid='scroll-event'] {
+  display: flex;
+  flex-direction: column;
+}
+[data-testid='scroll-event'] > * {
+  flex-shrink: 0;
+}
+[data-testid='scroll-event'] > :first-child {
+  margin-top: auto;
+}
+[data-testid='scroll-event'] > :last-child {
+  margin-bottom: auto;
 }
 
 /* victory / defeat */
@@ -1369,14 +1394,15 @@ button.item-row {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 14px 0 6px;
 }
-.end-title .px {
-  --px-s: 4;
-}
 .end-title {
-  filter: drop-shadow(0 4px 0 var(--ink));
+  line-height: 1.4;
+  font-size: 32px;
+}
+.screen.won .end-title {
+  color: var(--gold);
 }
 .end-scroll {
   display: flex;
@@ -1391,25 +1417,30 @@ button.item-row {
 }
 .end-feats {
   text-align: center;
-  padding: 2px 6px;
+  padding: 10px 12px;
 }
 @media (max-height: 700px) {
   .end-top {
     padding: 4px 0;
-    gap: 2px;
+    gap: 4px;
   }
-  .end-title .px {
-    --px-s: 3;
+  .end-title {
+    font-size: 26px;
+  }
+  .end-top .token {
+    width: 72px !important;
+    height: 72px !important;
   }
 }
 
-/* ------------------------------------------------------------ 12. rotate overlay (landscape on a phone) */
+/* ------------------------------------------------------------ 14. rotate overlay (landscape on a phone) */
 #rotate-overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: var(--ink);
+  background: var(--slate);
+  color: var(--ivory);
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -1425,14 +1456,14 @@ button.item-row {
   align-items: center;
   gap: 12px;
   font-size: 20px;
+  font-weight: 700;
 }
 .rotate-phone {
   width: 72px;
   height: 72px;
-  image-rendering: pixelated;
 }
 
-/* ------------------------------------------------------------ 13. reduced motion */
+/* ------------------------------------------------------------ 15. reduced motion */
 :root[data-motion='reduced'] *,
 :root[data-motion='reduced'] *::before,
 :root[data-motion='reduced'] *::after {
@@ -1450,125 +1481,11 @@ button.item-row {
   }
 }
 
-/* choices that show a die face: the toy and its number sit straight on the card */
-.choice .face-card.compact {
-  border: 0;
-  border-image: none;
-  min-width: 78px;
-}
-.choice .face-sym {
-  top: -4px;
-  right: -8px;
-}
-/* cannot afford it: still readable, clearly not for now */
-.shop-slot:disabled {
-  opacity: 1;
-  filter: saturate(0.35) brightness(0.82);
-}
-.shop-slot.sold {
-  opacity: 0.45;
-}
-.choice .face-art .word {
-  display: none;
-}
-.mini-hero.downed {
-  opacity: 1;
-  filter: grayscale(1) brightness(0.82);
-}
-
-/* pictures of items, doors and party miniatures: a box the size of the shown part, the sprite its background */
-.sprite-crop {
+/* pictures of items and doors */
+.picture {
   display: block;
   flex: 0 0 auto;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
 }
-.face-sym {
-  position: static;
-  margin-left: -2px;
-}
-.choice .face-sym {
-  top: auto;
-  right: auto;
-}
-.reward-art .big-plus .px {
-  --px-s: 3;
-}
-.reward-card {
-  min-height: 92px;
-}
-
-/* backdrops: props on the table stay in the picture but never compete with panels and buttons */
-/* menus: the table shows dimly at the top and fades to plain dark where the lists and buttons are */
-.screen {
-  background-image: linear-gradient(var(--ink-80) 0%, var(--ink-80) 20%, var(--ink) 60%), var(--screen-bg);
-}
-/* home: the logo stands on the table; the button block has a plain dark backing */
-.screen.home {
-  background-image: linear-gradient(var(--ink-20) 0%, var(--ink-40) 40%, var(--ink) 64%), var(--screen-bg);
-}
-.screen.flow {
-  background-image: linear-gradient(var(--ink-40) 0%, var(--ink-60) 30%, var(--ink-80) 100%), var(--screen-bg);
-}
-/* an event's text and choices sit in the middle of the space they have */
-[data-testid='scroll-event'] {
-  display: flex;
-  flex-direction: column;
-}
-[data-testid='scroll-event'] > * {
-  flex-shrink: 0;
-}
-[data-testid='scroll-event'] > :first-child {
-  margin-top: auto;
-}
-[data-testid='scroll-event'] > :last-child {
-  margin-bottom: auto;
-}
-
-/* Chips are low. Their box is honest: half-width borders, the art's edge drawn at full size reaching in under the content. */
-.gold,
-.price,
-.status-chip,
-.shield-badge,
-.forecast,
-.preview,
-.warn-chip,
-.tier,
-.fury-badge,
-.set-chip {
-  border-width: var(--kit-chip-bwh);
-  border-image: var(--k) var(--ks) / var(--kw) stretch;
-  padding: 0 2px;
-  line-height: 0;
-}
-.gold > *,
-.price > * {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-.gold {
-  min-height: 0;
-}
-
-.fury-chip {
-  --k: var(--kit-chip);
-  --ks: var(--kit-chip-slice);
-  --kw: var(--kit-chip-bw);
-  border-style: solid;
-  border-color: transparent;
-  border-width: var(--kit-chip-bwh);
-  border-image: var(--k) var(--ks) / var(--kw) stretch;
-  image-rendering: pixelated;
-  padding: 0 2px;
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 18px;
-  text-shadow: none;
-  white-space: nowrap;
-}
-.home {
-  padding-bottom: 16px;
-}
-.menu-stack {
-  padding-bottom: 0;
+.picture.fit {
+  object-fit: contain;
 }

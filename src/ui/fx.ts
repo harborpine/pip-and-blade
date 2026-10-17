@@ -50,7 +50,7 @@ export function flip(el: Element, delay = 0): Promise<void> {
 
 /** A number that floats up from a unit and fades. */
 export function floatText(host: HTMLElement, text: string, kind: 'dmg' | 'heal' | 'shield' | 'status' | 'info', delay = 0, iconId?: string): Promise<void> {
-  const el = h('div', { class: `float float-${kind}`, attrs: { 'aria-hidden': 'true' } }, iconId ? icon(iconId, kind === 'status' ? 18 : 24) : null, h('b', { class: 'pxn', text }));
+  const el = h('div', { class: `float float-${kind}`, attrs: { 'aria-hidden': 'true' } }, iconId ? icon(iconId, kind === 'status' ? 18 : 24) : null, h('b', { class: 'num', text }));
   el.style.opacity = '0';
   host.append(el);
   const p = animate(

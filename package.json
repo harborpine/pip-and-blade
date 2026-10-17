@@ -1,6 +1,6 @@
 {
   "name": "pip-and-blade",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Pip & Blade: a single-player dice-builder roguelike PWA.",
@@ -12,7 +12,7 @@
     "lint": "node node_modules/eslint/bin/eslint.js . --max-warnings 0",
     "test": "node node_modules/vitest/vitest.mjs run",
     "test:watch": "node node_modules/vitest/vitest.mjs",
-    "art": "node node_modules/tsx/dist/cli.mjs tools/voxelgen/main.ts",
+    "art": "node node_modules/tsx/dist/cli.mjs tools/artgen/main.ts",
     "check:content": "node node_modules/tsx/dist/cli.mjs tools/check-content.ts",
     "sim": "node node_modules/tsx/dist/cli.mjs tools/sim/main.ts",
     "e2e": "node node_modules/@playwright/test/cli.js test",

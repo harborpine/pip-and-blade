@@ -97,7 +97,7 @@ test('intent label: Lock die, and the jammed die then cannot be rerolled', async
   expect(die?.jammed, 'the targeted hero die is jammed next turn').toBe(true);
   const el = page.getByTestId(`die-${di}`);
   await expect(el).toHaveClass(/jammed/);
-  await expect(el.locator('.die-overlay')).not.toHaveCount(0);
+  await expect(el.locator('.die-chain')).not.toHaveCount(0);
   const faceBefore = g.run?.fight?.dice[di]?.face;
   if (eng.canApply(g, { type: 'reroll' })) g = await perform(page, g, { type: 'reroll' });
   expect(g.run?.fight?.dice[di]?.face, 'a jammed die keeps its face on reroll').toBe(faceBefore);

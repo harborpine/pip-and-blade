@@ -2,7 +2,7 @@ import '../fight.css';
 import type { Action, ActiveSet, DiePreview, DieView, EnemyForecast, EnemyState, GameEvent, GameState, RunState, TargetRef } from '@shared';
 import { IllegalActionError } from '@shared';
 import { animate, clearInputs, gateInput, inputGated, motionReduced, onInput, track, waitAnimations } from '../anim';
-import { KIT_SCALE, LAYOUT, icon, pixelize, spriteImg } from '../art';
+import { icon, token } from '../art';
 import { clear, h } from '../dom';
 import { content, engine } from '../engine';
 import { burst, fadeOut, flash, flip, floatText, flyDie, hop, ribbon, shake } from '../fx';
@@ -75,7 +75,7 @@ function previewText(p: DiePreview['hits'][number]): string {
 /** The same preview as toy parts for a chip: an icon and a number each. */
 function previewNodes(p: DiePreview['hits'][number] | undefined, selfLoss = 0): Node[] {
   const out: Node[] = [];
-  const num = (text: string): HTMLElement => h('b', { class: 'pxn', text });
+  const num = (text: string): HTMLElement => h('b', { class: 'num', text });
   if (p) {
     if (p.kills) out.push(h('span', { class: 'ko', text: 'KO' }));
     if (p.hpLoss > 0) out.push(icon('ui.hp', 18), num(`-${p.hpLoss}`));
@@ -110,13 +110,16 @@ interface Sizes {
   enemy: number;
   boss: number;
   hero: number;
-  /** Width of a die in CSS px. */
+  /** Width (and height) of a die in CSS px. */
   die: number;
 }
 
-/** Dice are the star: always art's full size (2 CSS px per pixel: 84 px wide). */
-const DIE_W = LAYOUT.die.w * KIT_SCALE;
-const DIE_H = LAYOUT.die.h * KIT_SCALE;
+/** Dice are the star: 76 CSS px square (docs/flat-style.md section 3), 64 on the very smallest layouts. */
+const DIE_W = 76;
+const DIE_MIN = 64;
+/** Token diameters, biggest first. */
+const TOKEN_STEPS = [72, 64, 56, 48];
+const TOKEN_MIN = 48;
 
 export function buildFight(): Screen {
   const root = h('main', { class: 'screen fight', testid: 'screen-fight' });
@@ -183,12 +186,10 @@ export function buildFight(): Screen {
     putDown();
   });
 
-  /** Pick sprite scales from the space available: heroes and enemies about the same size, bosses biggest. */
   /**
-   * Heroes and normal enemies get the same scale (so they look about equally big), bosses 1.5x.
-   * Level 0 is the biggest layout; each higher level is a smaller one (smaller dice first, then
-   * smaller sprites in half steps, boss a half step at a time). The caller measures and moves up
-   * a level until the screen fits, so small phones still use all the room they have.
+   * Token sizes from the space available. Heroes and normal enemies share a size, bosses are 1.5x.
+   * Level 0 is the biggest layout; each higher level is a smaller one (tokens first, the dice last).
+   * The caller measures and moves up a level until the screen fits.
    */
   function sizes(run: RunState, level: number): Sizes {
     const app = document.getElementById('app');
@@ -198,30 +199,16 @@ export function buildFight(): Screen {
     const bossCount = list.filter((e) => enemyDef(e.enemyId)?.kind === 'boss').length;
     const normals = n - bossCount;
     const configs: Sizes[] = [];
-    const seen = new Set<string>();
-    for (const H of [2, 1.5, 1]) {
-      // Enemies share the heroes' scale when that fits; otherwise they give up half a step first.
-      for (const E of H > 1 ? [H, H - 0.5] : [H]) {
-        // Enemies must fit side by side.
-        let es = E;
-        while (es > 1 && normals * 52 * es + bossCount * 64 * es + 8 * (n - 1) > W) es -= 0.5;
-        const widthLeft = W - normals * 52 * es - 8 * (n - 1);
-        const bossMax = bossCount > 0 ? Math.max(es, Math.floor(Math.min(es * 1.5, widthLeft / (64 * bossCount), 3) * 2) / 2) : es;
-        for (const die of [DIE_W]) {
-          for (let bs = bossMax; bs >= es; bs -= 0.5) {
-            const key = `${H}|${es}|${bs}|${die}`;
-            if (!seen.has(key)) {
-              seen.add(key);
-              configs.push({ enemy: es, boss: bs, hero: H, die });
-            }
-            if (bossCount === 0) break;
-          }
-        }
-      }
+    for (const H of TOKEN_STEPS) {
+      // Enemies must fit side by side (a normal enemy's column is at least its health bar wide).
+      let es = H;
+      while (es > TOKEN_MIN && normals * Math.max(es, 80) + bossCount * Math.max(es * 1.5, 120) + 8 * (n - 1) > W) es -= 8;
+      configs.push({ enemy: es, boss: Math.round(es * 1.5), hero: H, die: DIE_W });
     }
-    const last = configs[configs.length - 1] ?? { enemy: 1, boss: 1, hero: 1, die: DIE_W };
+    const small = configs[configs.length - 1] ?? { enemy: TOKEN_MIN, boss: TOKEN_MIN * 1.5, hero: TOKEN_MIN, die: DIE_W };
+    configs.push({ ...small, die: DIE_MIN });
     const pick = Math.min(level, configs.length - 1);
-    return { ...(configs[pick] ?? last), last: pick >= configs.length - 1 };
+    return { ...(configs[pick] ?? small), last: pick >= configs.length - 1 };
   }
 
   /** True if the enemy row's contents are taller than the row, or the whole screen overflows. */
@@ -279,7 +266,7 @@ export function buildFight(): Screen {
     if (level < 0) level = lastLevel;
     prevEnemies = new Map();
     for (const el of root.querySelectorAll<HTMLElement>('[data-enemy-uid]')) {
-      const sp = el.querySelector<HTMLElement>('.sprite');
+      const sp = el.querySelector<HTMLElement>('.token');
       if (sp) prevEnemies.set(Number(el.dataset['enemyUid']), { rect: sp.getBoundingClientRect(), sprite: sp.dataset['sprite'] ?? '' });
     }
 
@@ -344,11 +331,11 @@ export function buildFight(): Screen {
     const status = h('header', { class: 'fight-status' },
       h('div', { class: 'pips', testid: 'fight-progress', attrs: { 'aria-label': `Act ${run.act}, fight ${run.slot}` } },
         h('span', { class: 'act-label', text: `Act ${run.act}` }),
-        ...[1, 2, 3, 4].map((s) => h('span', { class: `pip${s < run.slot ? ' done' : s === run.slot ? ' now' : ' todo'}${s === 4 ? ' boss' : ''}` }, icon(s < run.slot ? 'ui.check' : s === 4 ? 'ui.boss' : 'ui.fight', 24))),
+        ...[1, 2, 3, 4].map((s) => h('span', { class: `pip${s < run.slot ? ' done' : s === run.slot ? ' now' : ' todo'}${s === 4 ? ' boss' : ''}` }, icon(s < run.slot ? 'ui.check' : s === 4 ? 'ui.boss' : 'ui.fight', 22))),
       ),
       furyBadge(f.turn),
       h('div', { class: 'status-right' },
-        h('span', { class: 'gold', testid: 'gold' }, icon('ui.gold', 18), h('b', { class: 'pxn', text: String(run.gold) })),
+        h('span', { class: 'gold', testid: 'gold' }, icon('ui.gold', 18), h('b', { class: 'num', text: String(run.gold) })),
         run.tier > 0 ? h('span', { class: 'tier', testid: 'tier', text: `T${run.tier}` }) : null,
         h('button', { class: 'icon-btn menu-btn', testid: 'btn-menu', attrs: { 'aria-label': 'Menu' }, onClick: () => openMenu(run) }, icon('ui.settings', 36)),
       ),
@@ -367,7 +354,7 @@ export function buildFight(): Screen {
             def?.kind === 'boss' || intent.moveName.includes('(') ? h('div', { class: 'intent-move', text: intent.moveName }) : null,
             // Smallest screens: each action is just its toy icon and number (the heroes' forecast chips say who is hit).
             ...(tight
-              ? [h('div', { class: 'intent-row' }, ...intent.actions.map((a) => h('span', { class: `intent-line ${a.type}`, attrs: { 'aria-label': actionLine(run, a) } }, icon(actionIconId(a), 18), actionBadge(a) ? h('b', { class: 'pxn', text: actionBadge(a) }) : null)))]
+              ? [h('div', { class: 'intent-row' }, ...intent.actions.map((a) => h('span', { class: `intent-line ${a.type}`, attrs: { 'aria-label': actionLine(run, a) } }, icon(actionIconId(a), 18), actionBadge(a) ? h('b', { class: 'num', text: actionBadge(a) }) : null)))]
               : intent.actions.map((a) => h('div', { class: `chip intent-line ${a.type}` }, icon(actionIconId(a), intent.actions.length > 1 ? 18 : 24), h('span', { class: 'intent-text', text: actionLine(run, a) })))),
           )
         : h('div', { class: 'intent' });
@@ -385,7 +372,7 @@ export function buildFight(): Screen {
           tutorialNoteIntentOpened();
         });
       }
-      const scale = def?.kind === 'boss' ? sc.boss : sc.enemy;
+      const size = def?.kind === 'boss' ? sc.boss : sc.enemy;
       const unit = h('div', {
         class: `unit enemy${def?.kind === 'boss' ? ' boss' : ''}${isTarget ? ' targetable' : ''}`,
         testid: `enemy-${e.uid}`,
@@ -393,7 +380,7 @@ export function buildFight(): Screen {
       },
         bubble,
         intent ? h('span', { class: 'intent-tail', attrs: { 'aria-hidden': 'true' } }) : null,
-        h('div', { class: 'sprite-box' }, spriteImg(enemySpriteId(e.enemyId), scale)),
+        h('div', { class: 'sprite-box' }, token(enemySpriteId(e.enemyId), size)),
         hpBar(shownHp(k, e.hp, e.maxHp), e.maxHp, shownSh(k, e.shield), `enemy-hp-${e.uid}`, '', pv ? h('div', { class: `preview${pv.kills ? ' kill' : ''}`, testid: `preview-enemy-${e.uid}`, attrs: { 'aria-label': previewText(pv) } }, ...previewNodes(pv)) : null),
         statusRow(e.statuses),
         h('div', { class: 'unit-name', text: def?.name ?? e.enemyId }),
@@ -409,7 +396,7 @@ export function buildFight(): Screen {
     const nEn = f.enemies.length;
     const bossN = f.enemies.filter((e) => enemyDef(e.enemyId)?.kind === 'boss').length;
     const rowW = (document.getElementById('app')?.clientWidth ?? window.innerWidth) - 16;
-    const normalW = Math.max(64, Math.floor((rowW - 4 * (nEn - 1) - bossN * (64 * sc.boss + 12)) / Math.max(1, nEn - bossN)));
+    const normalW = Math.max(64, Math.floor((rowW - 4 * (nEn - 1) - bossN * (Math.max(sc.boss, 120) + 12)) / Math.max(1, nEn - bossN)));
     const enemyRow = h('section', { class: `row enemies${nEn >= 3 ? ' crowded' : ''}`, testid: 'enemy-row', style: { '--uw': `${normalW}px` } }, ...f.enemies.map(enemyUnit));
 
     // ------------------------------------------------ heroes
@@ -428,7 +415,7 @@ export function buildFight(): Screen {
           testid: `hero-${i}`,
           attrs: { role: 'button', 'aria-label': heroName(hs.heroId) },
         },
-          h('div', { class: 'sprite-box' }, spriteImg(heroSpriteId(hs.heroId), sc.hero), hs.downed ? icon('ui.downed', 36, 'downed-icon') : null),
+          h('div', { class: 'sprite-box' }, token(heroSpriteId(hs.heroId), sc.hero), hs.downed ? icon('ui.downed', 24, 'downed-icon') : null),
           hpBar(hs.downed ? shownHp(k, 0, hs.maxHp) : shownHp(k, hs.hp, hs.maxHp), hs.maxHp, shownSh(k, (hf?.shield ?? 0) + (hf?.ward ?? 0)), `hero-hp-${i}`, hf?.ward ? 'ward' : '', pv || selfLoss ? h('div', { class: `preview${pv?.kills ? ' kill' : ''}`, testid: `preview-hero-${i}`, attrs: { 'aria-label': [pv ? previewText(pv) : '', selfLoss ? `self -${selfLoss}` : ''].filter(Boolean).join(', ') } }, ...previewNodes(pv, selfLoss)) : null),
           statusRow(hf?.statuses ?? {}),
           h('div', { class: 'unit-name', text: shortName(hs.heroId) }),
@@ -472,7 +459,7 @@ export function buildFight(): Screen {
       ),
       h('div', { class: 'dice' },
         ...dice.map((dv) => h('div', { class: 'die-col' },
-          dieButton(dv, run, ui.selected === dv.die, rolledNow.has(dv.die), () => press(() => onDieTap(dv.die)), () => peek(dv.die)),
+          dieButton(dv, run, sc.die, ui.selected === dv.die, rolledNow.has(dv.die), () => press(() => onDieTap(dv.die)), () => peek(dv.die)),
           lockButton(dv, locksOn, firstLockMatters && !!f.dice[dv.die]?.firstLocked, () => press(() => onLockTap(dv.die))),
         )),
       ),
@@ -491,21 +478,21 @@ export function buildFight(): Screen {
       testid: 'btn-reroll',
       attrs: { 'data-rerolls': String(f.rerollsLeft), 'data-state': rerollState, 'aria-disabled': String(rerollState !== 'ready') },
     },
-      icon('ui.reroll', 32),
+      icon('ui.reroll', 28),
       h('span', { class: 'reroll-text' },
-        h('b', { class: 'reroll-label pxt', text: rerollState === 'over' ? 'Rolling' : 'Reroll' }),
+        h('b', { class: 'reroll-label', text: rerollState === 'over' ? 'Rolling' : 'Reroll' }),
         ' ',
         rerollState === 'over'
-          ? h('b', { class: 'reroll-label pxt', text: 'over' })
-          : h('span', { class: 'reroll-count pxt', attrs: { 'aria-label': `${f.rerollsLeft} left` } },
-              h('span', { class: 'reroll-num pxt', testid: 'rerolls-left', text: String(f.rerollsLeft) }),
-              h('span', { class: 'reroll-word pxt', text: ' left' }),
+          ? h('b', { class: 'reroll-label', text: 'over' })
+          : h('span', { class: 'reroll-count', attrs: { 'aria-label': `${f.rerollsLeft} left` } },
+              h('span', { class: 'reroll-num', testid: 'rerolls-left', text: String(f.rerollsLeft) }),
+              h('span', { class: 'reroll-word', text: ' left' }),
             ),
       ),
     );
     rerollBtn.addEventListener('click', () => press(() => onRerollTap()));
 
-    const undoBtn = h('button', { class: 'btn act-btn undo', testid: 'btn-undo', disabled: !canUndo, onClick: () => press(() => act({ type: 'undo' })) }, h('span', { class: 'pxt', text: 'Undo' }));
+    const undoBtn = h('button', { class: 'btn act-btn undo', testid: 'btn-undo', disabled: !canUndo, onClick: () => press(() => act({ type: 'undo' })) }, h('span', { class: 'lbl', text: 'Undo' }));
 
     const endBtn = h('button', {
       class: `btn primary act-btn end${danger ? ` ${danger}` : ''}`,
@@ -517,11 +504,11 @@ export function buildFight(): Screen {
       },
     },
       h('span', { class: 'end-text' },
-        h('b', { class: 'pxt', text: 'End Turn' }),
+        h('b', { class: 'lbl', text: 'End Turn' }),
         forecastLine(forecast, totalIn, danger, downedHeroes),
       ),
     );
-    const tray = h('section', { class: `tray${rolling ? ' rolling' : ' acting'}`, testid: 'dice-tray', attrs: { 'data-phase': f.phase }, style: { '--die-w': `${DIE_W}px` } },
+    const tray = h('section', { class: `tray${rolling ? ' rolling' : ' acting'}`, testid: 'dice-tray', attrs: { 'data-phase': f.phase }, style: { '--die-w': `${sc.die}px` } },
       ...trayHead,
       h('footer', { class: 'actions' }, rerollBtn, undoBtn, endBtn),
     );
@@ -530,7 +517,6 @@ export function buildFight(): Screen {
     root.classList.toggle('tight', tight);
     document.body.dataset['act'] = String(run.act);
     root.append(status, enemyRow, heroRow, tray, fxLayer);
-    pixelize(root);
     tutorialAttach(root, { run, lifted: liftedDie !== undefined, unused, rolling });
     lastLevel = level;
     if (!noFit) fit(events, action, defer);
@@ -552,7 +538,7 @@ export function buildFight(): Screen {
       if (now.selected !== null && now.selected !== shown.selected) {
         // Lift: the die rises, its targets pulse twice and then hold a steady glow.
         const d = dieEl(now.selected);
-        if (d) void animate(d, [{ transform: 'translateY(0)' }, { transform: 'translateY(-10px)' }], { duration: 120, easing: 'ease-out' });
+        if (d) void animate(d, [{ transform: 'translateY(0)' }, { transform: 'translateY(-8px)' }], { duration: 120, easing: 'ease-out' });
         for (const el of root.querySelectorAll('.unit.targetable .sprite-box')) {
           void animate(el, [{ transform: 'scale(1)' }, { transform: 'scale(1.07)' }, { transform: 'scale(1)' }, { transform: 'scale(1.07)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-in-out' });
         }
@@ -768,7 +754,7 @@ export function buildFight(): Screen {
         if (!f) return;
         faceEl.classList.remove('pending');
         faceEl.classList.toggle('blank', f.effect === 'blank');
-        faceEl.replaceChildren(...faceContent(f.effect, f.value));
+        faceEl.replaceChildren(...faceContent(f.effect, f.value, false, Number(el.dataset['size'] ?? DIE_W)));
       });
     });
     at(delay + frames.length * 70, () => {
@@ -944,7 +930,7 @@ export function buildFight(): Screen {
             else {
               const gh = prevEnemies.get(ev.target.uid);
               if (gh) {
-                const img = spriteImg(gh.sprite, 1, 'ghost');
+                const img = token(gh.sprite, Math.round(gh.rect.width), 'ghost');
                 const lay = fxLayer.getBoundingClientRect();
                 img.style.position = 'absolute';
                 img.style.left = `${gh.rect.left - lay.left}px`;
@@ -963,7 +949,7 @@ export function buildFight(): Screen {
           break;
         case 'fightWon':
           if (run) {
-            const b = h('div', { class: 'banner pxt', testid: 'banner-victory', text: 'Victory!' });
+            const b = h('div', { class: 'banner', testid: 'banner-victory', text: 'Victory!' });
             fxLayer.append(b);
             void animate(b, [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1.1)', offset: 0.4 }, { opacity: 1, transform: 'scale(1)', offset: 0.8 }, { opacity: 0 }], { duration: 900, delay: t, fill: 'both' }).then(() => b.remove());
           }
@@ -1011,12 +997,12 @@ function hpBar(hp: number, max: number, shield: number, testid: string, extra = 
   const pct = max > 0 ? Math.max(0, Math.min(1, hp / max)) : 0;
   const fill = h('div', { class: `hp-fill${pct <= 0.34 ? ' low' : ''}` });
   fill.style.transform = `scaleX(${pct})`;
-  const badge = h('span', { class: 'shield-badge' }, icon(extra === 'ward' ? 'ui.ward' : 'ui.shield', 18), h('b', { class: 'pxn', text: String(shield) }));
+  const badge = h('span', { class: 'shield-badge' }, icon(extra === 'ward' ? 'ui.ward' : 'ui.shield', 18), h('b', { class: 'num', text: String(shield) }));
   if (shield <= 0) badge.style.display = 'none';
   return h('div', { class: `hp ${extra}${preview ? ' previewing' : ''}`, testid, attrs: { 'data-max': String(max), 'data-hp': String(hp), 'data-sh': String(shield) } },
     icon('ui.hp', 18, 'hp-heart'),
     h('div', { class: 'hp-track' }, fill),
-    h('span', { class: 'hp-text pxn', text: `${hp}/${max}` }),
+    h('span', { class: 'hp-text num', text: `${hp}/${max}` }),
     badge,
     preview,
   );
@@ -1037,13 +1023,13 @@ function furyBadge(turn: number): HTMLElement | null {
 function statusRow(st: Partial<Record<string, number>>): HTMLElement {
   const entries = Object.entries(st).filter(([, n]) => (n ?? 0) > 0);
   return h('div', { class: 'statuses' },
-    ...entries.map(([id, n]) => h('span', { class: 'status-chip', testid: `status-${id}`, attrs: { title: statusDef(id)?.name ?? id } }, icon(`status.${id}`, 18), h('b', { class: 'pxn', text: String(n) }))),
+    ...entries.map(([id, n]) => h('span', { class: 'status-chip', testid: `status-${id}`, attrs: { title: statusDef(id)?.name ?? id } }, icon(`status.${id}`, 18), h('b', { class: 'num', text: String(n) }))),
   );
 }
 
 function forecastChip(i: number, fc: EnemyForecast['heroes'][number]): HTMLElement {
   if (fc.downed) return h('div', { class: 'forecast down', testid: `forecast-${i}` }, icon('ui.downed', 18), h('span', { text: 'DOWN!' }));
-  if (fc.hpLoss > 0) return h('div', { class: 'forecast hit', testid: `forecast-${i}` }, icon('intent.attack', 18), h('b', { class: 'pxn', text: `-${fc.hpLoss}` }));
+  if (fc.hpLoss > 0) return h('div', { class: 'forecast hit', testid: `forecast-${i}` }, icon('intent.attack', 18), h('b', { class: 'num', text: `-${fc.hpLoss}` }));
   return h('div', { class: 'forecast safe', testid: `forecast-${i}`, text: fc.shieldLoss > 0 ? 'blocked' : 'safe' });
 }
 
@@ -1057,7 +1043,7 @@ function forecastLine(fc: EnemyForecast, total: number, danger: string, downed: 
     return line(text, h('span', { text }));
   }
   const parts = fc.heroes.map((x) => x.hpLoss).join('/');
-  return line(`incoming ${parts}`, icon('intent.attack', 18), h('b', { class: 'pxn', text: parts }));
+  return line(`incoming ${parts}`, icon('intent.attack', 18), h('b', { class: 'num', text: parts }));
 }
 
 function setBanner(sets: ActiveSet[], phase: string): HTMLElement {
@@ -1096,14 +1082,19 @@ function hintText(c: HintCtx): string {
   return `${c.unused} ${c.unused === 1 ? 'die' : 'dice'} left: tap one to use it`;
 }
 
-/** The icon, value and badges drawn on a die's face. Also used by the flip animation. */
-function faceContent(effect: string, value: number, cursed = false): Node[] {
-  // A cursed face is only the body and the cracked overlay (drawn by the die itself): no toy, no number.
-  if (cursed) return [h('b', { class: 'die-value die-word', text: 'Cursed' })];
-  const face = spriteImg(`die.face_${effect}`, KIT_SCALE, 'die-face-art');
-  if (effect === 'blank') return [face, h('b', { class: 'die-value die-word', text: cursed ? 'Cursed' : 'Blank' })];
+/**
+ * What is drawn on a die's face: the effect icon (hero colour) on the left and the value as real text
+ * on the right. Blank: a grey dash and no number. Cursed: the crack mark and no number. The words for
+ * blank / cursed stay in the page for readers and tests but are not drawn (.die-word).
+ * Also used by the flip animation.
+ */
+function faceContent(effect: string, value: number, cursed = false, size = DIE_W): Node[] {
+  const iconPx = Math.round(size * 0.4);
+  if (cursed) return [icon('die.cursed', iconPx, 'die-mark die-crack die-overlay'), h('b', { class: 'die-value die-word', text: 'Cursed' })];
+  if (effect === 'blank') return [icon('fx.blank', iconPx, 'die-mark die-dash'), h('b', { class: 'die-value die-word', text: 'Blank' })];
   const text = String(value);
-  return [face, h('b', { class: `die-value pxn${text.length > 1 ? ' two' : ''}`, text })];
+  // The effect icon is about 43% of the die (a little smaller beside a two-digit number).
+  return [icon(`fx.${effect}`, Math.round(size * (text.length > 1 ? 0.36 : 0.43)), 'die-icon'), h('b', { class: `die-value num${text.length > 1 ? ' two' : ''}`, text })];
 }
 
 /** The padlock under a die: open = will be rerolled, closed = kept, chain = jammed by an enemy. */
@@ -1115,6 +1106,7 @@ function lockButton(dv: DieView, on: boolean, first: boolean, onTap: () => void)
     testid: `lock-${dv.die}`,
     attrs: { 'data-locked': String(dv.locked), 'data-jammed': String(dv.jammed), 'aria-label': label, 'aria-pressed': String(dv.locked), ...(on ? {} : { 'aria-hidden': 'true', tabindex: '-1' }) },
   },
+    icon(dv.jammed ? 'die.jammed' : dv.locked ? 'ui.lock' : 'ui.unlock', 26, 'lock-icon'),
     h('span', { class: 'lock-word', text: dv.jammed ? 'Jammed' : dv.locked ? 'Kept' : 'Keep' }),
     first ? h('span', { class: 'lock-first', testid: `lock-first-${dv.die}`, text: '1st' }) : null,
   );
@@ -1122,19 +1114,23 @@ function lockButton(dv: DieView, on: boolean, first: boolean, onTap: () => void)
   return el;
 }
 
-function dieButton(dv: DieView, run: RunState, selected: boolean, pending: boolean, onTap: () => void, onPeek: () => void): HTMLElement {
+/**
+ * A die, drawn flat and front-on (docs/flat-style.md section 3): an ivory rounded square with a rim
+ * in its hero's colour, the effect icon left, the number right, the set symbol in the top-right
+ * corner and up to two keyword marks (then "+n") along the bottom edge. Every state is a class.
+ */
+function dieButton(dv: DieView, run: RunState, size: number, selected: boolean, pending: boolean, onTap: () => void, onPeek: () => void): HTMLElement {
   const hero = run.heroes[dv.hero];
   const heroId = hero?.heroId ?? '';
   const face = hero?.faces[dv.faceIndex];
-  // All die sprites share one canvas and anchor: stack them at the same spot.
-  const faceEl = h('span', { class: `die-face${pending ? ' pending' : ''}${dv.effect === 'blank' ? ' blank' : ''}` }, ...faceContent(dv.effect, dv.value, dv.cursed));
+  const down = !!hero?.downed;
+  const faceEl = h('span', { class: `die-face${pending ? ' pending' : ''}${dv.effect === 'blank' ? ' blank' : ''}` }, ...faceContent(dv.effect, dv.value, dv.cursed, size));
   const valueEl = faceEl.querySelector('.die-value');
   valueEl?.setAttribute('data-testid', `die-value-${dv.die}`);
-  const badges: Node[] = [];
-  if (dv.symbol && dv.effect !== 'blank') badges.push(icon(symbolIcon(dv.symbol), 18, 'die-symbol'));
-  for (const k of dv.keywords.slice(0, 3)) badges.push(icon(`kw.${k}`, 18, 'die-kw'));
+  const markPx = size >= 72 ? 14 : 12;
+  const kws = dv.keywords;
   const el = h('button', {
-    class: `die${dv.locked ? ' locked' : ''}${dv.jammed ? ' jammed' : ''}${dv.used ? ' used' : ''}${selected ? ' selected' : ''}${dv.cursed ? ' cursed' : ''}${dv.effect === 'blank' ? ' blank' : ''}${dv.usable ? '' : ' unusable'}`,
+    class: `die${dv.locked ? ' locked' : ''}${dv.jammed ? ' jammed' : ''}${dv.used ? ' used' : ''}${selected ? ' selected' : ''}${dv.cursed ? ' cursed' : ''}${dv.effect === 'blank' ? ' blank' : ''}${dv.usable ? '' : ' unusable'}${down ? ' down' : ''}`,
     testid: `die-${dv.die}`,
     attrs: {
       'aria-label': `${face?.name ?? 'die'} ${dv.effect} ${dv.value}`,
@@ -1146,23 +1142,17 @@ function dieButton(dv: DieView, run: RunState, selected: boolean, pending: boole
       'data-used': String(dv.used),
       'data-hero': String(dv.hero),
       'data-targets': String(dv.needsTarget ? dv.targets.length : 0),
+      'data-size': String(size),
     },
-    style: {
-      width: `${DIE_W}px`,
-      height: `${DIE_H}px`,
-      '--num-x': `${LAYOUT.die.right.x * KIT_SCALE}px`,
-      '--num-y': `${LAYOUT.die.right.y * KIT_SCALE}px`,
-      '--top-x': `${LAYOUT.die.top.x * KIT_SCALE}px`,
-      '--top-y': `${LAYOUT.die.top.y * KIT_SCALE}px`,
-    },
+    style: { width: `${size}px`, height: `${size}px`, '--die': `${size}px`, '--hc': `var(--hero-${heroId}, var(--c-ink))` },
   },
-    spriteImg(`die.${heroId}`, KIT_SCALE, 'die-body'),
-    spriteImg('die.used', KIT_SCALE, 'die-used'),
     faceEl,
-    dv.locked ? spriteImg('die.locked', KIT_SCALE, 'die-overlay') : null,
-    dv.jammed ? spriteImg('die.jammed', KIT_SCALE, 'die-overlay') : null,
-    dv.cursed ? spriteImg('die.cursed', KIT_SCALE, 'die-overlay') : null,
-    badges.length > 0 ? h('span', { class: 'die-badges' }, ...badges) : null,
+    dv.symbol && dv.effect !== 'blank' && !dv.cursed ? icon(symbolIcon(dv.symbol), markPx, `die-sym sym-${dv.symbol}`) : null,
+    kws.length > 0 && !dv.cursed
+      ? h('span', { class: 'die-kws' }, ...kws.slice(0, 2).map((k) => icon(`kw.${k}`, markPx, 'die-kw')), kws.length > 2 ? h('span', { class: 'die-more', text: `+${kws.length - 2}` }) : null)
+      : null,
+    dv.jammed ? icon('die.jammed', Math.round(size * 0.34), 'die-chain die-overlay') : null,
+    down ? icon('ui.downed', 18, 'die-down') : null,
   );
   el.addEventListener('click', onTap);
   onLongPress(el, onPeek);

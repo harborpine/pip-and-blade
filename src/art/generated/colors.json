@@ -1,0 +1,42 @@
+{
+ "palette": {
+  "ink": "#1c2430",
+  "ink-soft": "#55606b",
+  "ivory": "#f4ecd8",
+  "ivory-dim": "#e2d6ba",
+  "paper": "#fbf7ec",
+  "slate": "#243640",
+  "slate-2": "#304753",
+  "slate-3": "#6b828d",
+  "gold": "#f2c230",
+  "gold-ink": "#4a3500",
+  "red": "#e0483f",
+  "green": "#3fae5a",
+  "blue": "#3f8fe0",
+  "purple": "#8a5fd1",
+  "lime": "#7fbf3a",
+  "brown": "#9a6a43",
+  "ember": "#ee7d2b",
+  "teal": "#35b5a6",
+  "pink": "#ee9aa6",
+  "stone": "#a89d8f",
+  "hero-bulwark": "#2f6db3",
+  "hero-duelist": "#c43a32",
+  "hero-herbalist": "#2c8a3e",
+  "hero-gambler": "#7748c2",
+  "hero-redhand": "#b9561b",
+  "hero-automaton": "#1a8580",
+  "hero-grower": "#68751c",
+  "hero-hexer": "#ae3a8c"
+ },
+ "hero": {
+  "bulwark": "#2f6db3",
+  "duelist": "#c43a32",
+  "herbalist": "#2c8a3e",
+  "gambler": "#7748c2",
+  "redhand": "#b9561b",
+  "automaton": "#1a8580",
+  "grower": "#68751c",
+  "hexer": "#ae3a8c"
+ }
+}

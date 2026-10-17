@@ -1,9 +1,8 @@
 import '@art/generated/palette.css';
 import './styles.css';
 import type { Action, HeroId } from '@shared';
-import { isIdle, waitIdle } from './anim';
-import { autoPixelize } from './art';
-import { installKit } from './kit';
+import { isIdle, track, waitIdle } from './anim';
+import { ALL_SPRITE_IDS, inlineIcons, installBackdrops, preload, urlOf } from './art';
 import { engine } from './engine';
 import { startRouter, screenName } from './router';
 import { lockPageGestures, trackViewport } from './scroll';
@@ -42,12 +41,15 @@ function installDebugHook(): void {
 }
 
 async function main(): Promise<void> {
-  // The first screen waits (briefly) for the interface kit, so it is never drawn bare.
-  await installKit();
-  for (const id of ['app', 'overlays', 'rotate-overlay']) {
-    const host = document.getElementById(id);
-    if (host) autoPixelize(host);
-  }
+  // Surfaces are drawn by CSS (never bare). Icons and backdrops are fetched and decoded up
+  // front so a screen never shows a hole where a picture is still loading (waitIdle() covers this).
+  installBackdrops();
+  void track(preload(ALL_SPRITE_IDS.filter((id) => /^(bg|ui)\./.test(id))));
+  // The first screen waits (at most 2.5 s) until the icons are in the page, so none is drawn blank.
+  await track(inlineIcons());
+  const rotate = document.querySelector<HTMLImageElement>('.rotate-phone');
+  const rotateUrl = urlOf('ui.rotate');
+  if (rotate && rotateUrl) rotate.src = rotateUrl;
   lockPageGestures();
   trackViewport();
   installDebugHook();

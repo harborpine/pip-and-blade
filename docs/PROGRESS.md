@@ -26,7 +26,7 @@ All 5 phases complete. `npm run verify` passes all 7 gates.
 | E | Restyle every screen with the kit (ui) | complete |
 | F | Tests: finger scrolling, dice flow, old save, tutorial, full run, screenshots (qa) | complete |
 | G | Lead screenshot review | complete (see below) |
-| H | Full verify, publish clean snapshot, confirm live 0.2.0 | see the end of this section |
+| H | Full verify, publish clean snapshot, confirm live 0.2.0 | complete |
 
 Team used: art (Opus), ui (Opus, replaced once by a fresh ui teammate when the first ran
 out of room), qa (Sonnet). Never more than 3 at once. engine and designer were not needed:
@@ -47,6 +47,11 @@ tray is an interface-kit piece. Titles, button labels and numbers use the code-g
 pixel font; longer descriptions use the phone's own font so they stay easy to read, which
 is a deliberate choice, not a leftover. Backgrounds are tabletop dioramas.
 
+**Published 11 Oct 2026.** `npm run verify` passed all 7 gates (830 Playwright tests) on
+the final code. The update was uploaded as a clean copy authored by `harborpine`, the
+GitHub build succeeded, and https://harborpine.github.io/pip-and-blade/version.json reports
+0.2.0. Next: the owner checks 0.2.0 on their own iPhone (see README, "Needs Harborpine").
+
 Known soft spots, accepted:
 
 - On the smallest phone size (375x548) the layout is dense: enemy intentions shrink to an
@@ -57,6 +62,42 @@ Known soft spots, accepted:
   in Chromium's engine and, in Safari's engine, by proving the game no longer cancels the
   drag. The owner's phone is the final check.
 
+## Update 0.3.0 ("clean and flat", BRIEF-3.md): in progress
+
+| # | Step | Status |
+|---|---|---|
+| A | Spec (`docs/flat-style.md`), 0.2.0 save fixture (`tests/fixtures/save-v0.2.0.json`) | done |
+| B | Art style sheet (dice, icons, six tokens, backdrop, mock fight screen) | done |
+| C | Lead review of the style sheet; mock sent to the owner | done (approved with fixes) |
+| D | Full art set as flat SVG (art) | done (169 SVGs) |
+| E | Cut-over: asset list, content check, art script, SVGs and CSS surfaces (lead, art, ui) | done |
+| F | Every screen restyled (ui) | done |
+| G | Tests kept green, look checks replaced, old-save tests, screenshots (qa) | done (891 tests) |
+| H | Lead screenshot review | done (see below) |
+| I | Full verify, publish clean snapshot, confirm live 0.3.0, before/after to owner | not started |
+
+### Lead's screenshot review for 0.3.0 (17 Oct 2026)
+
+I reviewed the committed screenshots in `tests/e2e/screenshots/390x664/` and `390x844/`
+plus ui3's review set: Home, Hero select, Fight (rolling, a die lifted with targets, a
+jammed die, four enemies, the Act 2 boss), Reward, Shop, Collection, Victory, and the art
+review sheets in `tools/artgen/stylesheet/`.
+
+**Nothing from the old look remains and nothing looks cluttered.** Every picture is a flat
+vector drawing (the content check counts 169 of 169 and 0 leftovers); the dice are flat,
+front-on and ivory with a large icon and a real-text number; every character is a round
+token; every surface is drawn by the app; all text uses the rounded system lettering. The
+new `look.spec.ts` (58 tests) enforces all of this on every run.
+
+Known soft spots, accepted: the "Rolling over" button is low contrast (it is a disabled
+state with its words also in the hint line); a shield badge can touch a token's edge; a few
+pictures are weaker than the rest (the reduce-motion feather, the boss marker, the glove
+and bandana items, the anchor-less Anchor Hulk, the dark Slag Golem); this PC has no Apple
+rounded font, so the real lettering is seen only on the owner's iPhone.
+
+If the session restarts: read BRIEF-3.md, docs/flat-style.md and this table; respawn the
+teammates the table needs (art, ui, qa) with a written handover; carry on.
+
 ## Who owns what
 
 See the table in `CLAUDE.md`. Team mode used: real named teammates (engine, art, ui,
@@ -64,9 +105,7 @@ designer, qa), never more than 3 working at once. All teammates are shut down.
 
 ## Active now
 
-- Nobody. Version 0.1.0 is published and the owner has played it on their iPhone.
-  Their feedback is written up as `BRIEF-2.md` (scrolling fix, tap-to-use dice, toy-set
-  restyle). That work starts when the owner sends its goal.
+- 0.3.0 in progress (see the table above). Version 0.2.0 is live.
 
 ## Done
 

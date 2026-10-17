@@ -1,6 +1,6 @@
 /** Reusable pieces shared by the between-fight screens. */
 import type { FaceState, HeroState, RunState } from '@shared';
-import { icon, picture, portrait } from './art';
+import { icon, picture, token } from './art';
 import { h } from './dom';
 import { content } from './engine';
 import { showHeroInfo, showItemInfo } from './info';
@@ -9,7 +9,7 @@ import type { ChoiceItem } from './ui';
 import { effectIcon, faceLine, heroName, heroSpriteId, itemDef, itemName, shortName, symbolIcon } from './view';
 
 export function goldPill(run: RunState): HTMLElement {
-  return h('span', { class: 'gold', testid: 'gold' }, icon('ui.gold', 18), h('b', { class: 'pxn', text: String(run.gold) }));
+  return h('span', { class: 'gold', testid: 'gold' }, icon('ui.gold', 18), h('b', { class: 'num', text: String(run.gold) }));
 }
 
 /** Compact row of the three heroes with HP. Long-press for the full info sheet. */
@@ -17,7 +17,7 @@ export function partyStrip(run: RunState, compact = false): HTMLElement {
   return h('div', { class: `party-strip${compact ? ' compact' : ''}`, testid: 'party-strip' },
     ...run.heroes.map((hs, i) => {
       const el = h('div', { class: `mini-hero${hs.downed ? ' downed' : ''}`, testid: `party-${i}` },
-        compact ? null : h('div', { class: 'mini-art' }, portrait(heroSpriteId(hs.heroId))),
+        compact ? null : h('div', { class: 'mini-art' }, token(heroSpriteId(hs.heroId), 52)),
         h('strong', { text: shortName(hs.heroId) }),
         h('span', { class: 'hint', text: `${hs.hp}/${hs.maxHp} HP` }),
         h('div', { class: 'mini-items' }, ...hs.items.map((it) => {
@@ -34,16 +34,17 @@ export function partyStrip(run: RunState, compact = false): HTMLElement {
 }
 
 /** A little die-face card: icon, value, symbol, keywords, name. */
-export function faceCard(f: FaceState, extra = ''): HTMLElement {
+export function faceCard(f: FaceState, extra = '', heroId?: string): HTMLElement {
   const faceIcon = f.effect === 'blank' && f.symbol ? symbolIcon(f.symbol) : effectIcon(f.effect);
   return h('div', { class: `face-card ${extra}` },
-    h('div', { class: `face-art${f.effect === 'blank' ? ' blank' : ''}` },
-      f.effect === 'blank' ? icon('die.blank', 36) : icon(faceIcon, 36),
-      f.effect === 'blank' ? h('b', { class: 'word', text: 'Blank' }) : h('b', { class: 'pxn', text: String(f.value) }),
+    h('div', { class: `face-art${f.effect === 'blank' ? ' blank' : ''}`, style: heroId ? { '--hc': `var(--hero-${heroId})` } : {} },
+      icon(f.effect === 'blank' ? 'fx.blank' : faceIcon, 26, 'face-icon'),
+      f.effect === 'blank' ? h('b', { class: 'word', text: 'Blank' }) : h('b', { class: 'num', text: String(f.value) }),
       // The symbol badge stands beside the number, never on it.
-      f.symbol && f.effect !== 'blank' ? icon(symbolIcon(f.symbol), 18, 'face-sym') : null,
+      f.symbol && f.effect !== 'blank' ? icon(symbolIcon(f.symbol), 14, 'face-sym') : null,
     ),
-    f.keywords.length > 0 ? h('div', { class: 'face-kws' }, ...f.keywords.map((k) => icon(`kw.${k}`, 18))) : null,
+    // Always present (empty when there are none) so faces in a grid line up.
+    h('div', { class: 'face-kws' }, ...f.keywords.map((k) => icon(`kw.${k}`, 16))),
     h('span', { class: 'face-name', text: extra.includes('compact') ? f.name : faceLine(f) }),
     f.upgrades > 0 ? h('span', { class: 'face-up', text: `+${f.upgrades}` }) : null,
   );
@@ -56,7 +57,7 @@ export async function chooseFace(hero: HeroState, opts: { title: string; hint?: 
   const items: ChoiceItem[] = hero.faces.map((f, i) => ({
     label: faceLine(f),
     sub: `${opts.upgradeAmount && f.effect !== 'blank' ? `Becomes ${f.value + opts.upgradeAmount}. ` : ''}${f.upgrades > 0 ? `Upgraded ${f.upgrades}/${upgradeCap()}` : ''}`.trim() || undefined,
-    icon: faceCard(f, 'compact'),
+    icon: faceCard(f, 'compact', hero.heroId),
     testid: `face-slot-${i}`,
     disabled: !!opts.onlyUpgradable && f.upgrades >= upgradeCap(),
   }));
@@ -68,7 +69,7 @@ export async function chooseHero(run: RunState, opts: { title: string; hint?: st
   const items: ChoiceItem[] = run.heroes.map((hs, i) => ({
     label: heroName(hs.heroId),
     sub: `${hs.hp}/${hs.maxHp} HP${hs.items.length ? ` \u00b7 ${hs.items.map(itemName).join(', ')}` : ''}`,
-    icon: portrait(heroSpriteId(hs.heroId)),
+    icon: token(heroSpriteId(hs.heroId), 44),
     testid: `place-hero-${i}`,
     disabled: opts.filter ? !opts.filter(hs) : false,
   }));
@@ -92,8 +93,8 @@ export async function chooseItemPlacement(run: RunState, itemId: string): Promis
 }
 
 /** All of a hero's faces as a 3x2 grid of face cards. */
-export function faceGrid(faces: FaceState[]): HTMLElement {
-  return h('div', { class: 'face-grid', testid: 'face-grid' }, ...faces.map((f) => faceCard(f, 'compact')));
+export function faceGrid(faces: FaceState[], heroId?: string): HTMLElement {
+  return h('div', { class: 'face-grid', testid: 'face-grid' }, ...faces.map((f) => faceCard(f, 'compact', heroId)));
 }
 
 /** Item rows (icon, name, exact text) for info sheets. */
@@ -108,8 +109,8 @@ export function itemRows(ids: string[]): HTMLElement[] {
 /** One-line face: icon, value, keyword badges. For tight lists such as the shop. */
 export function faceInline(f: FaceState): HTMLElement {
   return h('span', { class: 'face-inline' },
-    f.effect === 'blank' ? icon('die.blank', 24) : icon(effectIcon(f.effect), 24),
-    f.effect === 'blank' ? null : h('b', { class: 'pxn', text: String(f.value) }),
+    icon(f.effect === 'blank' ? 'fx.blank' : effectIcon(f.effect), 24),
+    f.effect === 'blank' ? null : h('b', { class: 'num', text: String(f.value) }),
     ...f.keywords.map((k) => icon(`kw.${k}`, 18)),
   );
 }

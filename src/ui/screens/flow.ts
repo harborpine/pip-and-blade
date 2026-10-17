@@ -1,7 +1,7 @@
 /** Between-fight screens: reward, doors, rest, shop, event, victory, defeat. */
 import type { Action, RewardOption, RunState } from '@shared';
 import { IllegalActionError } from '@shared';
-import { icon, picture, spriteImg } from '../art';
+import { icon, picture, token } from '../art';
 import { h, replace } from '../dom';
 import { scrollBox } from '../scroll';
 import { content } from '../engine';
@@ -46,7 +46,7 @@ function rewardCard(o: RewardOption, r: RunState, i: number, onPick: () => void)
   let line: string | null = null;
   let note: string;
   if (o.type === 'face') {
-    art = faceCard(o.face, 'compact art-only');
+    art = faceCard(o.face, 'compact art-only', r.heroes[o.hero]?.heroId);
     title = `New face: ${shortName(r.heroes[o.hero]?.heroId ?? '')}`;
     line = faceLine(o.face);
     note = 'Replaces one of this hero’s faces.';
@@ -203,7 +203,7 @@ export function buildShop(): Screen {
         const b = h('button', { class: `shop-slot${s.sold ? ' sold' : ''}`, testid: `shop-slot-${i}`, disabled: s.sold || !afford, attrs: { 'data-type': s.type } },
           pic,
           h('span', { class: 'shop-text' }, h('strong', { text: title }), h('small', { text })),
-          h('span', { class: 'price' }, s.sold ? null : icon('ui.gold', 18), h('b', { class: 'pxn', text: s.sold ? 'SOLD' : String(s.price) })),
+          h('span', { class: 'price' }, s.sold ? null : icon('ui.gold', 18), h('b', { class: 'num', text: s.sold ? 'SOLD' : String(s.price) })),
         );
         b.addEventListener('click', () => {
           void (async () => {
@@ -292,7 +292,7 @@ export function buildEnd(won: boolean): () => Screen {
     const el = h('main', { class: `screen flow end ${won ? 'won' : 'lost'}`, testid: won ? 'screen-victory' : 'screen-defeat' },
       h('div', { class: 'end-top' },
         h('h1', { class: 'end-title', testid: 'end-title', text: title }),
-        won ? spriteImg('hero.' + (r.heroes[0]?.heroId ?? 'bulwark'), 2) : icon('ui.downed', 48),
+        won ? token('hero.' + (r.heroes[0]?.heroId ?? 'bulwark'), 96) : icon('ui.downed', 48, 'end-icon'),
       ),
       scrollBox(won ? 'victory' : 'defeat', { class: 'end-scroll' },
         partyStrip(r),

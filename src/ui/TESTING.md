@@ -5,7 +5,7 @@ Run the app: `npm run dev` (http://localhost:5173/pip-and-blade/) or the product
 `page.getByTestId(...)`. The current screen is `document.body.dataset.screen`.
 
 Playwright iPhone 14 has a 390x664 viewport (a Safari tab on a standard iPhone). The layout adapts to the height: tab sizes
-390x664, 393x659, 402x681; Home Screen sizes 390x844, 393x852, 402x874; small 375x667 and 375x548. Dice are always 84 px wide (art's 2x).
+390x664, 393x659, 402x681; Home Screen sizes 390x844, 393x852, 402x874; small 375x667 and 375x548. Dice are 76 px square (64 on the smallest layout).
 
 ## Debug hook: `window.__pip`
 
@@ -69,7 +69,7 @@ First launch (tutorial not done and not offered before): modal `tutorial-offer` 
   - used die / downed hero: never dispatches; shake and `hint-line` says why (`Already used this turn.` ...).
   - Setting "Always choose the target myself" on (`btn-choose-target`, or prefs `{"chooseTarget":true}`): one-target dice lift and wait too.
     No-target dice still fire on one tap.
-- Padlocks: `lock-<i>` directly under `die-<i>` (84x44; it overlaps the foot of its die by 10 px, 20 px on `tight` layouts; attributes `data-locked="true|false"`, `data-jammed="true|false"`,
+- Padlocks: `lock-<i>` directly under `die-<i>` (44x44; it overlaps the foot of its die by 6 px, 10 px on `tight` layouts; attributes `data-locked="true|false"`, `data-jammed="true|false"`,
   `aria-pressed`; classes `open` / `closed` / `chain`). A tap dispatches `toggleLock`. They are usable only while a reroll could still
   happen (`phase === 'rolling'` and `rerollsLeft > 0`); otherwise they carry class `gone` (invisible, not tappable, `aria-hidden`) but keep
   their place so the dice do not jump. A jammed die shows the chain: tapping it changes nothing and `hint-line` reads
@@ -135,34 +135,49 @@ Cancel button (`<sheetid>-cancel`).
 
 **Global**: `rotate-overlay` (visible only in landscape on a phone), `toast`.
 
-## The toy-set look (0.2.0): what it means for tests
+## The flat look (0.3.0): what it means for tests
 
-- Titles, button labels and numbers are drawn with art's pixel fonts: each character is its own invisible glyph box inside a
-  `.px` span, so `textContent` still gives the words exactly as written (`End Turn`, `20/20`, `-3`); match text
-  case-insensitively if you compare what is SEEN (the font is capitals only). Toggles (`btn-reduce-motion`, `btn-choose-target`)
-  show kit art; read their state from `aria-checked` (their `On`/`Off` text is still in the DOM, invisible).
-- Fight details that changed with the restyle: enemy names are not shown under normal enemies (bosses keep theirs);
-  `end-turn-forecast` text is now `4/0/3` (damage per hero), `no damage`, `safe, -1 reroll`, `<Name> down!` or `PARTY WIPE!`, and
-  its `aria-label` is the full sentence (`incoming 4/0/3`); `preview-enemy-<uid>` / `preview-hero-<i>` now sit ON the target's
-  health bar (inside `enemy-hp-<uid>` / `hero-hp-<i>`) and hold icon + number parts (`-3`, `+2`, `KO`), with the words in
-  `aria-label` (`-3 HP`, `+2 shield`, `KO, -3 HP`); `forecast-<i>` text is still `-N`, `safe`, `blocked` or `DOWN!`;
-  `rerolls-left` is the number inside `Reroll` / `N left`; in state `over` the button text is `Rolling over`;
-  `set-banner` is a 44 px button around a low chip; `btn-menu` is the gear; the padlocks' words (`Keep`, `Kept`, `Jammed`) are
-  in the DOM but not drawn (the art says it).
+- **Lettering**: every element uses the phone's rounded system lettering, `font-family: ui-rounded, 'SF Pro Rounded', system-ui, sans-serif`
+  (set once on `:root`/`body`; buttons and inputs inherit it). No computed `font-size` is under 12px. There is no pixel font any more:
+  no `.px` / `.pxg` spans, text is plain text in its element, written in normal case (`End Turn`, `20/20`, `-3`).
+  Words that are in the page for readers but not drawn (`.die-word` "Blank"/"Cursed", `.lock-word` "Keep"/"Kept"/"Jammed") are clipped
+  to a 1 px box with `clip-path: inset(50%)`, still at 12px; the switches' `On`/`Off` text is drawn transparent (read `aria-checked`).
+- **Surfaces** are drawn by CSS (`src/ui/styles.css` section 3, docs/flat-style.md section 6): no element has a `border-image` and no
+  element has a picture as its background except the screen backdrops (`--bg-*`, ids `bg.*`). No element has `image-rendering: pixelated`.
+  There is no start-up picture preloading for frames and no `#kit-warm` helper (a CSS surface cannot be drawn bare). Icons and backdrops
+  are still fetched and decoded at start-up; `waitIdle()` covers that.
+- **Icons**: a single-colour vector icon (`sym fx kw status intent set ui die` ids whose file is `.svg`) is a `<span class="sprite icon tint"
+  data-sprite="<id>">` drawn as a CSS mask filled with `currentColor`; items, doors, tokens and the logo are `<img data-sprite="<id>">`.
+  While an id is still a `.png` it is shown as an `<img>`.
+- **Dice** (`die-<i>`): a `<button class="die …">` 76x76 (64x64 on the smallest layout, attribute `data-size`), ivory background, 4px border
+  in the hero's colour (`--hc` = `var(--hero-<heroId>)`), radius 16, no 3D transform. Inside: `.die-face` holding the effect icon
+  (`.die-icon`, `data-sprite="fx.<effect>"`, in the hero colour) and the value as real text (`.die-value`, `die-value-<i>`); the set symbol
+  `.die-sym` in the top-right corner; up to two keyword marks in `.die-kws` along the bottom edge, then `.die-more` (`+n`).
+  States (classes unchanged): `locked` = 3px gold `outline` 3px outside the rim and `lock-<i>` has class `closed` (gold); `selected` (lifted)
+  = raised 8px, 3px ivory `outline`, one soft shadow; `used` = ivory-dim face, slate-3 rim, contents at 60% (the look is dropped while
+  `using`); `blank` = slate-3 rim, `.die-dash` (`fx.blank`) centred, no `.die-value` text (only the clipped `.die-word` "Blank");
+  `cursed` = purple rim, purple-tinted face, `.die-crack` (`die.cursed`) centred, no number; `jammed` = `.die-chain` (`die.jammed`)
+  across the lower edge and `lock-<i>` has class `chain`; `down` (its hero is down) = the used look plus `.die-down` (`ui.downed`).
+- **Padlocks** (`lock-<i>`): a 44x44 rounded square centred under its die, overlapping the die's foot by 6px (10px on `tight`
+  layouts). Open: slate-2 with the `ui.unlock` icon; closed: gold with `ui.lock`; chain: slate-2 with `die.jammed`.
+- **Tokens**: every hero, enemy and boss (fight rows, info sheets, hero select, collection, party strips, victory) is drawn by one helper
+  (`token()` in `src/ui/art.ts`): class `token token-<hero|enemy|elite|boss>`, `data-sprite` = its sprite id, a circle
+  (`border-radius: 50%`). With a vector token it is the `<img>` of `<id>.svg`; until then it is a CSS coin (`.token-disc`) holding the
+  old picture. In a fight, heroes and normal enemies share one size (72, 64, 56 or 48 px, whatever fits) and bosses are 1.5x the enemies.
+  A downed hero's token is greyed with a small `ui.downed` mark (`.downed-icon`).
+- Fight details kept from 0.2.0: enemy names are not shown under normal enemies (bosses keep theirs); `end-turn-forecast` text is
+  `4/0/3` (damage per hero), `no damage`, `safe, -1 reroll`, `<Name> down!` or `PARTY WIPE!`, `aria-label` the full sentence
+  (`incoming 4/0/3`); `preview-enemy-<uid>` / `preview-hero-<i>` sit ON the target's health bar (inside `enemy-hp-<uid>` / `hero-hp-<i>`)
+  and hold icon + number parts (`-3`, `+2`, `KO`), words in `aria-label`; `forecast-<i>` text is `-N`, `safe`, `blocked` or `DOWN!`;
+  `rerolls-left` is the number inside `Reroll` / `N left`; in state `over` the button text is `Rolling over`; `set-banner` is a 44 px
+  button round a low gold chip; `btn-menu` is the gear.
 - On the very smallest layouts (class `tight` on `screen-fight`: 375x548, and boss or four-enemy fights in a tab) intents show
   icon + number only (the full line is each one's `aria-label`) and are part of their enemy's tap target (no `role="button"` of their
-  own, no pointer under the bubble), names are hidden, `hero-items-<i>` stand beside the miniature (top right of `hero-<i>`, still
-  44x44 each) instead of in a row under it, and the padlocks overlap the foot of their dice by up to 20 px. While the tutorial card
-  is showing on a `tight` layout the status bar (`fight-progress`, `gold`, `btn-menu`) is hidden: the card takes its place.
-  Known limit: the tutorial's first fight at 375x548 still overlaps a little (enemy health bars under the heroes' forecast chips).
-- Sheet titles are short now: `Replace which face?`, `Upgrade which face?`, `Whose face?`, `Who carries it?`, `No free slot`
+  own), names are hidden, `hero-items-<i>` stand beside the token (top right of `hero-<i>`, still 44x44 each), the dice may drop to
+  64 px. While the tutorial card is showing on a `tight` layout the status bar (`fight-progress`, `gold`, `btn-menu`) is hidden.
+- Sheet titles are short: `Replace which face?`, `Upgrade which face?`, `Whose face?`, `Who carries it?`, `No free slot`
   (the hero and item names are in the hint line under the title).
-
-- Pictures: the interface kit, backdrops and font sheets are fetched once at start-up and given to the style sheet as the
-  pictures themselves; the first screen waits for that (at most 2.5 s) and `waitIdle()` covers it, so a screenshot taken after
-  `waitIdle()` never shows a tray, bubble or panel without its frame. `<div id="kit-warm">` in `<body>` is an invisible 1 px
-  helper for this, not content. Item and door pictures are cropped boxes (`.picture`): 2 CSS px per pixel on reward cards,
-  doors and the item sheet, 1 in shop rows and item rows; the party strip shows whole miniatures at 1 (`.portrait`).
+- Item and door pictures (`.picture`) are 64 px squares on reward cards, doors and the item sheet and 40 px in shop rows and item rows.
 
 ## Scrolling (0.2.0)
 

@@ -1,1899 +1,1387 @@
 {
- "generatedBy": "voxelgen",
+ "generatedBy": "artgen",
  "palette": [
-  "#1b1730",
-  "#4b5169",
-  "#9099b0",
-  "#f6f3ea",
-  "#e8dcb8",
-  "#e5463f",
-  "#9e2b45",
-  "#f28a2e",
-  "#f6c833",
-  "#8bd23f",
-  "#2f9d50",
-  "#1e6342",
-  "#2cb6a9",
-  "#146a78",
-  "#4ba6f2",
-  "#2d4aa6",
-  "#4d3b9e",
-  "#9a5fdc",
-  "#cbb0f2",
-  "#dd58a4",
-  "#f5a9bd",
-  "#dba76a",
-  "#8c5a36",
-  "#5a3a2a"
+  "#1c2430",
+  "#55606b",
+  "#f4ecd8",
+  "#e2d6ba",
+  "#fbf7ec",
+  "#243640",
+  "#304753",
+  "#6b828d",
+  "#f2c230",
+  "#4a3500",
+  "#e0483f",
+  "#3fae5a",
+  "#3f8fe0",
+  "#8a5fd1",
+  "#7fbf3a",
+  "#9a6a43",
+  "#ee7d2b",
+  "#35b5a6",
+  "#ee9aa6",
+  "#a89d8f",
+  "#2f6db3",
+  "#c43a32",
+  "#2c8a3e",
+  "#7748c2",
+  "#b9561b",
+  "#1a8580",
+  "#68751c",
+  "#ae3a8c"
  ],
  "sprites": {
-  "app.icon": {
-   "file": "art/app.icon.png",
-   "w": 64,
-   "h": 64,
-   "ax": 32,
-   "ay": 32,
-   "render": "voxel"
-  },
-  "bg.act1": {
-   "file": "art/bg.act1.png",
-   "w": 180,
-   "h": 320,
-   "ax": 90,
-   "ay": 160,
-   "render": "scene"
-  },
-  "bg.act2": {
-   "file": "art/bg.act2.png",
-   "w": 180,
-   "h": 320,
-   "ax": 90,
-   "ay": 160,
-   "render": "scene"
-  },
-  "bg.act3": {
-   "file": "art/bg.act3.png",
-   "w": 180,
-   "h": 320,
-   "ax": 90,
-   "ay": 160,
-   "render": "scene"
-  },
-  "bg.menu": {
-   "file": "art/bg.menu.png",
-   "w": 180,
-   "h": 320,
-   "ax": 90,
-   "ay": 160,
-   "render": "scene"
-  },
-  "boss.bramble_king": {
-   "file": "art/boss.bramble_king.png",
-   "w": 64,
-   "h": 90,
-   "ax": 32,
-   "ay": 69,
-   "render": "voxel"
-  },
-  "boss.drowned_bell": {
-   "file": "art/boss.drowned_bell.png",
-   "w": 64,
-   "h": 90,
-   "ax": 32,
-   "ay": 69,
-   "render": "voxel"
-  },
-  "boss.pip_eater": {
-   "file": "art/boss.pip_eater.png",
-   "w": 64,
-   "h": 90,
-   "ax": 32,
-   "ay": 69,
-   "render": "voxel"
-  },
-  "die.automaton": {
-   "file": "art/die.automaton.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.blank": {
-   "file": "art/die.blank.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "die.bulwark": {
-   "file": "art/die.bulwark.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.cursed": {
-   "file": "art/die.cursed.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.duelist": {
-   "file": "art/die.duelist.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.face_blank": {
-   "file": "art/die.face_blank.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.face_damage": {
-   "file": "art/die.face_damage.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.face_focus": {
-   "file": "art/die.face_focus.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.face_heal": {
-   "file": "art/die.face_heal.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.face_shield": {
-   "file": "art/die.face_shield.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.face_weaken": {
-   "file": "art/die.face_weaken.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.gambler": {
-   "file": "art/die.gambler.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.grower": {
-   "file": "art/die.grower.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.herbalist": {
-   "file": "art/die.herbalist.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.hexer": {
-   "file": "art/die.hexer.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.jammed": {
-   "file": "art/die.jammed.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.locked": {
-   "file": "art/die.locked.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.redhand": {
-   "file": "art/die.redhand.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "die.used": {
-   "file": "art/die.used.png",
-   "w": 42,
-   "h": 44,
-   "ax": 21,
-   "ay": 31,
-   "render": "voxel"
-  },
-  "door.elite": {
-   "file": "art/door.elite.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "door.event": {
-   "file": "art/door.event.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "door.onward": {
-   "file": "art/door.onward.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "door.rest": {
-   "file": "art/door.rest.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "door.shop": {
-   "file": "art/door.shop.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "door.treasure": {
-   "file": "art/door.treasure.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "enemy.anchor_hulk": {
-   "file": "art/enemy.anchor_hulk.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.ash_cultist": {
-   "file": "art/enemy.ash_cultist.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.barnacle_golem": {
-   "file": "art/enemy.barnacle_golem.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.bell_diver": {
-   "file": "art/enemy.bell_diver.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.bramble_imp": {
-   "file": "art/enemy.bramble_imp.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.chain_warden": {
-   "file": "art/enemy.chain_warden.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.cinder_bat": {
-   "file": "art/enemy.cinder_bat.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.coin_mimic": {
-   "file": "art/enemy.coin_mimic.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.crab_knight": {
-   "file": "art/enemy.crab_knight.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.drowned_sailor": {
-   "file": "art/enemy.drowned_sailor.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.eel_lancer": {
-   "file": "art/enemy.eel_lancer.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.ember_whelp": {
-   "file": "art/enemy.ember_whelp.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.forge_smith": {
-   "file": "art/enemy.forge_smith.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.gnaw_rat": {
-   "file": "art/enemy.gnaw_rat.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.hollow_stag": {
-   "file": "art/enemy.hollow_stag.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.ink_squid": {
-   "file": "art/enemy.ink_squid.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.magpie_thief": {
-   "file": "art/enemy.magpie_thief.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.mud_slime": {
-   "file": "art/enemy.mud_slime.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.mushroom_brute": {
-   "file": "art/enemy.mushroom_brute.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.obsidian_knight": {
-   "file": "art/enemy.obsidian_knight.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.slag_golem": {
-   "file": "art/enemy.slag_golem.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.soot_hexer": {
-   "file": "art/enemy.soot_hexer.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.tide_witch": {
-   "file": "art/enemy.tide_witch.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.twig_archer": {
-   "file": "art/enemy.twig_archer.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "enemy.web_spinner": {
-   "file": "art/enemy.web_spinner.png",
-   "w": 52,
-   "h": 83,
-   "ax": 24,
-   "ay": 65,
-   "render": "voxel"
-  },
-  "fx.blank": {
-   "file": "art/fx.blank.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "fx.damage": {
-   "file": "art/fx.damage.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "fx.focus": {
-   "file": "art/fx.focus.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "fx.heal": {
-   "file": "art/fx.heal.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "fx.shield": {
-   "file": "art/fx.shield.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "fx.weaken": {
-   "file": "art/fx.weaken.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "hero.automaton": {
-   "file": "art/hero.automaton.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
-  },
   "hero.bulwark": {
-   "file": "art/hero.bulwark.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
+   "file": "art/hero.bulwark.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
   "hero.duelist": {
-   "file": "art/hero.duelist.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
-  },
-  "hero.gambler": {
-   "file": "art/hero.gambler.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
-  },
-  "hero.grower": {
-   "file": "art/hero.grower.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
+   "file": "art/hero.duelist.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
   "hero.herbalist": {
-   "file": "art/hero.herbalist.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
+   "file": "art/hero.herbalist.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "hero.hexer": {
-   "file": "art/hero.hexer.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
+  "hero.gambler": {
+   "file": "art/hero.gambler.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
   "hero.redhand": {
-   "file": "art/hero.redhand.png",
-   "w": 58,
-   "h": 75,
-   "ax": 24,
-   "ay": 58,
-   "render": "voxel"
+   "file": "art/hero.redhand.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.attack": {
-   "file": "art/intent.attack.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "hero.automaton": {
+   "file": "art/hero.automaton.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.attack_all": {
-   "file": "art/intent.attack_all.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "hero.grower": {
+   "file": "art/hero.grower.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.buff": {
-   "file": "art/intent.buff.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "hero.hexer": {
+   "file": "art/hero.hexer.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.charge": {
-   "file": "art/intent.charge.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.gnaw_rat": {
+   "file": "art/enemy.gnaw_rat.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.curseFace": {
-   "file": "art/intent.curseFace.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.bramble_imp": {
+   "file": "art/enemy.bramble_imp.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.debuff": {
-   "file": "art/intent.debuff.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.mud_slime": {
+   "file": "art/enemy.mud_slime.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.heal": {
-   "file": "art/intent.heal.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.twig_archer": {
+   "file": "art/enemy.twig_archer.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.lockDie": {
-   "file": "art/intent.lockDie.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.mushroom_brute": {
+   "file": "art/enemy.mushroom_brute.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.shield": {
-   "file": "art/intent.shield.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.magpie_thief": {
+   "file": "art/enemy.magpie_thief.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.stealReroll": {
-   "file": "art/intent.stealReroll.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.web_spinner": {
+   "file": "art/enemy.web_spinner.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "intent.summon": {
-   "file": "art/intent.summon.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "enemy.hollow_stag": {
+   "file": "art/enemy.hollow_stag.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.battle_drum": {
-   "file": "art/item.battle_drum.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.drowned_sailor": {
+   "file": "art/enemy.drowned_sailor.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.bone_charm": {
-   "file": "art/item.bone_charm.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.crab_knight": {
+   "file": "art/enemy.crab_knight.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.cleaver_hook": {
-   "file": "art/item.cleaver_hook.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.ink_squid": {
+   "file": "art/enemy.ink_squid.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.crown_of_three": {
-   "file": "art/item.crown_of_three.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.barnacle_golem": {
+   "file": "art/enemy.barnacle_golem.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.double_or_nothing": {
-   "file": "art/item.double_or_nothing.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.eel_lancer": {
+   "file": "art/enemy.eel_lancer.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.echo_bell": {
-   "file": "art/item.echo_bell.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.bell_diver": {
+   "file": "art/enemy.bell_diver.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.executioners_hood": {
-   "file": "art/item.executioners_hood.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.tide_witch": {
+   "file": "art/enemy.tide_witch.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.field_medic_kit": {
-   "file": "art/item.field_medic_kit.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.coin_mimic": {
+   "file": "art/enemy.coin_mimic.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.first_pick_glove": {
-   "file": "art/item.first_pick_glove.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.anchor_hulk": {
+   "file": "art/enemy.anchor_hulk.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.gamblers_ante": {
-   "file": "art/item.gamblers_ante.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.ember_whelp": {
+   "file": "art/enemy.ember_whelp.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.glass_cannon": {
-   "file": "art/item.glass_cannon.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.ash_cultist": {
+   "file": "art/enemy.ash_cultist.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.healers_satchel": {
-   "file": "art/item.healers_satchel.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.slag_golem": {
+   "file": "art/enemy.slag_golem.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.hollow_die": {
-   "file": "art/item.hollow_die.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.cinder_bat": {
+   "file": "art/enemy.cinder_bat.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.iron_ration": {
-   "file": "art/item.iron_ration.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.forge_smith": {
+   "file": "art/enemy.forge_smith.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.kings_die": {
-   "file": "art/item.kings_die.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.chain_warden": {
+   "file": "art/enemy.chain_warden.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.last_word": {
-   "file": "art/item.last_word.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.soot_hexer": {
+   "file": "art/enemy.soot_hexer.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.leech_fang": {
-   "file": "art/item.leech_fang.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "enemy.obsidian_knight": {
+   "file": "art/enemy.obsidian_knight.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.loaded_pip": {
-   "file": "art/item.loaded_pip.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "boss.bramble_king": {
+   "file": "art/boss.bramble_king.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.lucky_coin": {
-   "file": "art/item.lucky_coin.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "boss.drowned_bell": {
+   "file": "art/boss.drowned_bell.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
-  "item.merchants_scale": {
-   "file": "art/item.merchants_scale.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.mirror_shard": {
-   "file": "art/item.mirror_shard.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.oak_buckler": {
-   "file": "art/item.oak_buckler.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.patient_hourglass": {
-   "file": "art/item.patient_hourglass.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.phoenix_feather": {
-   "file": "art/item.phoenix_feather.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.pip_magnet": {
-   "file": "art/item.pip_magnet.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.plague_censer": {
-   "file": "art/item.plague_censer.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.purse_string": {
-   "file": "art/item.purse_string.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.rainbow_prism": {
-   "file": "art/item.rainbow_prism.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.reckless_idol": {
-   "file": "art/item.reckless_idol.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.red_bandana": {
-   "file": "art/item.red_bandana.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.seedling_pot": {
-   "file": "art/item.seedling_pot.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.spiked_pommel": {
-   "file": "art/item.spiked_pommel.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.thorn_mail": {
-   "file": "art/item.thorn_mail.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.tortoise_shell": {
-   "file": "art/item.tortoise_shell.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.twin_charm": {
-   "file": "art/item.twin_charm.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.unjam_oil": {
-   "file": "art/item.unjam_oil.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.venom_vial": {
-   "file": "art/item.venom_vial.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.void_pip": {
-   "file": "art/item.void_pip.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
-  },
-  "item.ward_stone": {
-   "file": "art/item.ward_stone.png",
-   "w": 48,
-   "h": 48,
-   "ax": 24,
-   "ay": 24,
-   "render": "voxel"
+  "boss.pip_eater": {
+   "file": "art/boss.pip_eater.svg",
+   "w": 96,
+   "h": 96,
+   "ax": 48,
+   "ay": 48,
+   "render": "flat"
   },
   "item.whetstone": {
-   "file": "art/item.whetstone.png",
+   "file": "art/item.whetstone.svg",
    "w": 48,
    "h": 48,
    "ax": 24,
    "ay": 24,
-   "render": "voxel"
+   "render": "flat"
   },
-  "kit.badge": {
-   "file": "art/kit.badge.png",
-   "w": 13,
-   "h": 13,
-   "ax": 7,
-   "ay": 7,
-   "render": "kit"
+  "item.oak_buckler": {
+   "file": "art/item.oak_buckler.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.banner": {
-   "file": "art/kit.banner.png",
-   "w": 40,
-   "h": 18,
-   "ax": 20,
-   "ay": 9,
-   "render": "kit",
-   "slice": [
-    2,
-    12,
-    5,
-    12
-   ]
+  "item.healers_satchel": {
+   "file": "art/item.healers_satchel.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.bar_frame": {
-   "file": "art/kit.bar_frame.png",
-   "w": 12,
-   "h": 8,
-   "ax": 6,
-   "ay": 4,
-   "render": "kit",
-   "slice": [
-    2,
-    2,
-    2,
-    2
-   ]
+  "item.lucky_coin": {
+   "file": "art/item.lucky_coin.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.bar_hp": {
-   "file": "art/kit.bar_hp.png",
-   "w": 4,
-   "h": 6,
-   "ax": 2,
-   "ay": 3,
-   "render": "kit"
+  "item.hollow_die": {
+   "file": "art/item.hollow_die.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.bar_hurt": {
-   "file": "art/kit.bar_hurt.png",
-   "w": 4,
-   "h": 6,
-   "ax": 2,
-   "ay": 3,
-   "render": "kit"
+  "item.loaded_pip": {
+   "file": "art/item.loaded_pip.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.bar_shield": {
-   "file": "art/kit.bar_shield.png",
-   "w": 4,
-   "h": 6,
-   "ax": 2,
-   "ay": 3,
-   "render": "kit"
+  "item.first_pick_glove": {
+   "file": "art/item.first_pick_glove.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.bubble": {
-   "file": "art/kit.bubble.png",
-   "w": 20,
-   "h": 18,
-   "ax": 10,
-   "ay": 9,
-   "render": "kit",
-   "slice": [
-    4,
-    4,
-    4,
-    4
-   ]
+  "item.thorn_mail": {
+   "file": "art/item.thorn_mail.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.bubble_tail": {
-   "file": "art/kit.bubble_tail.png",
-   "w": 9,
-   "h": 5,
-   "ax": 5,
-   "ay": 3,
-   "render": "kit"
+  "item.venom_vial": {
+   "file": "art/item.venom_vial.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.button": {
-   "file": "art/kit.button.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    4,
-    4,
-    8,
-    4
-   ]
+  "item.twin_charm": {
+   "file": "art/item.twin_charm.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.button_danger": {
-   "file": "art/kit.button_danger.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    4,
-    4,
-    8,
-    4
-   ]
+  "item.crown_of_three": {
+   "file": "art/item.crown_of_three.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.button_danger_pressed": {
-   "file": "art/kit.button_danger_pressed.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    7,
-    4,
-    5,
-    4
-   ]
+  "item.patient_hourglass": {
+   "file": "art/item.patient_hourglass.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.button_disabled": {
-   "file": "art/kit.button_disabled.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    7,
-    4,
-    5,
-    4
-   ]
+  "item.gamblers_ante": {
+   "file": "art/item.gamblers_ante.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.button_pressed": {
-   "file": "art/kit.button_pressed.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    7,
-    4,
-    5,
-    4
-   ]
+  "item.iron_ration": {
+   "file": "art/item.iron_ration.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.button_primary": {
-   "file": "art/kit.button_primary.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    4,
-    4,
-    8,
-    4
-   ]
+  "item.seedling_pot": {
+   "file": "art/item.seedling_pot.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.button_primary_pressed": {
-   "file": "art/kit.button_primary_pressed.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    7,
-    4,
-    5,
-    4
-   ]
+  "item.red_bandana": {
+   "file": "art/item.red_bandana.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.chip": {
-   "file": "art/kit.chip.png",
-   "w": 14,
-   "h": 11,
-   "ax": 7,
-   "ay": 6,
-   "render": "kit",
-   "slice": [
-    4,
-    5,
-    4,
-    5
-   ]
+  "item.mirror_shard": {
+   "file": "art/item.mirror_shard.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.divider": {
-   "file": "art/kit.divider.png",
-   "w": 4,
-   "h": 3,
-   "ax": 2,
-   "ay": 2,
-   "render": "kit"
+  "item.ward_stone": {
+   "file": "art/item.ward_stone.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.font": {
-   "file": "art/kit.font.png",
-   "w": 128,
-   "h": 32,
-   "ax": 0,
-   "ay": 0,
-   "render": "kit"
+  "item.bone_charm": {
+   "file": "art/item.bone_charm.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.font_big": {
-   "file": "art/kit.font_big.png",
-   "w": 143,
-   "h": 14,
-   "ax": 0,
-   "ay": 0,
-   "render": "kit"
+  "item.unjam_oil": {
+   "file": "art/item.unjam_oil.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.font_ivory": {
-   "file": "art/kit.font_ivory.png",
-   "w": 128,
-   "h": 32,
-   "ax": 0,
-   "ay": 0,
-   "render": "kit"
+  "item.purse_string": {
+   "file": "art/item.purse_string.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.lock_chain": {
-   "file": "art/kit.lock_chain.png",
-   "w": 44,
-   "h": 44,
-   "ax": 22,
-   "ay": 22,
-   "render": "kit"
+  "item.spiked_pommel": {
+   "file": "art/item.spiked_pommel.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.lock_closed": {
-   "file": "art/kit.lock_closed.png",
-   "w": 44,
-   "h": 44,
-   "ax": 22,
-   "ay": 22,
-   "render": "kit"
+  "item.leech_fang": {
+   "file": "art/item.leech_fang.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.lock_open": {
-   "file": "art/kit.lock_open.png",
-   "w": 44,
-   "h": 44,
-   "ax": 22,
-   "ay": 22,
-   "render": "kit"
+  "item.battle_drum": {
+   "file": "art/item.battle_drum.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.panel": {
-   "file": "art/kit.panel.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    5,
-    5,
-    6,
-    5
-   ]
+  "item.last_word": {
+   "file": "art/item.last_word.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.panel_dark": {
-   "file": "art/kit.panel_dark.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    5,
-    5,
-    5,
-    5
-   ]
+  "item.cleaver_hook": {
+   "file": "art/item.cleaver_hook.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.panel_selected": {
-   "file": "art/kit.panel_selected.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    6,
-    6,
-    7,
-    6
-   ]
+  "item.field_medic_kit": {
+   "file": "art/item.field_medic_kit.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.sheet": {
-   "file": "art/kit.sheet.png",
-   "w": 24,
-   "h": 24,
-   "ax": 12,
-   "ay": 12,
-   "render": "kit",
-   "slice": [
-    6,
-    5,
-    3,
-    5
-   ]
+  "item.merchants_scale": {
+   "file": "art/item.merchants_scale.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.sheet_grip": {
-   "file": "art/kit.sheet_grip.png",
-   "w": 20,
-   "h": 4,
-   "ax": 10,
-   "ay": 2,
-   "render": "kit"
+  "item.void_pip": {
+   "file": "art/item.void_pip.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.slot": {
-   "file": "art/kit.slot.png",
-   "w": 46,
-   "h": 25,
-   "ax": 23,
-   "ay": 13,
-   "render": "kit"
+  "item.echo_bell": {
+   "file": "art/item.echo_bell.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.tab": {
-   "file": "art/kit.tab.png",
-   "w": 20,
-   "h": 16,
-   "ax": 10,
-   "ay": 8,
-   "render": "kit",
-   "slice": [
-    7,
-    4,
-    2,
-    4
-   ]
+  "item.reckless_idol": {
+   "file": "art/item.reckless_idol.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.tab_active": {
-   "file": "art/kit.tab_active.png",
-   "w": 20,
-   "h": 16,
-   "ax": 10,
-   "ay": 8,
-   "render": "kit",
-   "slice": [
-    4,
-    4,
-    2,
-    4
-   ]
+  "item.executioners_hood": {
+   "file": "art/item.executioners_hood.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.toggle_off": {
-   "file": "art/kit.toggle_off.png",
-   "w": 26,
-   "h": 14,
-   "ax": 13,
-   "ay": 7,
-   "render": "kit"
+  "item.rainbow_prism": {
+   "file": "art/item.rainbow_prism.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.toggle_on": {
-   "file": "art/kit.toggle_on.png",
-   "w": 26,
-   "h": 14,
-   "ax": 13,
-   "ay": 7,
-   "render": "kit"
+  "item.pip_magnet": {
+   "file": "art/item.pip_magnet.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kit.tray": {
-   "file": "art/kit.tray.png",
-   "w": 32,
-   "h": 32,
-   "ax": 16,
-   "ay": 16,
-   "render": "kit",
-   "slice": [
-    8,
-    7,
-    9,
-    7
-   ]
+  "item.glass_cannon": {
+   "file": "art/item.glass_cannon.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kw.cleave": {
-   "file": "art/kw.cleave.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "item.tortoise_shell": {
+   "file": "art/item.tortoise_shell.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kw.echo": {
-   "file": "art/kw.echo.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "item.plague_censer": {
+   "file": "art/item.plague_censer.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kw.execute": {
-   "file": "art/kw.execute.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "item.double_or_nothing": {
+   "file": "art/item.double_or_nothing.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kw.growth": {
-   "file": "art/kw.growth.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "item.phoenix_feather": {
+   "file": "art/item.phoenix_feather.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "kw.momentum": {
-   "file": "art/kw.momentum.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "kw.pierce": {
-   "file": "art/kw.pierce.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "kw.poised": {
-   "file": "art/kw.poised.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "kw.rally": {
-   "file": "art/kw.rally.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "kw.reckless": {
-   "file": "art/kw.reckless.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "kw.twin": {
-   "file": "art/kw.twin.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "kw.venom": {
-   "file": "art/kw.venom.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "kw.ward": {
-   "file": "art/kw.ward.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "set.pair": {
-   "file": "art/set.pair.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "set.rainbow": {
-   "file": "art/set.rainbow.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "set.triple": {
-   "file": "art/set.triple.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "status.mark": {
-   "file": "art/status.mark.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "status.poison": {
-   "file": "art/status.poison.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "status.regen": {
-   "file": "art/status.regen.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "status.strength": {
-   "file": "art/status.strength.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "status.thorns": {
-   "file": "art/status.thorns.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "status.weak": {
-   "file": "art/status.weak.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "item.kings_die": {
+   "file": "art/item.kings_die.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
   "sym.blade": {
-   "file": "art/sym.blade.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+   "file": "art/sym.blade.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
   "sym.guard": {
-   "file": "art/sym.guard.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+   "file": "art/sym.guard.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
   "sym.heart": {
-   "file": "art/sym.heart.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
-  },
-  "sym.skull": {
-   "file": "art/sym.skull.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+   "file": "art/sym.heart.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
   "sym.spark": {
-   "file": "art/sym.spark.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+   "file": "art/sym.spark.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.act": {
-   "file": "art/ui.act.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "sym.skull": {
+   "file": "art/sym.skull.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.back": {
-   "file": "art/ui.back.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "fx.damage": {
+   "file": "art/fx.damage.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.boss": {
-   "file": "art/ui.boss.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "fx.shield": {
+   "file": "art/fx.shield.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.check": {
-   "file": "art/ui.check.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "fx.heal": {
+   "file": "art/fx.heal.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.close": {
-   "file": "art/ui.close.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "fx.weaken": {
+   "file": "art/fx.weaken.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.collection": {
-   "file": "art/ui.collection.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "fx.focus": {
+   "file": "art/fx.focus.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.daily": {
-   "file": "art/ui.daily.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "fx.blank": {
+   "file": "art/fx.blank.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.downed": {
-   "file": "art/ui.downed.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.cleave": {
+   "file": "art/kw.cleave.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.end_turn": {
-   "file": "art/ui.end_turn.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.echo": {
+   "file": "art/kw.echo.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.export": {
-   "file": "art/ui.export.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.growth": {
+   "file": "art/kw.growth.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.feat": {
-   "file": "art/ui.feat.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.reckless": {
+   "file": "art/kw.reckless.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.feat_locked": {
-   "file": "art/ui.feat_locked.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.pierce": {
+   "file": "art/kw.pierce.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.fight": {
-   "file": "art/ui.fight.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.venom": {
+   "file": "art/kw.venom.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.gold": {
-   "file": "art/ui.gold.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.ward": {
+   "file": "art/kw.ward.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.hp": {
-   "file": "art/ui.hp.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.twin": {
+   "file": "art/kw.twin.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.import": {
-   "file": "art/ui.import.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.rally": {
+   "file": "art/kw.rally.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.info": {
-   "file": "art/ui.info.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.momentum": {
+   "file": "art/kw.momentum.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.install": {
-   "file": "art/ui.install.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.poised": {
+   "file": "art/kw.poised.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.lock": {
-   "file": "art/ui.lock.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "kw.execute": {
+   "file": "art/kw.execute.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.logo": {
-   "file": "art/ui.logo.png",
-   "w": 58,
-   "h": 65,
-   "ax": 30,
-   "ay": 44,
-   "render": "voxel"
+  "status.poison": {
+   "file": "art/status.poison.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.motion": {
-   "file": "art/ui.motion.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "status.weak": {
+   "file": "art/status.weak.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.peek": {
-   "file": "art/ui.peek.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "status.strength": {
+   "file": "art/status.strength.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.play": {
-   "file": "art/ui.play.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "status.thorns": {
+   "file": "art/status.thorns.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.reroll": {
-   "file": "art/ui.reroll.png",
+  "status.regen": {
+   "file": "art/status.regen.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "status.mark": {
+   "file": "art/status.mark.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "die.jammed": {
+   "file": "art/die.jammed.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "die.cursed": {
+   "file": "art/die.cursed.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.attack": {
+   "file": "art/intent.attack.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.attack_all": {
+   "file": "art/intent.attack_all.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.shield": {
+   "file": "art/intent.shield.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.heal": {
+   "file": "art/intent.heal.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.buff": {
+   "file": "art/intent.buff.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.debuff": {
+   "file": "art/intent.debuff.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.lockDie": {
+   "file": "art/intent.lockDie.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.curseFace": {
+   "file": "art/intent.curseFace.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.stealReroll": {
+   "file": "art/intent.stealReroll.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.summon": {
+   "file": "art/intent.summon.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "intent.charge": {
+   "file": "art/intent.charge.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "door.elite": {
+   "file": "art/door.elite.svg",
    "w": 48,
    "h": 48,
    "ax": 24,
    "ay": 24,
-   "render": "voxel"
+   "render": "flat"
   },
-  "ui.reset": {
-   "file": "art/ui.reset.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "door.rest": {
+   "file": "art/door.rest.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "ui.rotate": {
-   "file": "art/ui.rotate.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "door.shop": {
+   "file": "art/door.shop.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "ui.settings": {
-   "file": "art/ui.settings.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "door.event": {
+   "file": "art/door.event.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "ui.shield": {
-   "file": "art/ui.shield.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "door.treasure": {
+   "file": "art/door.treasure.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "ui.skip": {
-   "file": "art/ui.skip.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "door.onward": {
+   "file": "art/door.onward.svg",
+   "w": 48,
+   "h": 48,
+   "ax": 24,
+   "ay": 24,
+   "render": "flat"
   },
-  "ui.stats": {
-   "file": "art/ui.stats.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "set.pair": {
+   "file": "art/set.pair.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.target": {
-   "file": "art/ui.target.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "set.triple": {
+   "file": "art/set.triple.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.tier": {
-   "file": "art/ui.tier.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "set.rainbow": {
+   "file": "art/set.rainbow.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.tutorial": {
-   "file": "art/ui.tutorial.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "ui.logo": {
+   "file": "art/ui.logo.svg",
+   "w": 160,
+   "h": 120,
+   "ax": 80,
+   "ay": 60,
+   "render": "flat"
   },
-  "ui.undo": {
-   "file": "art/ui.undo.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "ui.reroll": {
+   "file": "art/ui.reroll.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
-  "ui.unknown": {
-   "file": "art/ui.unknown.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+  "ui.lock": {
+   "file": "art/ui.lock.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
   "ui.unlock": {
-   "file": "art/ui.unlock.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+   "file": "art/ui.unlock.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.undo": {
+   "file": "art/ui.undo.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.end_turn": {
+   "file": "art/ui.end_turn.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.settings": {
+   "file": "art/ui.settings.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.back": {
+   "file": "art/ui.back.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.close": {
+   "file": "art/ui.close.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.check": {
+   "file": "art/ui.check.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.hp": {
+   "file": "art/ui.hp.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.shield": {
+   "file": "art/ui.shield.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
   },
   "ui.ward": {
-   "file": "art/ui.ward.png",
-   "w": 36,
-   "h": 36,
-   "ax": 18,
-   "ay": 18,
-   "render": "voxel"
+   "file": "art/ui.ward.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.gold": {
+   "file": "art/ui.gold.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.downed": {
+   "file": "art/ui.downed.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.play": {
+   "file": "art/ui.play.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.daily": {
+   "file": "art/ui.daily.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.collection": {
+   "file": "art/ui.collection.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.stats": {
+   "file": "art/ui.stats.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.feat": {
+   "file": "art/ui.feat.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.feat_locked": {
+   "file": "art/ui.feat_locked.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.tutorial": {
+   "file": "art/ui.tutorial.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.export": {
+   "file": "art/ui.export.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.import": {
+   "file": "art/ui.import.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.reset": {
+   "file": "art/ui.reset.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.motion": {
+   "file": "art/ui.motion.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.tier": {
+   "file": "art/ui.tier.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.unknown": {
+   "file": "art/ui.unknown.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.rotate": {
+   "file": "art/ui.rotate.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.info": {
+   "file": "art/ui.info.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.skip": {
+   "file": "art/ui.skip.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.act": {
+   "file": "art/ui.act.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.boss": {
+   "file": "art/ui.boss.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.fight": {
+   "file": "art/ui.fight.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.install": {
+   "file": "art/ui.install.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.target": {
+   "file": "art/ui.target.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "ui.peek": {
+   "file": "art/ui.peek.svg",
+   "w": 24,
+   "h": 24,
+   "ax": 12,
+   "ay": 12,
+   "render": "flat"
+  },
+  "bg.act1": {
+   "file": "art/bg.act1.svg",
+   "w": 390,
+   "h": 844,
+   "ax": 195,
+   "ay": 422,
+   "render": "flat"
+  },
+  "bg.act2": {
+   "file": "art/bg.act2.svg",
+   "w": 390,
+   "h": 844,
+   "ax": 195,
+   "ay": 422,
+   "render": "flat"
+  },
+  "bg.act3": {
+   "file": "art/bg.act3.svg",
+   "w": 390,
+   "h": 844,
+   "ax": 195,
+   "ay": 422,
+   "render": "flat"
+  },
+  "bg.menu": {
+   "file": "art/bg.menu.svg",
+   "w": 390,
+   "h": 844,
+   "ax": 195,
+   "ay": 422,
+   "render": "flat"
+  },
+  "app.icon": {
+   "file": "art/app.icon.svg",
+   "w": 512,
+   "h": 512,
+   "ax": 256,
+   "ay": 256,
+   "render": "flat"
   }
  }
 }

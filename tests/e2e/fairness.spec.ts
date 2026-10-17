@@ -23,9 +23,9 @@ async function expectIntentsShown(page: Page, g: GameState): Promise<void> {
     expect(e.intent, `enemy ${e.uid} has an intent in state`).not.toBeNull();
     const bubble = page.getByTestId(`intent-${e.uid}`);
     await expect(bubble, `intent of enemy ${e.uid} is visible`).toBeVisible();
-    // 0.2.0 look: icons + numbers; the sentence is the aria-label ("<Enemy> intends <move>"), and at least one icon is drawn.
+    // Icons + numbers (flat icons are [data-sprite] elements); the sentence is the aria-label ("<Enemy> intends <move>"), and at least one icon is drawn.
     await expect(bubble, `intent of enemy ${e.uid} is described`).toHaveAttribute('aria-label', /intends/);
-    expect(await bubble.locator('img, canvas, svg, .px').count(), `intent of enemy ${e.uid} shows at least one action`).toBeGreaterThan(0);
+    expect(await bubble.locator('[data-sprite]').count(), `intent of enemy ${e.uid} shows at least one action`).toBeGreaterThan(0);
   }
 }
 

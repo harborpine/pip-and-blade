@@ -51,8 +51,8 @@ export async function layoutIssues(page: Page, opts: LayoutOptions = {}): Promis
     // Text or pictures that spill out of the box that is meant to hold them (cut off, or poking out over a neighbour).
     const spill = new Set<string>();
     for (const el of document.querySelectorAll<HTMLElement>('#app *, #overlays *')) {
-      // Pixel-font text is invisible glyph boxes (.px) and die/padlock words are not drawn (.die-word, .lock-word): see src/ui/TESTING.md.
-      if (el.closest('.fx-layer, .px, .die-word, .lock-word') || el instanceof SVGElement || el.tagName === 'IMG') continue;
+      // Die/padlock words are clipped to 1 px on purpose (.die-word, .lock-word): see src/ui/TESTING.md.
+      if (el.closest('.fx-layer, .die-word, .lock-word') || el instanceof SVGElement || el.tagName === 'IMG') continue;
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.display === 'inline' || /(auto|scroll)/.test(cs.overflowY)) continue;
       if (el.clientHeight === 0 || el.clientWidth === 0) continue;
@@ -64,37 +64,49 @@ export async function layoutIssues(page: Page, opts: LayoutOptions = {}): Promis
     }
     issues.push(...spill);
 
-    // The pixel-font text itself: the hidden DOM text inside .px is ignored above, but the box that DRAWS each
-    // piece of pixel text must lie inside the box that holds it and inside the screen (same strictness as plain text).
-    const pxSeen = new Set<string>();
-    for (const px of document.querySelectorAll<HTMLElement>('.px')) {
-      if (px.parentElement?.closest('.px') || px.closest('.fx-layer')) continue;
-      const pr = px.getBoundingClientRect();
+    // The text itself (0.3.0: real text in the phone's rounded font): the box that DRAWS each piece of text must
+    // lie inside the box that holds it and inside the screen (same strictness as before: 2 px).
+    const textSeen = new Set<string>();
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const txt = (node.textContent ?? '').trim();
+      const parent = node.parentElement;
+      if (!txt || !parent) continue;
+      if (parent.closest('.fx-layer, .die-word, .lock-word, #rotate-overlay, script, style') || parent instanceof SVGElement) continue;
+      const pcs = getComputedStyle(parent);
+      if (pcs.display === 'none' || pcs.visibility === 'hidden') continue;
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const pr = range.getBoundingClientRect();
       if (pr.width === 0 || pr.height === 0) continue;
-      const cs = getComputedStyle(px);
-      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
       if (pr.right < 0 || pr.left > vw || pr.bottom < 0 || pr.top > vh) continue;
-      let host: HTMLElement | null = px.parentElement;
-      while (host && host.closest('.px')) host = host.parentElement;
+      let host: HTMLElement | null = parent;
+      while (host && host !== document.body && /^(inline|contents)$/.test(getComputedStyle(host).display)) host = host.parentElement;
       if (host && host !== document.body) {
         const hr = host.getBoundingClientRect();
-        const l = hr.left;
         let t = hr.top;
-        const r = hr.right;
-        let b = hr.bottom;
-        const hs = getComputedStyle(host);
-        if (/(auto|scroll)/.test(hs.overflowY)) {
+        let bt = hr.bottom;
+        if (/(auto|scroll)/.test(getComputedStyle(host).overflowY)) {
           // inside a scroll box the text may be scrolled out of view; only the horizontal fit is measured
           t = -Infinity;
-          b = Infinity;
+          bt = Infinity;
         }
-        if (pr.left < l - 2 || pr.right > r + 2 || pr.top < t - 2 || pr.bottom > b + 2) {
-          pxSeen.add(`pixel text spills out of its box: "${(px.textContent ?? '').slice(0, 20)}" ${Math.round(pr.width)}x${Math.round(pr.height)} in ${name(host)} ${Math.round(hr.width)}x${Math.round(hr.height)}`);
+        // text that a scroll parent has scrolled out of view is not on screen
+        let hiddenByScroll = false;
+        for (let p: HTMLElement | null = host.parentElement; p && p !== document.body; p = p.parentElement) {
+          if (/(auto|scroll)/.test(getComputedStyle(p).overflowY)) {
+            const sr = p.getBoundingClientRect();
+            if (pr.bottom <= sr.top || pr.top >= sr.bottom) hiddenByScroll = true;
+            break;
+          }
+        }
+        if (!hiddenByScroll && (pr.left < hr.left - 2 || pr.right > hr.right + 2 || pr.top < t - 2 || pr.bottom > bt + 2)) {
+          textSeen.add(`text spills out of its box: "${txt.slice(0, 20)}" ${Math.round(pr.width)}x${Math.round(pr.height)} in ${name(host)} ${Math.round(hr.width)}x${Math.round(hr.height)}`);
         }
       }
-      if (pr.left < -0.5 || pr.right > vw + 0.5) pxSeen.add(`pixel text outside the screen: "${(px.textContent ?? '').slice(0, 20)}"`);
+      if (pr.left < -0.5 || pr.right > vw + 0.5) textSeen.add(`text outside the screen: "${txt.slice(0, 20)}"`);
     }
-    issues.push(...pxSeen);
+    issues.push(...textSeen);
 
     const modal = document.querySelector('#overlays .modal-back');
     const scope: ParentNode = modal ?? document;
@@ -156,10 +168,10 @@ export async function layoutIssues(page: Page, opts: LayoutOptions = {}): Promis
         if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
         const w = Math.min(a.vis.r, b.vis.r) - Math.max(a.vis.l, b.vis.l);
         const h = Math.min(a.vis.b, b.vis.b) - Math.max(a.vis.t, b.vis.t);
-        // A padlock overlaps the foot of its own die by up to 20 px on the tightest layouts, on purpose.
+        // A padlock overlaps the foot of its own die by up to 10 px (6 px normally), on purpose.
         const ia = a.el.dataset['testid'] ?? '';
         const ib = b.el.dataset['testid'] ?? '';
-        const lockOverDie = ((ia.startsWith('die-') && ib === 'lock-' + ia.slice(4)) || (ib.startsWith('die-') && ia === 'lock-' + ib.slice(4))) && h <= 20;
+        const lockOverDie = ((ia.startsWith('die-') && ib === 'lock-' + ia.slice(4)) || (ib.startsWith('die-') && ia === 'lock-' + ib.slice(4))) && h <= 10;
         if (lockOverDie && w > 2 && h > 2) {
           // Approved overlap (padlock over the foot of its own die): the padlock must stay fully on top and tappable.
           const lockEl = ia.startsWith('lock-') ? a : b;

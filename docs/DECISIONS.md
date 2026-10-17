@@ -116,3 +116,23 @@ The ones a player could notice:
     names) rather than shrinking the miniatures further.
 46. **A jammed die says "Jammed by an enemy"** without naming which one; naming it would
     need a rules-code change and rules were frozen for this update.
+
+## Update 0.3.0 (17 Oct 2026)
+
+47. **The owner chose a flat, clean style for the whole game**: ivory front-on dice, round
+    tokens for every character, flat icons, the phone's rounded lettering. The 3D voxel
+    look, the pixel lettering and the picture-based interface kit are retired.
+48. **Pictures become vector drawings (SVG) and surfaces are drawn by the app (CSS).** They
+    stay sharp at any size, need no pixel-scaling rules, and are simpler to produce well.
+49. **The die is drawn by the app, not a picture**, so every state is plain styling and the
+    number is real text.
+50. **The "every icon is a 3D toy" content check is replaced by "every picture is a flat
+    vector drawing"**, because the owner changed the requirement. It is not a loosening:
+    the new check is as strict (every id present, right format, right size, nothing left
+    over from the old look).
+51. **Three small departures from the flat-style spec, accepted:** the ring around a lifted
+    die is ivory rather than ink (an ink ring is invisible on the dark tray); the heart on a
+    health bar is red while the bar itself is green; the padlock overlaps its die by 6px
+    (10px on the tightest layouts).
+52. **Single-colour icons are tinted by the app and held in memory from start-up**, because
+    icons fetched on first use could briefly paint blank (a missing heart was seen once).

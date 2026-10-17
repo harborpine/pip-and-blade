@@ -37,13 +37,15 @@ export function buildHome(): Screen {
     );
   }
 
-  // The logo takes whatever height is left over, at a whole-number scale so its pixels stay crisp.
+  // The logo takes whatever height is left over (it is a vector drawing: any size is sharp).
+  const native = spriteInfo('ui.logo');
+  const ratio = native ? native.h / native.w : 0.75;
   const room = window.innerHeight - 290 - (tip ? 100 : 0) - 70;
-  const logoScale = Math.max(1, Math.min(4, Math.floor(room / (spriteInfo('ui.logo')?.h ?? 48))));
+  const logoW = Math.max(0, Math.min(240, Math.floor(room / ratio)));
 
-  const el = h('main', { class: `screen home${logoScale < 2 ? ' short' : ''}`, testid: 'screen-home' },
+  const el = h('main', { class: `screen home${logoW < 120 ? ' short' : ''}`, testid: 'screen-home' },
     h('div', { class: 'home-logo' },
-      spriteImg('ui.logo', logoScale, 'logo-art'),
+      logoW >= 80 ? spriteImg('ui.logo', logoW, 'logo-art') : null,
       h('h1', { class: 'title', testid: 'title', text: 'Pip & Blade' }),
       h('p', { class: 'tagline', text: 'Roll. Lock. Strike.' }),
     ),
@@ -70,14 +72,13 @@ export function buildHome(): Screen {
     mounted: () => {
       const box = el.querySelector<HTMLElement>('.home-logo');
       const logo = el.querySelector<HTMLElement>('.logo-art');
-      const native = spriteInfo('ui.logo');
-      if (!box || !logo || !native) return;
-      let scale = logoScale;
+      if (!box || !logo) return;
+      let w = logoW;
       const fits = (): boolean => box.scrollHeight <= box.clientHeight + 1;
-      while (!fits() && scale > 1) {
-        scale -= 1;
-        logo.style.width = `${native.w * scale}px`;
-        logo.style.height = `${native.h * scale}px`;
+      while (!fits() && w > 96) {
+        w = Math.max(96, w - 24);
+        logo.style.width = `${w}px`;
+        logo.style.height = `${Math.round(w * ratio)}px`;
       }
       if (!fits()) el.classList.add('short');
       if (!fits()) logo.style.display = 'none';

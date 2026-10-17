@@ -44,7 +44,8 @@ export function watch(page: Page): Problems {
     foreignRequests: [],
     assertClean() {
       expect(p.pageErrors, 'uncaught page errors').toEqual([]);
-      expect(p.console, 'console errors').toEqual([]);
+      // A "Failed to load resource" console line carries no URL: show the failed requests beside it so the file is named.
+      expect(p.console, `console errors (failed requests seen: ${JSON.stringify(p.failedRequests)})`).toEqual([]);
       expect(p.failedRequests, 'failed requests').toEqual([]);
       expect(p.foreignRequests, 'requests that left the origin').toEqual([]);
     },

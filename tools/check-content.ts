@@ -3,12 +3,12 @@
  * Verifies launch counts, that every entity has generated art, and that nothing references
  * something that does not exist. Owned by the lead. Never loosen a check to get a pass.
  */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CONTENT } from '@content';
 import type { ArtManifest, Condition, ContentDB, Effect, EnemyAi, FaceDef, TriggeredEffect } from '@shared';
 import {
-  APP_ICON_FILES, ASSET_IDS, ASSET_LIST, STRETCHY_KIT_IDS, BOSS_ROSTER, ENEMY_ROSTER, FACE_EFFECTS, HERO_ROSTER, ITEM_ROSTER, KEYWORDS, REQUIRED_COUNTS,
+  APP_ICON_FILES, ASSET_IDS, ASSET_LIST, BOSS_ROSTER, ENEMY_ROSTER, FACE_EFFECTS, HERO_ROSTER, ITEM_ROSTER, KEYWORDS, REQUIRED_COUNTS,
   STARTER_HEROES, STATUSES, SYMBOLS,
 } from '@shared';
 
@@ -44,35 +44,36 @@ for (const f of APP_ICON_FILES) if (!existsSync(`${root}public/icons/${f}`)) fai
 if (!existsSync(`${root}public/gallery.html`)) fail('Art gallery missing: public/gallery.html');
 if (manifest && manifest.palette.length > 28) fail(`Palette has ${manifest.palette.length} colours; the shared palette must be about 24 (max 28).`);
 
-// ---------------------------------------------------------------- one toy set (0.2.0)
-// Every character and every icon must be a voxel model drawn by the isometric renderer:
-// no flat icons anywhere. The generator sets `render` from the code path it really used.
-const VOXEL_CATEGORIES: readonly string[] = ['hero', 'enemy', 'boss', 'sym', 'fx', 'kw', 'status', 'intent', 'door', 'set', 'ui', 'item', 'die', 'app'];
-const MIN_ICON_PX = 32;
-const ICON_CATEGORIES = ['sym', 'fx', 'kw', 'status', 'intent', 'set', 'ui', 'die', 'item', 'door'];
-const flat: string[] = [];
-const tooSmall: string[] = [];
-const renderCount: Record<string, { voxel: number; total: number }> = {};
+// ---------------------------------------------------------------- one flat style (0.3.0)
+// From 0.3.0 every picture is a flat vector drawing (SVG) made by tools/artgen (BRIEF-3,
+// docs/flat-style.md). This replaces the 0.2.0 "every icon is a voxel toy" rule because the
+// owner changed the requirement; it is just as strict.
+const SIZE_RULES: Record<string, number> = {
+  sym: 24, fx: 24, kw: 24, status: 24, intent: 24, set: 24, die: 24,
+  item: 48, door: 48, hero: 96, enemy: 96, boss: 96,
+};
+const notFlat: string[] = [];
+const wrongSize: string[] = [];
+const renderCount: Record<string, { flat: number; total: number }> = {};
 for (const a of ASSET_LIST) {
   const info = manifest?.sprites[a.id];
   if (!info) continue;
-  const rc = (renderCount[a.category] ??= { voxel: 0, total: 0 });
+  const rc = (renderCount[a.category] ??= { flat: 0, total: 0 });
   rc.total += 1;
-  if (info.render === 'voxel') rc.voxel += 1;
-  if (VOXEL_CATEGORIES.includes(a.category) && info.render !== 'voxel') flat.push(a.id);
-  if (a.category === 'kit' && info.render !== 'kit') fail(`Kit piece ${a.id} is not marked render "kit".`);
-  if (a.category === 'bg' && info.render !== 'scene') fail(`Background ${a.id} is not marked render "scene".`);
-  if (ICON_CATEGORIES.includes(a.category) && VOXEL_CATEGORIES.includes(a.category) && Math.max(info.w, info.h) < MIN_ICON_PX) {
-    tooSmall.push(`${a.id} (${info.w}x${info.h})`);
-  }
+  const isFlat = info.render === 'flat' && info.file.endsWith('.svg');
+  if (isFlat) rc.flat += 1;
+  else notFlat.push(a.id);
+  const want = SIZE_RULES[a.category];
+  if (want !== undefined && a.id !== 'ui.logo' && (info.w !== want || info.h !== want)) wrongSize.push(`${a.id} (${info.w}x${info.h}, want ${want}x${want})`);
+  if (a.category === 'ui' && a.id !== 'ui.logo' && (info.w !== 24 || info.h !== 24)) wrongSize.push(`${a.id} (${info.w}x${info.h}, want 24x24)`);
 }
-if (flat.length > 0) fail(`Flat (non-voxel) sprites remain: ${flat.slice(0, 20).join(', ')}${flat.length > 20 ? ', ...' : ''}`);
-if (tooSmall.length > 0) fail(`Icons under ${MIN_ICON_PX}px native: ${tooSmall.slice(0, 20).join(', ')}`);
-for (const id of STRETCHY_KIT_IDS) {
-  const sl = manifest?.sprites[id]?.slice;
-  if (!sl || sl.length !== 4 || sl.some((n) => !Number.isInteger(n) || n < 0)) fail(`Stretchable kit piece ${id} has no valid 9-slice insets.`);
-}
-for (const f of ['font.json', 'palette.json', 'palette.css']) {
+if (notFlat.length > 0) fail(`Not a flat SVG drawing: ${notFlat.slice(0, 20).join(', ')}${notFlat.length > 20 ? ', ...' : ''}`);
+if (wrongSize.length > 0) fail(`Wrong drawing size: ${wrongSize.slice(0, 20).join(', ')}`);
+if (ASSET_LIST.some((a) => a.category === 'kit')) fail('The retired interface kit (kit.*) is still on the asset list.');
+const leftoverPng = existsSync(`${root}public/art`) ? readdirSync(`${root}public/art`).filter((f) => !f.endsWith('.svg')) : [];
+if (leftoverPng.length > 0) fail(`Leftover non-SVG pictures in public/art: ${leftoverPng.slice(0, 10).join(', ')}`);
+if (manifest && manifest.generatedBy !== 'artgen') fail(`Art manifest was made by "${manifest.generatedBy}", not the flat generator (artgen).`);
+for (const f of ['palette.css']) {
   if (!existsSync(`${root}src/art/generated/${f}`)) fail(`Generated art file missing: src/art/generated/${f}`);
 }
 
@@ -145,7 +146,6 @@ for (const h of c.heroes) {
   if (h.itemSlots < 1) fail(`hero ${h.id}: needs at least 1 item slot.`);
   if (h.starter !== STARTER_HEROES.includes(h.id)) fail(`hero ${h.id}: starter flag disagrees with STARTER_HEROES.`);
   needArt(`hero.${h.id}`);
-  needArt(`die.${h.id}`);
 }
 dupes([...c.heroes.flatMap((h) => h.faces.map((f) => f.id)), ...c.rewardFaces.map((f) => f.id)], 'face');
 for (const f of c.rewardFaces) {
@@ -348,7 +348,7 @@ atLeast(count.feats, REQUIRED_COUNTS.feats, 'feats');
 
 const withArt = (ids: string[]): string => {
   const ok = ids.filter(hasArt).length;
-  return `${ok}/${ids.length} with generated voxel art`;
+  return `${ok}/${ids.length} with generated art`;
 };
 console.log('Pip & Blade content check');
 console.log('-------------------------');
@@ -362,13 +362,15 @@ console.log(`Events:     ${count.events}`);
 console.log(`Tiers:      ${count.tiers}`);
 console.log(`Encounters: ${count.encounters}    Reward faces: ${count.rewardFaces}`);
 const rc = (cats: string[]): string => {
-  const v = cats.reduce((n, k) => n + (renderCount[k]?.voxel ?? 0), 0);
+  const v = cats.reduce((n, k) => n + (renderCount[k]?.flat ?? 0), 0);
   const t = cats.reduce((n, k) => n + (renderCount[k]?.total ?? 0), 0);
-  return `${v}/${t} voxel toy objects, ${t - v} flat`;
+  return `${v}/${t} flat vector drawings`;
 };
-console.log(`Icons:      symbols ${rc(['sym'])}; face effects ${rc(['fx'])}; keywords ${rc(['kw'])}; statuses ${rc(['status'])}`);
-console.log(`            intents ${rc(['intent'])}; doors ${rc(['door'])}; sets ${rc(['set'])}; interface ${rc(['ui'])}; items ${rc(['item'])}; dice ${rc(['die'])}`);
-console.log(`Kit:        ${renderCount['kit']?.total ?? 0} interface-kit pieces (${STRETCHY_KIT_IDS.length} stretchable, all with 9-slice insets)    Backgrounds: ${renderCount['bg']?.total ?? 0}`);
+console.log(`Icons:      symbols ${rc(['sym'])}; effects ${rc(['fx'])}; keywords ${rc(['kw'])}; statuses ${rc(['status'])}`);
+console.log(`            intents ${rc(['intent'])}; sets ${rc(['set'])}; interface ${rc(['ui'])}; die marks ${rc(['die'])}`);
+console.log(`Items:      ${rc(['item'])}    Doors: ${rc(['door'])}    Backgrounds: ${rc(['bg'])}    App icon: ${rc(['app'])}`);
+console.log(`Tokens:     heroes ${rc(['hero'])}; enemies ${rc(['enemy'])}; bosses ${rc(['boss'])}`);
+console.log(`Leftovers:  ${leftoverPng.length} old pixel pictures, ${ASSET_LIST.filter((a) => a.category === 'kit').length} interface-kit pieces`);
 console.log(`Asset list: ${ASSET_IDS.length} sprites required, ${ASSET_IDS.length - ASSET_IDS.filter((id) => !hasArt(id)).length} present, ${ASSET_IDS.filter((id) => !hasArt(id)).length} missing`);
 
 const missing = [...new Set(artMissing)];

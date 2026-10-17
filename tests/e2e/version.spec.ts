@@ -1,18 +1,18 @@
-/** 0.2.0 version marker and the one-time Home Screen install tip (shown in a browser tab only). */
+/** 0.3.0 version marker and the one-time Home Screen install tip (shown in a browser tab only). */
 import { expect, test } from '@playwright/test';
 import { PARTY, expectScreen, openApp, readPrefs, startRun, watch } from './support/app';
 import { layoutIssues } from './support/layout';
 
-test('Settings shows Version 0.2.0 and version.json serves 0.2.0', async ({ page }) => {
+test('Settings shows Version 0.3.0 and version.json serves 0.3.0', async ({ page }) => {
   const problems = watch(page);
   await openApp(page);
   await page.getByTestId('btn-settings').tap();
-  await expect(page.getByTestId('app-version')).toHaveText(/0\.2\.0/);
-  await expect(page.getByTestId('app-version')).toHaveText('Version 0.2.0');
+  await expect(page.getByTestId('app-version')).toHaveText(/0\.3\.0/);
+  await expect(page.getByTestId('app-version')).toHaveText('Version 0.3.0');
   const res = await page.request.get('version.json');
   expect(res.ok()).toBe(true);
   const body = (await res.json()) as { version?: string };
-  expect(body.version).toBe('0.2.0');
+  expect(body.version).toBe('0.3.0');
   problems.assertClean();
 });
 

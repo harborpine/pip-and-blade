@@ -1,6 +1,6 @@
 /** Info sheets: exact rules text for dice, heroes, enemies, intents, items and keywords. */
 import type { DieView, ItemId } from '@shared';
-import { icon, picture, spriteImg } from './art';
+import { icon, picture, token } from './art';
 import { h } from './dom';
 import { content } from './engine';
 import { faceGrid, itemRows } from './parts';
@@ -47,7 +47,7 @@ export function showDieInfo(dv: DieView, opts: { previews?: string[]; onClose?: 
     onClose: opts.onClose,
     testid: 'info-die',
     title: face?.name ?? 'Die',
-    icon: icon(dv.effect === 'blank' ? 'die.blank' : `fx.${dv.effect}`, 36),
+    icon: icon(dv.effect === 'blank' ? 'fx.blank' : `fx.${dv.effect}`, 36),
     lines,
   });
 }
@@ -61,10 +61,10 @@ export function showHeroInfo(index: number): void {
   const lines: (string | Node)[] = [`${d?.title ?? ''}. ${d?.blurb ?? ''}`, `HP ${hs.downed ? 0 : hs.hp} of ${hs.maxHp}${hs.downed ? ' (down this fight)' : ''}.`];
   if (hf && (hf.shield > 0 || hf.ward > 0)) lines.push(`Shield ${hf.shield}${hf.ward ? `, Ward ${hf.ward} (does not expire)` : ''}.`);
   if (hf) for (const [s, n] of Object.entries(hf.statuses)) if (n) lines.push(`${statusDef(s)?.name ?? s} ${n}: ${statusDef(s)?.text ?? ''}`);
-  lines.push(section('Die faces'), faceGrid(hs.faces), section('Items'));
+  lines.push(section('Die faces'), faceGrid(hs.faces, hs.heroId), section('Items'));
   if (hs.items.length === 0) lines.push('No items.');
   else lines.push(...itemRows(hs.items));
-  infoSheet({ testid: 'info-hero', title: heroName(hs.heroId), icon: spriteImg(heroSpriteId(hs.heroId), 1), lines });
+  infoSheet({ testid: 'info-hero', title: heroName(hs.heroId), icon: token(heroSpriteId(hs.heroId), 64), lines });
 }
 
 export function showEnemyInfo(uid: number): void {
@@ -77,7 +77,7 @@ export function showEnemyInfo(uid: number): void {
   for (const [s, n] of Object.entries(es.statuses)) if (n) lines.push(`${statusDef(s)?.name ?? s} ${n}: ${statusDef(s)?.text ?? ''}`);
   if (d?.passiveText) lines.push(section(d.kind === 'boss' ? 'Boss mechanic' : 'Passive'), d.passiveText);
   if (es.intent) lines.push(section(`Next: ${es.intent.moveName}`), ...describeIntent(run, es.intent));
-  infoSheet({ testid: 'info-enemy', title: d?.name ?? es.enemyId, icon: spriteImg(enemySpriteId(es.enemyId), 1), lines });
+  infoSheet({ testid: 'info-enemy', title: d?.name ?? es.enemyId, icon: token(enemySpriteId(es.enemyId), 64), lines });
 }
 
 export function showIntentInfo(uid: number): void {
@@ -108,8 +108,8 @@ export function showHeroDefInfo(id: string, known = true): void {
     return;
   }
   const lines: (string | Node)[] = [`${d.title}. ${d.blurb}`, `HP ${d.maxHp}. ${d.itemSlots} item slots.`, section('Die faces')];
-  lines.push(faceGrid(d.faces.map((f) => ({ defId: f.id, name: f.name, effect: f.effect, symbol: f.symbol, value: f.value, keywords: f.keywords, upgrades: 0 }))));
-  infoSheet({ testid: 'info-hero-def', title: d.name, icon: spriteImg(heroSpriteId(d.id), 1), lines });
+  lines.push(faceGrid(d.faces.map((f) => ({ defId: f.id, name: f.name, effect: f.effect, symbol: f.symbol, value: f.value, keywords: f.keywords, upgrades: 0 })), d.id));
+  infoSheet({ testid: 'info-hero-def', title: d.name, icon: token(heroSpriteId(d.id), 64), lines });
 }
 
 /** Info for an enemy from content (collection): HP, passive, moves. */
@@ -118,7 +118,7 @@ export function showEnemyDefInfo(id: string): void {
   if (!d) return;
   const lines: (string | Node)[] = [d.blurb, `${d.kind === 'boss' ? 'Boss' : d.kind === 'elite' ? 'Elite' : 'Enemy'} of act ${d.act}. HP ${d.hp}.`];
   if (d.passiveText) lines.push(section(d.kind === 'boss' ? 'Boss mechanic' : 'Passive'), d.passiveText);
-  infoSheet({ testid: 'info-enemy-def', title: d.name, icon: spriteImg(enemySpriteId(d.id), 1), lines });
+  infoSheet({ testid: 'info-enemy-def', title: d.name, icon: token(enemySpriteId(d.id), 64), lines });
 }
 
 /** The exact anti-stall rule, from the numbers in content. */

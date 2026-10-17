@@ -1,5 +1,5 @@
 /** Collection, Feats, Stats, Daily. */
-import { icon, portrait, spriteImg } from '../art';
+import { icon, token } from '../art';
 import { h, replace } from '../dom';
 import { scrollBox } from '../scroll';
 import { content, engine } from '../engine';
@@ -37,13 +37,13 @@ export function buildCollection(): Screen {
     let tiles: HTMLElement[];
     let count: string;
     if (tab === 'heroes') {
-      tiles = content.heroes.map((d) => tile(`coll-hero-${d.id}`, seenH.has(d.id), d.name, seenH.has(d.id) ? portrait(`hero.${d.id}`) : icon('ui.unknown', 48), () => showHeroDefInfo(d.id, seenH.has(d.id))));
+      tiles = content.heroes.map((d) => tile(`coll-hero-${d.id}`, seenH.has(d.id), d.name, seenH.has(d.id) ? token(`hero.${d.id}`, 60) : icon('ui.unknown', 48), () => showHeroDefInfo(d.id, seenH.has(d.id))));
       count = `${content.heroes.filter((d) => seenH.has(d.id)).length}/${content.heroes.length}`;
     } else if (tab === 'items') {
       tiles = content.items.map((d) => tile(`coll-item-${d.id}`, seenI.has(d.id), d.name, icon(seenI.has(d.id) ? `item.${d.id}` : 'ui.unknown', 48), () => (seenI.has(d.id) ? showItemInfo(d.id) : toast('Not found yet.'))));
       count = `${content.items.filter((d) => seenI.has(d.id)).length}/${content.items.length}`;
     } else {
-      tiles = content.enemies.map((d) => tile(`coll-enemy-${d.id}`, seenE.has(d.id), d.name, seenE.has(d.id) ? spriteImg(enemySpriteId(d.id), 1) : icon('ui.unknown', 48), () => (seenE.has(d.id) ? showEnemyDefInfo(d.id) : toast('Not met yet.'))));
+      tiles = content.enemies.map((d) => tile(`coll-enemy-${d.id}`, seenE.has(d.id), d.name, seenE.has(d.id) ? token(enemySpriteId(d.id), 60) : icon('ui.unknown', 48), () => (seenE.has(d.id) ? showEnemyDefInfo(d.id) : toast('Not met yet.'))));
       count = `${content.enemies.filter((d) => seenE.has(d.id)).length}/${content.enemies.length}`;
     }
     replace(el,
@@ -127,7 +127,7 @@ export function buildDaily(): Screen {
     topBar('Daily run', back),
     h('p', { class: 'center', testid: 'daily-date', text: key }),
     h('div', { class: 'daily-party' },
-      ...heroes.map((id) => h('div', { class: 'mini-hero' }, h('div', { class: 'mini-art' }, portrait(`hero.${id}`)), h('strong', { text: shortName(id) }))),
+      ...heroes.map((id) => h('div', { class: 'mini-hero' }, h('div', { class: 'mini-art' }, token(`hero.${id}`, 52)), h('strong', { text: shortName(id) }))),
     ),
     h('p', { class: 'hint center', text: 'Same party, same fights, same rewards every try today.' }),
     h('p', { class: 'center', testid: 'daily-best', text: rec ? `Best today: ${rec.bestScore}${rec.won ? ' (won)' : ''} · ${rec.attempts} attempt${rec.attempts === 1 ? '' : 's'}` : 'Not played yet today' }),

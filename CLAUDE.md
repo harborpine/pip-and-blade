@@ -5,8 +5,10 @@ A single-player dice-builder roguelike PWA for iPhone. Read these first, in this
 1. `BRIEF.md`: what the owner (Harborpine, a non-programmer) asked for. It is the requirement.
 2. `docs/design.md`: the specification. `src/shared/` is the binding contract (types).
 3. `docs/PROGRESS.md`: current phase, who owns what, what is next.
-4. For the 0.2.0 update: `BRIEF-2.md` (the owner's second brief) and `docs/redesign.md`
-   (its exact specification). Game rules and numbers are frozen in this update.
+4. `BRIEF-2.md` and `docs/redesign.md`: the 0.2.0 update (scrolling and the dice flow
+   still follow `docs/redesign.md` sections A and B).
+5. For the 0.3.0 update: `BRIEF-3.md` (the owner's third brief) and `docs/flat-style.md`
+   (its exact specification). Game rules, numbers, interaction and test ids are frozen.
 
 ## Team and ownership
 
@@ -15,7 +17,7 @@ A single-player dice-builder roguelike PWA for iPhone. Read these first, in this
 | lead | `docs/`, `CLAUDE.md`, `README.md`, `BRIEF*.md`, `package.json`, config files in the repo root, `scripts/`, `tools/check-content.ts`, `tests/fixtures/`, `.github/`, `src/shared/` |
 | engine | `src/engine/` |
 | designer | `src/content/`, `tools/sim/` |
-| art | `tools/voxelgen/`, `src/art/`, `public/art/`, `public/icons/`, `public/gallery.html` |
+| art | `tools/artgen/`, `src/art/`, `public/art/`, `public/icons/`, `public/gallery.html` |
 | ui | `src/ui/`, `index.html`, `public/` (everything except art's three paths) |
 | qa | `tests/e2e/` |
 

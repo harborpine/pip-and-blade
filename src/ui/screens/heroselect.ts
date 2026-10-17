@@ -1,5 +1,5 @@
 import type { HeroId } from '@shared';
-import { icon, spriteImg } from '../art';
+import { icon, token } from '../art';
 import { h, replace } from '../dom';
 import { scrollBox } from '../scroll';
 import { content, engine } from '../engine';
@@ -36,7 +36,7 @@ export function buildHeroSelect(): Screen {
           const open = unlocked.has(d.id);
           const on = picked.includes(d.id);
           const card = h('div', { class: `hero-card${on ? ' picked' : ''}${open ? '' : ' locked'}`, testid: `hero-pick-${d.id}`, attrs: { role: 'button', tabindex: '0', 'aria-pressed': String(on) } },
-            h('div', { class: 'hero-card-art' }, spriteImg(`hero.${d.id}`, 1)),
+            h('div', { class: 'hero-card-art' }, token(`hero.${d.id}`, 72)),
             h('strong', { text: d.name }),
             h('span', { class: 'hint', text: open ? `${d.title} · HP ${d.maxHp}` : unlockHint(d.id) }),
             on ? h('span', { class: 'picked-mark', text: `#${picked.indexOf(d.id) + 1}` }) : null,

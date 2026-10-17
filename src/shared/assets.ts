@@ -22,17 +22,8 @@ const spec = (category: AssetCategory, key: string, name: string, look: string):
 });
 
 const DIE_OVERLAYS: [string, string, string][] = [
-  ['locked', 'Locked die', 'Overlay for a die the player locked: small gold padlock at a corner / gold rim.'],
-  ['jammed', 'Jammed die', 'Overlay for a die locked by an enemy: grey web or chains across the cube.'],
-  ['cursed', 'Cursed face', 'Overlay for a face cursed to blank: purple crack and wisp.'],
-  ['used', 'Used die', 'Overlay or darkened variant for a die already used this turn.'],
-  ['blank', 'Blank face', 'Empty die-face icon: faint dotted outline.'],
-  ['face_damage', 'Die face: damage', 'The damage effect drawn at the pixel size of the die, placed on the die canvas.'],
-  ['face_shield', 'Die face: shield', 'The shield effect at die pixel size.'],
-  ['face_heal', 'Die face: heal', 'The heal effect at die pixel size.'],
-  ['face_weaken', 'Die face: weaken', 'The weaken effect at die pixel size.'],
-  ['face_focus', 'Die face: focus', 'The focus effect at die pixel size.'],
-  ['face_blank', 'Die face: blank', 'The blank look at die pixel size.'],
+  ['jammed', 'Jammed die', 'Flat icon: a chain, shown on a die an enemy has jammed and on its padlock button.'],
+  ['cursed', 'Cursed face', 'Flat icon: a crack, shown on a face an enemy has cursed to blank.'],
 ];
 
 const INTENTS: [string, string, string][] = [
@@ -98,49 +89,7 @@ const UI_ICONS: [string, string, string][] = [
   ['peek', 'Peek', 'An eye.'],
 ];
 
-/** Interface kit (0.2.0): toy-style pieces the UI builds every surface from. See docs/redesign.md section C. */
-const KIT: [string, string, string][] = [
-  ['button', 'Button', 'Chunky ivory button, raised.'],
-  ['button_pressed', 'Button pressed', 'The same button, sunk.'],
-  ['button_disabled', 'Button disabled', 'Greyed, flat.'],
-  ['button_primary', 'Primary button', 'Gold, raised.'],
-  ['button_primary_pressed', 'Primary button pressed', 'Gold, sunk.'],
-  ['button_danger', 'Danger button', 'Red, raised.'],
-  ['button_danger_pressed', 'Danger button pressed', 'Red, sunk.'],
-  ['panel', 'Panel', 'Card-like light panel.'],
-  ['panel_dark', 'Dark panel', 'Dark inset panel.'],
-  ['panel_selected', 'Selected panel', 'Highlighted card frame.'],
-  ['sheet', 'Sheet', 'Bottom sheet body.'],
-  ['sheet_grip', 'Sheet grip', 'The grab notch shown at the top of a sheet.'],
-  ['tray', 'Dice tray', 'Wooden rim, felt floor.'],
-  ['slot', 'Die slot', 'Socket a die sits in.'],
-  ['bubble', 'Intent bubble', 'Speech bubble body.'],
-  ['bubble_tail', 'Intent bubble tail', 'The pointer under a bubble.'],
-  ['chip', 'Chip', 'Small pill for statuses and previews.'],
-  ['badge', 'Badge', 'Round number badge.'],
-  ['bar_frame', 'Bar frame', 'Health bar frame.'],
-  ['bar_hp', 'Bar fill: health', 'Green fill.'],
-  ['bar_hurt', 'Bar fill: hurt', 'Red fill for low health or damage.'],
-  ['bar_shield', 'Bar fill: shield', 'Blue fill.'],
-  ['tab', 'Tab', 'Tab, idle.'],
-  ['tab_active', 'Tab active', 'Tab, selected.'],
-  ['toggle_off', 'Toggle off', 'Switch, off.'],
-  ['toggle_on', 'Toggle on', 'Switch, on.'],
-  ['banner', 'Banner', 'Ribbon for set names, victory and act titles.'],
-  ['lock_open', 'Padlock button: open', 'The button under a die: this die will be rerolled.'],
-  ['lock_closed', 'Padlock button: closed', 'The button under a die: this die is kept.'],
-  ['lock_chain', 'Padlock button: jammed', 'The button under a die an enemy has jammed.'],
-  ['divider', 'Divider', 'Thin toy divider line.'],
-  ['font', 'Pixel font (ink)', 'Glyph atlas: capitals, digits, punctuation. Metrics in src/art/generated/font.json.'],
-  ['font_ivory', 'Pixel font (ivory)', 'The same atlas in ivory, for dark surfaces.'],
-  ['font_big', 'Big digits', 'Large digit atlas for dice values, health and damage numbers.'],
-];
-
-/** Kit pieces that stretch: each must carry 9-slice insets in the manifest. */
-export const STRETCHY_KIT_IDS: readonly string[] = [
-  'button', 'button_pressed', 'button_disabled', 'button_primary', 'button_primary_pressed', 'button_danger', 'button_danger_pressed',
-  'panel', 'panel_dark', 'panel_selected', 'sheet', 'tray', 'bubble', 'chip', 'bar_frame', 'tab', 'tab_active', 'banner',
-].map((k) => `kit.${k}`);
+/* The 0.2.0 interface kit (kit.*) was retired in 0.3.0: surfaces are drawn by ui in CSS. */
 
 export const ASSET_LIST: readonly AssetSpec[] = [
   ...HERO_ROSTER.map((h) => spec('hero', h.id, h.name, `${h.look} Round light base.`)),
@@ -161,7 +110,6 @@ export const ASSET_LIST: readonly AssetSpec[] = [
   ...STATUSES.map((s) => spec('status', s, `${s} status`, {
     poison: 'Green skull drop.', weak: 'Bent sword.', strength: 'Flexed arm.', thorns: 'Spike ring.', regen: 'Green leaf with a plus.', mark: 'Red target reticle.',
   }[s])),
-  ...HERO_ROSTER.map((h) => spec('die', h.id, `${h.name}'s die`, `Voxel cube die body in this hero's main colour; top face left clear for the UI to draw the face icon and value.`)),
   ...DIE_OVERLAYS.map(([k, n, l]) => spec('die', k, n, l)),
   ...INTENTS.map(([k, n, l]) => spec('intent', k, n, l)),
   ...DOORS.map(([k, n, l]) => spec('door', k, n, l)),
@@ -173,7 +121,6 @@ export const ASSET_LIST: readonly AssetSpec[] = [
   spec('bg', 'act2', 'Act 2: Sunken Vault', 'Portrait background: flooded stone vault, teal water, pillars, chains. Calm lower half.'),
   spec('bg', 'act3', 'Act 3: Cinder Spire', 'Portrait background: volcanic tower interior, glowing cracks, dark basalt. Calm lower half.'),
   spec('bg', 'menu', 'Menu backdrop', 'Portrait background: a game table with a felt mat and scattered dice, soft vignette.'),
-  ...KIT.map(([k, n, l]) => spec('kit', k, n, l)),
   spec('app', 'icon', 'App icon', 'Square: a white die showing a crossed-sword pip on a deep teal field. Also exported as PWA icon sizes into public/icons/.'),
 ];
 
@@ -203,14 +150,15 @@ export interface SpriteInfo {
    *  'voxel' = a 3D voxel model drawn by the isometric renderer (characters, dice, every icon);
    *  'kit'   = an interface-kit piece (button, panel, tray, bar) drawn in the toy style;
    *  'scene' = a background.
+   *  'flat'  = a flat vector drawing (version 0.3.0 onwards; see docs/flat-style.md).
    */
-  render?: 'voxel' | 'kit' | 'scene';
+  render?: 'voxel' | 'kit' | 'scene' | 'flat';
   /** For stretchable kit pieces: 9-slice insets in native pixels [top, right, bottom, left]. */
   slice?: [number, number, number, number];
 }
 
 export interface ArtManifest {
-  generatedBy: 'voxelgen';
+  generatedBy: 'voxelgen' | 'artgen';
   /** The shared palette, as hex strings. */
   palette: string[];
   sprites: Record<string, SpriteInfo>;
